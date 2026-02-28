@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
       }
     };
 
-    // Non-blocking — respond immediately
-    sendEmail();
+    // Wait for the email to send before responding
+    await sendEmail();
 
     return NextResponse.json({ success: true });
   } catch (error) {

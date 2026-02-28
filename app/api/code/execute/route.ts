@@ -66,13 +66,12 @@ export async function POST(req: NextRequest) {
 
     const isAccepted = results.status === "ACCEPTED";
 
-    // ── Update DB stats on submit (non-blocking, fast path) ──
+    // ── Update DB stats on submit ──
     if (type === "submit") {
-      connectDB()
-        .then(async () => {
-          const dbUser = await User.findOne({ email: session.user?.email }).select("_id").lean();
-          if (!dbUser) return;
-
+      try {
+        await connectDB();
+        const dbUser = await User.findOne({ email: session.user?.email }).select("_id").lean();
+        if (dbUser) {
           const diffField =
             difficulty === "Easy"
               ? "stats.easySolved"
@@ -91,8 +90,10 @@ export async function POST(req: NextRequest) {
           if (isAccepted) {
             await incGlobalStats({ totalSolved: 1 });
           }
-        })
-        .catch((err) => console.error("Stats update error:", err));
+        }
+      } catch (err) {
+        console.error("Stats update error:", err);
+      }
     }
 
     return NextResponse.json(results);

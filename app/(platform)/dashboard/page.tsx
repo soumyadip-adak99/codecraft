@@ -28,7 +28,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/user/progress")
+        fetch("/api/user/progress", { cache: "no-store" })
             .then((r) => r.json())
             .then((d) => {
                 setProgress(d);
