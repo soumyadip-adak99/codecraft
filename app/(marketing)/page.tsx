@@ -1,41 +1,32 @@
 "use client";
 
+import { Review } from "@/@types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import {
     ArrowRight,
     BarChart3,
     Brain,
     Code2,
     Globe,
+    Loader2,
     MessageSquarePlus,
+    Send,
     Shield,
     Sparkles,
     Star,
     Zap,
-    Send,
-    Loader2,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
-interface Review {
-    _id: string;
-    userName: string;
-    review: string;
-    createdAt: string;
-}
-
-interface PlatformStats {
-    totalUsers: number;
-    totalQuestions: number;
-    totalSolved: number;
-}
+import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 
 export default function LandingPage() {
     const { data: session, status } = useSession();
@@ -44,11 +35,12 @@ export default function LandingPage() {
     const statsRef = useRef<HTMLDivElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
 
-    const [stats, setStats] = useState<PlatformStats>({
-        totalUsers: 0,
-        totalQuestions: 0,
-        totalSolved: 0,
-    });
+    // ── Real-time platform counters from Convex ──
+    const platformStats = useQuery(api.platformStats.get);
+    const totalDevelopers = platformStats?.totalDevelopers ?? 0;
+    const totalQuestions = platformStats?.totalQuestionsGenerated ?? 0;
+    const totalSolved = platformStats?.totalProblemsSolved ?? 0;
+
     const [reviews, setReviews] = useState<Review[]>([]);
     const [reviewText, setReviewText] = useState("");
     const [submittingReview, setSubmittingReview] = useState(false);
@@ -60,20 +52,14 @@ export default function LandingPage() {
         }
     }, [status, router]);
 
+    // Fetch reviews from convex directly
+    const fetchedReviews = useQuery(api.reviews.getReviews);
+
     useEffect(() => {
-        fetch("/api/stats")
-            .then((r) => r.json())
-            .then(setStats)
-            .catch(() => {
-                setStats({ totalUsers: 1200, totalQuestions: 8500, totalSolved: 42000 });
-            });
-        fetch("/api/reviews")
-            .then((r) => r.json())
-            .then((d) => {
-                if (Array.isArray(d)) setReviews(d);
-            })
-            .catch(() => { });
-    }, []);
+        if (fetchedReviews) {
+            setReviews(fetchedReviews as unknown as Review[]);
+        }
+    }, [fetchedReviews]);
 
     useEffect(() => {
         if (!heroRef.current) return;
@@ -82,13 +68,13 @@ export default function LandingPage() {
     }, []);
 
     useEffect(() => {
-        if (!statsRef.current || !stats.totalUsers) return;
+        if (!statsRef.current || !totalDevelopers) return;
         const counters = statsRef.current.querySelectorAll("[data-counter]");
         counters.forEach((el) => {
             const val = parseInt(el.getAttribute("data-counter") || "0");
             animations.countUp(el, val, 2.5);
         });
-    }, [stats]);
+    }, [totalDevelopers, totalQuestions, totalSolved]);
 
     useEffect(() => {
         if (!reviewsRef.current || reviews.length === 0) return;
@@ -96,42 +82,13 @@ export default function LandingPage() {
         animations.staggerCards(cards, reviewsRef.current);
     }, [reviews]);
 
-    const handleSubmitReview = async () => {
-        if (!session) {
-            toast.error("Please log in to submit a review");
-            return;
-        }
-        if (reviewText.trim().length < 10) {
-            toast.error("Review must be at least 10 characters");
-            return;
-        }
-        setSubmittingReview(true);
-        try {
-            const res = await fetch("/api/reviews", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ review: reviewText }),
-            });
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.error || "Failed to submit review");
-            }
-            toast.success("Review submitted! Thank you 🎉");
-            setReviewText("");
-            // Refresh reviews
-            fetch("/api/reviews")
-                .then((r) => r.json())
-                .then((d) => { if (Array.isArray(d)) setReviews(d); })
-                .catch(() => { });
-        } catch (err: unknown) {
-            toast.error(err instanceof Error ? err.message : "Failed to submit review");
-        } finally {
-            setSubmittingReview(false);
-        }
-    };
+    // Reviews are now submitted via the Dashboard.
+    // We remove the handleSubmitReview from Landing Page.
 
     // Don't render if redirecting
     if (status === "authenticated") return null;
+
+    //  console.log(reviews);
 
     return (
         <div className="relative overflow-hidden">
@@ -188,8 +145,8 @@ export default function LandingPage() {
                     data-animate
                     className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed"
                 >
-                    Start a session, get AI-generated coding problems, submit solutions, and receive a
-                    PDF performance report in your inbox — all in one seamless flow.
+                    Start a session, get AI-generated coding problems, submit solutions, and receive
+                    a PDF performance report in your inbox — all in one seamless flow.
                 </p>
 
                 <div data-animate className="flex flex-wrap items-center justify-center gap-4">
@@ -218,17 +175,17 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Stats */}
-            <section ref={statsRef} className="py-16 border-y border-white/5 bg-white/[0.02]">
+            {/* Stats — real-time from Convex */}
+            <section ref={statsRef} className="py-16 border-y border-white/5 bg-white/2">
                 <div className="max-w-4xl mx-auto px-4 grid grid-cols-3 gap-8 text-center">
                     {[
-                        { label: "Developers", value: stats.totalUsers, suffix: "+" },
+                        { label: "Developers", value: totalDevelopers, suffix: "+" },
                         {
                             label: "AI Questions Generated",
-                            value: stats.totalQuestions,
+                            value: totalQuestions,
                             suffix: "+",
                         },
-                        { label: "Problems Solved", value: stats.totalSolved, suffix: "+" },
+                        { label: "Problems Solved", value: totalSolved, suffix: "+" },
                     ].map(({ label, value, suffix }) => (
                         <div key={label}>
                             <div className="text-4xl sm:text-5xl font-black text-white mb-2">
@@ -301,72 +258,60 @@ export default function LandingPage() {
             </section>
 
             {/* Reviews */}
-            {reviews.length > 0 && (
-                <section className="py-24 px-4 border-t border-white/5 bg-white/[0.01]">
+            {reviews.length >= 4 && (
+                <section className="py-24 px-4 border-t border-white/5 bg-white/1 overflow-hidden">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-black text-white mb-4">
                                 Loved by <span className="text-orange-500">developers</span>
                             </h2>
                         </div>
-                        <div ref={reviewsRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {reviews.map((r) => (
-                                <div
-                                    key={r._id}
-                                    data-review-card
-                                    className="glass rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
-                                >
-                                    <div className="flex items-center gap-1 mb-3">
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                className="h-4 w-4 text-orange-500 fill-orange-500"
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className="text-zinc-300 text-sm leading-relaxed mb-4">
-                                        &ldquo;{r.review}&rdquo;
-                                    </p>
-                                    <p className="text-zinc-500 text-sm font-medium">{r.userName}</p>
-                                </div>
-                            ))}
-                        </div>
 
-                        {/* Review submission form — logged-in users only */}
-                        {session && (
-                            <div className="mt-12 max-w-xl mx-auto">
-                                <div className="glass rounded-2xl p-6 border border-white/5">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <MessageSquarePlus className="h-5 w-5 text-orange-500" />
-                                        <h3 className="text-base font-bold text-white">Share your experience</h3>
-                                    </div>
-                                    <textarea
-                                        value={reviewText}
-                                        onChange={(e) => setReviewText(e.target.value)}
-                                        placeholder="Tell others about your experience with codeCarft…"
-                                        maxLength={500}
-                                        rows={3}
-                                        className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 resize-none"
-                                    />
-                                    <div className="flex items-center justify-between mt-3">
-                                        <span className="text-xs text-zinc-600">{reviewText.length}/500</span>
-                                        <Button
-                                            onClick={handleSubmitReview}
-                                            disabled={submittingReview || reviewText.trim().length < 10}
-                                            size="sm"
-                                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2 disabled:opacity-50"
+                        <div
+                            className="relative"
+                            style={{
+                                maskImage:
+                                    "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+                                WebkitMaskImage:
+                                    "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+                            }}
+                        >
+                            <InfiniteSlider speedOnHover={25} gap={24}>
+                                <div className="flex gap-6">
+                                    {reviews.map((r) => (
+                                        <div
+                                            key={r._id}
+                                            className="min-w-[320px] rounded-2xl border border-white/10 
+                           bg-white/5 backdrop-blur-xl p-6 
+                           shadow-lg shadow-black/30
+                           transition-all duration-300
+                           hover:border-white/20 hover:scale-[1.02]"
                                         >
-                                            {submittingReview ? (
-                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                            ) : (
-                                                <Send className="h-3.5 w-3.5" />
-                                            )}
-                                            Submit Review
-                                        </Button>
-                                    </div>
+                                            <p className="text-zinc-300 text-sm leading-relaxed mb-4 line-clamp-4">
+                                                &ldquo;{(r as any).reviewText}&rdquo;
+                                            </p>
+
+                                            <div className="flex items-center gap-3 mt-4">
+                                                {(r as any).userImageUrl ? (
+                                                    <img
+                                                        src={(r as any).userImageUrl as string}
+                                                        alt={r.userName}
+                                                        className="w-9 h-9 rounded-full object-cover ring-1 ring-white/10"
+                                                    />
+                                                ) : (
+                                                    <div className="w-9 h-9 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500 font-bold text-xs uppercase">
+                                                        {r.userName.charAt(0)}
+                                                    </div>
+                                                )}
+                                                <p className="text-zinc-400 text-sm font-medium">
+                                                    {r.userName}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-                        )}
+                            </InfiniteSlider>
+                        </div>
                     </div>
                 </section>
             )}

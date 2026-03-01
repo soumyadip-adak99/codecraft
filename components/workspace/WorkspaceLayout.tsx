@@ -10,22 +10,11 @@ import { CodeEditor } from "./CodeEditor";
 import { TestResultsPanel } from "./TestResultsPanel";
 import { ChevronRight, Code2, LogOut, Loader2, SkipForward, Zap } from "lucide-react";
 import Link from "next/link";
-import { useChallengeStore } from "@/store/challengeStore";
+import { useChallengeStore, type Question } from "@/store/challengeStore";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store";
-
-interface Question {
-    title: string;
-    difficulty: "Easy" | "Medium" | "Hard";
-    description: string;
-    constraints: string[];
-    examples: { input: string; output: string; explanation?: string }[];
-    starterCode: Record<string, string>;
-    testCases: { input: string; expectedOutput: string; isHidden: boolean }[];
-    tags: string[];
-}
 
 const difficultyConfig = {
     Easy: { cls: "bg-green-500/15 text-green-400 border-green-500/30" },
@@ -116,8 +105,8 @@ export function WorkspaceLayout({ question }: { question: Question }) {
                         disabled={!canGoNext || isGenerating}
                         title={canGoNext ? "Go to next question" : "Submit current question first"}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${canGoNext
-                                ? "bg-orange-500/15 text-orange-400 border-orange-500/30 hover:bg-orange-500/25 hover:text-orange-300 cursor-pointer"
-                                : "bg-white/5 text-zinc-600 border-white/5 cursor-not-allowed opacity-50"
+                            ? "bg-orange-500/15 text-orange-400 border-orange-500/30 hover:bg-orange-500/25 hover:text-orange-300 cursor-pointer"
+                            : "bg-white/5 text-zinc-600 border-white/5 cursor-not-allowed opacity-50"
                             }`}
                     >
                         {isGenerating ? (

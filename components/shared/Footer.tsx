@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { Code2, Github, Twitter } from "lucide-react";
 import Logo from "@/components/ui/logo";
+import Link from "next/link";
 
 export function Footer() {
     return (

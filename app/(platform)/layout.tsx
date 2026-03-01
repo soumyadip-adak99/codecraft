@@ -6,11 +6,7 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { ChallengeModal } from "@/components/challenge/ChallengeModal";
 
-export default function PlatformLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function PlatformLayout({ children }: { children: React.ReactNode }) {
     const { data: session, status } = useSession();
     const router = useRouter();
 

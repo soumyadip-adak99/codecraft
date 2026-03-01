@@ -6,17 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useUserStore } from "@/store";
-
-const PROVIDERS = [
-    { value: "openai", label: "OpenAI", models: ["gpt-4o-mini", "gpt-4o", "gpt-4"] },
-    {
-        value: "anthropic",
-        label: "Anthropic",
-        models: ["claude-3-haiku", "claude-3-sonnet", "claude-3-opus"],
-    },
-    { value: "google", label: "Google Gemini", models: ["gemini-1.5-flash", "gemini-1.5-pro"] },
-    { value: "custom", label: "Custom / Local", models: [] },
-];
+import { API_KEY_PROVIDER_LINK, PROVIDERS } from "@/constant";
 
 export default function SettingsPage() {
     const { hasApiKey, setHasApiKey } = useUserStore();
@@ -172,18 +162,7 @@ export default function SettingsPage() {
                         Where to get API keys
                     </h3>
                     <div className="space-y-3 text-sm text-zinc-400">
-                        {[
-                            {
-                                name: "Google AI",
-                                url: "https://aistudio.google.com/app/apikey",
-                                badge: "Recommended",
-                            },
-                            { name: "OpenAI", url: "https://platform.openai.com/api-keys" },
-                            {
-                                name: "Anthropic",
-                                url: "https://console.anthropic.com/settings/keys",
-                            },
-                        ].map(({ name, url, badge }) => (
+                        {API_KEY_PROVIDER_LINK.map(({ name, url, badge }) => (
                             <div key={name} className="flex items-center justify-between">
                                 <span className="flex items-center gap-2">
                                     {name}

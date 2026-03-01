@@ -68,7 +68,11 @@ function ChallengeSkeleton() {
                         <div className="h-3 w-48 bg-white/5 rounded animate-pulse ml-6" />
                     </div>
                     {[80, 60, 72, 90, 65, 55, 70, 40, 78, 62].map((w, i) => (
-                        <div key={i} className="flex items-center gap-1" style={{ marginTop: i === 0 ? 24 : 0 }}>
+                        <div
+                            key={i}
+                            className="flex items-center gap-1"
+                            style={{ marginTop: i === 0 ? 24 : 0 }}
+                        >
                             <div className="h-3 w-3 bg-white/5 rounded animate-pulse text-right" />
                             <div
                                 className="h-3 bg-white/5 rounded animate-pulse ml-6"

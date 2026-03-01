@@ -1,14 +1,5 @@
 import nodemailer from "nodemailer";
-import type { SessionSolvedQuestion } from "@/app/api/session/end/route";
-
-interface SessionReportData {
-    totalSolved: number;
-    easySolved: number;
-    mediumSolved: number;
-    hardSolved: number;
-    solvedQuestions: SessionSolvedQuestion[];
-    sessionId: string;
-}
+import { SessionReportData, SessionSolvedQuestion } from "@/@types";
 
 export class EmailService {
     private transporter: nodemailer.Transporter;
@@ -26,6 +17,12 @@ export class EmailService {
     }
 
     async sendWelcomeEmail(to: string, name: string) {
+        const baseUrl =
+            process.env.NEXTAUTH_URL ||
+            (process.env.VERCEL_URL
+                ? `https://${process.env.VERCEL_URL}`
+                : "http://localhost:3000");
+
         const html = `
       <!DOCTYPE html>
       <html>
@@ -56,7 +53,7 @@ export class EmailService {
                 <p style="color:#666;margin:0;font-size:14px;">Get a PDF performance report in your inbox</p>
               </div>
             </div>
-            <a href="${process.env.NEXTAUTH_URL}/dashboard" 
+            <a href="${baseUrl}/dashboard" 
                style="display:inline-block;background:#f97316;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;">
               Start Coding →
             </a>
@@ -89,6 +86,12 @@ export class EmailService {
           </tr>`
             )
             .join("");
+
+        const baseUrl =
+            process.env.NEXTAUTH_URL ||
+            (process.env.VERCEL_URL
+                ? `https://${process.env.VERCEL_URL}`
+                : "http://localhost:3000");
 
         const html = `
       <!DOCTYPE html>
@@ -138,7 +141,7 @@ export class EmailService {
                     : `<p style="color:#666;text-align:center;margin:24px 0;">No problems solved this session.</p>`
             }
 
-            <a href="${process.env.NEXTAUTH_URL}/dashboard" 
+            <a href="${baseUrl}/dashboard" 
                style="display:inline-block;margin-top:32px;background:#f97316;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;">
               Start Another Session →
             </a>
@@ -151,19 +154,24 @@ export class EmailService {
       </html>
     `;
 
-        await this.transporter.sendMail({
-            from: `"codeCarft Team" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-            to,
-            subject: `📊 ${name}'s Session Report — ${data.totalSolved} problem${data.totalSolved !== 1 ? "s" : ""} solved`,
-            html,
-            attachments: [
-                {
-                    filename: `codeCarft-session-report.pdf`,
-                    content: pdfBuffer,
-                    contentType: "application/pdf",
-                },
-            ],
-        });
+        try {
+            await this.transporter.sendMail({
+                from: `"codeCarft Team" <${process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@codecarft.com"}>`,
+                to,
+                subject: `📊 ${name}'s Session Report — ${data.totalSolved} problem${data.totalSolved !== 1 ? "s" : ""} solved`,
+                html,
+                attachments: [
+                    {
+                        filename: `codeCarft-session-report.pdf`,
+                        content: pdfBuffer,
+                        contentType: "application/pdf",
+                    },
+                ],
+            });
+        } catch (error) {
+            console.error("Failed to send session report email:", error);
+            throw error;
+        }
     }
 
     private async send(options: { to: string; subject: string; html: string }) {
