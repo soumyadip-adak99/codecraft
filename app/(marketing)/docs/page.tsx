@@ -3,19 +3,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
+import { steps } from "@/constant";
 import { animations } from "@/lib/animations/config";
 import {
     ArrowRight,
     BookOpen,
-    Brain,
-    Code2,
     CheckCircle2,
-    FileText,
     Github,
     Mail,
-    Shield,
-    Terminal,
-    Zap,
+    Shield
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -35,48 +31,7 @@ export default function DocsPage() {
         animations.heroEntrance(elements);
     }, []);
 
-    const steps = [
-        {
-            icon: Zap,
-            title: "1. Start a Session",
-            description:
-                "Begin your journey from the Dashboard by clicking 'Start Session'. Choose your desired difficulty (Easy, Medium, or Hard) and optionally specify a topic like 'Dynamic Programming' or 'Trees'.",
-            color: "text-orange-500",
-            bg: "bg-orange-500/10",
-        },
-        {
-            icon: Brain,
-            title: "2. AI Question Generation",
-            description:
-                "Our platform uses advanced LLMs (Groq, OpenAI, Anthropic, or Gemini) to generate a unique, completely new coding challenge tailored to your chosen difficulty and topic. We ensure you never see the same question twice in a session.",
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
-        },
-        {
-            icon: Code2,
-            title: "3. Write Code in Monaco Editor",
-            description:
-                "Solve the problem in a professional VS Code-like environment supporting 5 languages: JavaScript, TypeScript, Python, Java, and C++. The editor comes with syntax highlighting, IntelliSense, and language-specific starter code.",
-            color: "text-green-400",
-            bg: "bg-green-500/10",
-        },
-        {
-            icon: Terminal,
-            title: "4. Run & Submit for Evaluation",
-            description:
-                "Click 'Run' to test your logic against visible test cases. When ready, click 'Submit' to evaluate against hidden edge cases. A robust execution engine grades your attempt. Once 'Accepted', your stats are updated and the 'Next' button unlocks.",
-            color: "text-purple-400",
-            bg: "bg-purple-500/10",
-        },
-        {
-            icon: FileText,
-            title: "5. End Session & PDF Report",
-            description:
-                "When you are done practicing, click 'End Session'. A detailed performance report summarizing your solved questions, difficulty breakdown, and time spent is compiled into a beautiful PDF and instantly emailed to your inbox.",
-            color: "text-red-400",
-            bg: "bg-red-500/10",
-        },
-    ];
+
 
     return (
         <div className="relative overflow-hidden min-h-screen bg-black">
@@ -144,7 +99,7 @@ export default function DocsPage() {
                             className="glass rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <div
-                                className={`flex-shrink-0 h-14 w-14 rounded-2xl flex items-center justify-center ${step.bg}`}
+                                className={`shrink-0 h-14 w-14 rounded-2xl flex items-center justify-center ${step.bg}`}
                             >
                                 <step.icon className={`h-7 w-7 ${step.color}`} />
                             </div>
@@ -192,7 +147,7 @@ export default function DocsPage() {
             </section>
 
             {/* API Key Guide Section */}
-            <section className="py-24 px-4 bg-white/[0.02] border-t border-white/5">
+            <section className="py-24 px-4 bg-white/2 border-t border-white/5">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl font-black text-white mb-4">
@@ -340,7 +295,7 @@ export default function DocsPage() {
             </section>
 
             {/* Developer Info Section */}
-            <section ref={devRef} className="py-24 px-4 border-t border-white/5 bg-white/[0.01]">
+            <section ref={devRef} className="py-24 px-4 border-t border-white/5 bg-white/1">
                 <div className="max-w-3xl mx-auto text-center">
                     <h2 className="text-3xl font-black text-white mb-6">
                         Meet the <span className="text-orange-500">Developer</span>

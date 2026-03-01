@@ -1,14 +1,5 @@
 import nodemailer from "nodemailer";
-import type { SessionSolvedQuestion } from "@/app/api/session/end/route";
-
-interface SessionReportData {
-    totalSolved: number;
-    easySolved: number;
-    mediumSolved: number;
-    hardSolved: number;
-    solvedQuestions: SessionSolvedQuestion[];
-    sessionId: string;
-}
+import { SessionReportData, SessionSolvedQuestion } from "@/@types";
 
 export class EmailService {
     private transporter: nodemailer.Transporter;
@@ -26,7 +17,11 @@ export class EmailService {
     }
 
     async sendWelcomeEmail(to: string, name: string) {
-        const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+        const baseUrl =
+            process.env.NEXTAUTH_URL ||
+            (process.env.VERCEL_URL
+                ? `https://${process.env.VERCEL_URL}`
+                : "http://localhost:3000");
 
         const html = `
       <!DOCTYPE html>
@@ -92,7 +87,11 @@ export class EmailService {
             )
             .join("");
 
-        const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+        const baseUrl =
+            process.env.NEXTAUTH_URL ||
+            (process.env.VERCEL_URL
+                ? `https://${process.env.VERCEL_URL}`
+                : "http://localhost:3000");
 
         const html = `
       <!DOCTYPE html>

@@ -1,43 +1,110 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { Zap, Trophy, Target, BarChart2, BookOpen, Flame } from "lucide-react";
+import { UserStats } from "@/@types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUIStore } from "@/store";
 import { useChallengeStore } from "@/store/challengeStore";
-
-interface Progress {
-    stats: {
-        totalSolved: number;
-        easySolved: number;
-        mediumSolved: number;
-        hardSolved: number;
-        totalAttempts: number;
-    };
-    hasApiKey: boolean;
-    preferredModel: string;
-}
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { BarChart2, BookOpen, Flame, Target, Trophy, Zap, MessageSquarePlus, Star, Loader2, Send } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
     const { openChallengeModal } = useUIStore();
     const { sessionActive, solvedQuestions } = useChallengeStore();
-    const [progress, setProgress] = useState<Progress | null>(null);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch("/api/user/progress", { cache: "no-store" })
-            .then((r) => r.json())
-            .then((d) => {
-                setProgress(d);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
+    // ── Real-time user stats from Convex ──
+    const userStatus = useQuery(
+        api.userStatus.getByEmail,
+        session?.user?.email ? { email: session.user.email } : "skip"
+    );
 
-    const stats = progress?.stats;
+    const loading = userStatus === undefined;
+    const stats: UserStats | null = userStatus
+        ? {
+            totalSolved: userStatus.totalSolved,
+            easySolved: userStatus.easySolved,
+            mediumSolved: userStatus.mediumSolved,
+            hardSolved: userStatus.hardSolved,
+            totalAttempts: userStatus.totalAttempts,
+        }
+        : null;
+
+    const dashBoardContent = [
+        {
+            icon: Trophy,
+            label: "Total Solved",
+            value: stats?.totalSolved ?? 0,
+            color: "text-orange-500",
+            bg: "bg-orange-500/10",
+        },
+        {
+            icon: BookOpen,
+            label: "Easy Solved",
+            value: stats?.easySolved ?? 0,
+            color: "text-green-400",
+            bg: "bg-green-500/10",
+        },
+        {
+            icon: BarChart2,
+            label: "Medium Solved",
+            value: stats?.mediumSolved ?? 0,
+            color: "text-yellow-400",
+            bg: "bg-yellow-500/10",
+        },
+        {
+            icon: Flame,
+            label: "Hard Solved",
+            value: stats?.hardSolved ?? 0,
+            color: "text-red-400",
+            bg: "bg-red-500/10",
+        },
+        {
+            icon: Target,
+            label: "Total Attempts",
+            value: stats?.totalAttempts ?? 0,
+            color: "text-blue-400",
+            bg: "bg-blue-500/10",
+        },
+    ];
+
+    const [reviewText, setReviewText] = useState("");
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [showReviewForm, setShowReviewForm] = useState(false);
+
+    // Add review mutation hook
+    const addReview = useMutation(api.reviews.addReview);
+
+    const handleSubmitReview = async () => {
+        if (!session?.user?.name || !session?.user?.email) {
+            toast.error("Please log in to submit a review");
+            return;
+        }
+        if (reviewText.trim().length < 10) {
+            toast.error("Review must be at least 10 characters");
+            return;
+        }
+        setSubmittingReview(true);
+        try {
+            await addReview({
+                reviewText: reviewText,
+                userName: session.user.name,
+                userEmail: session.user.email,
+                userImageUrl: session.user.image || undefined,
+            });
+            toast.success("Review submitted! Thank you 🎉");
+            setReviewText("");
+            setShowReviewForm(false);
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : "Failed to submit review");
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black">
@@ -86,43 +153,7 @@ export default function DashboardPage() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-                    {[
-                        {
-                            icon: Trophy,
-                            label: "Total Solved",
-                            value: stats?.totalSolved ?? 0,
-                            color: "text-orange-500",
-                            bg: "bg-orange-500/10",
-                        },
-                        {
-                            icon: BookOpen,
-                            label: "Easy Solved",
-                            value: stats?.easySolved ?? 0,
-                            color: "text-green-400",
-                            bg: "bg-green-500/10",
-                        },
-                        {
-                            icon: BarChart2,
-                            label: "Medium Solved",
-                            value: stats?.mediumSolved ?? 0,
-                            color: "text-yellow-400",
-                            bg: "bg-yellow-500/10",
-                        },
-                        {
-                            icon: Flame,
-                            label: "Hard Solved",
-                            value: stats?.hardSolved ?? 0,
-                            color: "text-red-400",
-                            bg: "bg-red-500/10",
-                        },
-                        {
-                            icon: Target,
-                            label: "Total Attempts",
-                            value: stats?.totalAttempts ?? 0,
-                            color: "text-blue-400",
-                            bg: "bg-blue-500/10",
-                        },
-                    ].map(({ icon: Icon, label, value, color, bg }) => (
+                    {dashBoardContent.map(({ icon: Icon, label, value, color, bg }) => (
                         <div
                             key={label}
                             className="bg-white/10 rounded-2xl p-5 border border-white/10 shadow-2xl shadow-white/5"
@@ -165,6 +196,72 @@ export default function DashboardPage() {
                         </Button>
                     </div>
                 )}
+
+                {/* Review submission form */}
+                <div className="mt-12">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <Star className="h-5 w-5 text-orange-500 fill-orange-500" />
+                            Help us improve
+                        </h2>
+                        {!showReviewForm && (
+                            <Button
+                                onClick={() => setShowReviewForm(true)}
+                                variant="outline"
+                                className="border-orange-500/20 text-orange-400 hover:bg-orange-500/10"
+                                size="sm"
+                            >
+                                <MessageSquarePlus className="h-4 w-4 mr-2" />
+                                Write a Review
+                            </Button>
+                        )}
+                    </div>
+
+                    {showReviewForm && (
+                        <div className="glass rounded-2xl p-6 border border-orange-500/20 bg-orange-500/5 animate-in fade-in slide-in-from-top-4">
+                            <h3 className="text-base font-bold text-white mb-4">
+                                Share your experience with CodeCraft
+                            </h3>
+                            <textarea
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                placeholder="I really enjoyed using CodeCraft because..."
+                                maxLength={500}
+                                rows={4}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 resize-none transition-colors"
+                            />
+                            <div className="flex items-center justify-between mt-4">
+                                <span className="text-xs text-zinc-500">
+                                    {reviewText.length}/500 characters
+                                </span>
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={() => setShowReviewForm(false)}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-zinc-400 hover:text-white"
+                                        disabled={submittingReview}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmitReview}
+                                        disabled={submittingReview || reviewText.trim().length < 10}
+                                        size="sm"
+                                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 disabled:opacity-50"
+                                    >
+                                        {submittingReview ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Send className="h-4 w-4" />
+                                        )}
+                                        Submit Review
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

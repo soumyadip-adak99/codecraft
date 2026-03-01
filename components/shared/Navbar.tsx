@@ -9,11 +9,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Logo from "@/components/ui/logo";
 import { useUIStore } from "@/store";
-import { ChevronDown, Code2, LogOut, Settings, Trophy, Zap } from "lucide-react";
+import { ChevronDown, LogOut, Settings, Trophy, Zap } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import Logo from "@/components/ui/logo";
 
 export function Navbar() {
     const { data: session } = useSession();

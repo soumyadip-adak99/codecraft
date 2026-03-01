@@ -85,7 +85,9 @@ export function ChallengeModal() {
         <div
             ref={backdropRef}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
-            onClick={(e) => { if (e.target === backdropRef.current) handleClose(); }}
+            onClick={(e) => {
+                if (e.target === backdropRef.current) handleClose();
+            }}
         >
             <div
                 ref={contentRef}
@@ -101,7 +103,9 @@ export function ChallengeModal() {
                             <h2 className="text-base font-bold text-white">
                                 {sessionActive ? "Next Question" : "Start Session"}
                             </h2>
-                            <p className="text-xs text-zinc-500">AI-generated challenge just for you</p>
+                            <p className="text-xs text-zinc-500">
+                                AI-generated challenge just for you
+                            </p>
                         </div>
                     </div>
                     <button
@@ -116,20 +120,23 @@ export function ChallengeModal() {
                 <div className="p-6 space-y-5">
                     {/* Difficulty */}
                     <div>
-                        <label className="block text-xs font-medium text-zinc-400 mb-2">Difficulty</label>
+                        <label className="block text-xs font-medium text-zinc-400 mb-2">
+                            Difficulty
+                        </label>
                         <div className="grid grid-cols-3 gap-2">
                             {DIFFICULTIES.map((d) => (
                                 <button
                                     key={d}
                                     onClick={() => setDifficulty(d)}
-                                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${difficulty === d
-                                        ? d === "Easy"
-                                            ? "bg-green-500/20 border-green-500/40 text-green-400"
-                                            : d === "Medium"
-                                                ? "bg-orange-500/20 border-orange-500/40 text-orange-400"
-                                                : "bg-red-500/20 border-red-500/40 text-red-400"
-                                        : "border-white/5 text-zinc-500 hover:border-white/10 hover:text-zinc-300 bg-white/2"
-                                        }`}
+                                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                                        difficulty === d
+                                            ? d === "Easy"
+                                                ? "bg-green-500/20 border-green-500/40 text-green-400"
+                                                : d === "Medium"
+                                                  ? "bg-orange-500/20 border-orange-500/40 text-orange-400"
+                                                  : "bg-red-500/20 border-red-500/40 text-red-400"
+                                            : "border-white/5 text-zinc-500 hover:border-white/10 hover:text-zinc-300 bg-white/2"
+                                    }`}
                                 >
                                     {d}
                                 </button>
@@ -153,24 +160,35 @@ export function ChallengeModal() {
                     {/* Default key toggle */}
                     <div
                         onClick={() => setUseDefaultKey(!useDefaultKey)}
-                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${useDefaultKey
-                            ? "bg-orange-500/10 border-orange-500/30"
-                            : "bg-white/3 border-white/8 hover:border-white/15"
-                            }`}
+                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${
+                            useDefaultKey
+                                ? "bg-orange-500/10 border-orange-500/30"
+                                : "bg-white/3 border-white/8 hover:border-white/15"
+                        }`}
                     >
-                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${useDefaultKey ? "bg-orange-500/20" : "bg-white/5"}`}>
-                            <Server className={`h-4 w-4 ${useDefaultKey ? "text-orange-400" : "text-zinc-500"}`} />
+                        <div
+                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${useDefaultKey ? "bg-orange-500/20" : "bg-white/5"}`}
+                        >
+                            <Server
+                                className={`h-4 w-4 ${useDefaultKey ? "text-orange-400" : "text-zinc-500"}`}
+                            />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium ${useDefaultKey ? "text-orange-300" : "text-zinc-300"}`}>
+                            <p
+                                className={`text-sm font-medium ${useDefaultKey ? "text-orange-300" : "text-zinc-300"}`}
+                            >
                                 Use Default Server Key
                             </p>
                             <p className="text-[11px] text-zinc-500 mt-0.5">
                                 Powered by Groq Llama 3.3 — no key needed
                             </p>
                         </div>
-                        <div className={`h-5 w-9 rounded-full transition-colors ${useDefaultKey ? "bg-orange-500" : "bg-zinc-700"}`}>
-                            <div className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${useDefaultKey ? "translate-x-4" : "translate-x-0"}`} />
+                        <div
+                            className={`h-5 w-9 rounded-full transition-colors ${useDefaultKey ? "bg-orange-500" : "bg-zinc-700"}`}
+                        >
+                            <div
+                                className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${useDefaultKey ? "translate-x-4" : "translate-x-0"}`}
+                            />
                         </div>
                     </div>
 
@@ -178,7 +196,9 @@ export function ChallengeModal() {
                     {!useDefaultKey && (
                         <>
                             <div>
-                                <label className="block text-xs font-medium text-zinc-400 mb-2">LLM Provider</label>
+                                <label className="block text-xs font-medium text-zinc-400 mb-2">
+                                    LLM Provider
+                                </label>
                                 <div className="relative">
                                     <select
                                         value={provider}
@@ -186,7 +206,9 @@ export function ChallengeModal() {
                                         className="w-full appearance-none bg-zinc-900 border border-white/8 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 cursor-pointer"
                                     >
                                         {PROVIDERS.map((p) => (
-                                            <option key={p.value} value={p.value}>{p.label}</option>
+                                            <option key={p.value} value={p.value}>
+                                                {p.label}
+                                            </option>
                                         ))}
                                     </select>
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
@@ -195,7 +217,9 @@ export function ChallengeModal() {
 
                             {provider === "custom" && (
                                 <div>
-                                    <label className="block text-xs font-medium text-zinc-400 mb-2">Base URL</label>
+                                    <label className="block text-xs font-medium text-zinc-400 mb-2">
+                                        Base URL
+                                    </label>
                                     <Input
                                         placeholder="https://api.example.com/v1"
                                         value={customBaseUrl}
@@ -218,7 +242,8 @@ export function ChallengeModal() {
                                     className="bg-white/3 border-white/8 text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:ring-orange-500/20 font-mono text-sm"
                                 />
                                 <p className="mt-1.5 text-[11px] text-zinc-600">
-                                    Your key is used to call the LLM directly and never stored on our servers.
+                                    Your key is used to call the LLM directly and never stored on
+                                    our servers.
                                 </p>
                             </div>
                         </>
@@ -248,7 +273,9 @@ export function ChallengeModal() {
                         ) : (
                             <>
                                 <Zap className="h-4 w-4" />
-                                {sessionActive ? `Next ${difficulty} Challenge` : `Start Session — ${difficulty}`}
+                                {sessionActive
+                                    ? `Next ${difficulty} Challenge`
+                                    : `Start Session — ${difficulty}`}
                             </>
                         )}
                     </Button>

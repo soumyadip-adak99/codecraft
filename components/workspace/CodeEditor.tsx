@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Editor, useMonaco } from "@monaco-editor/react";
-import { useChallengeStore, type Language } from "@/store/challengeStore";
+import { Button } from "@/components/ui/button";
 import {
-    editorOptions,
     defineCustomTheme,
     EDITOR_THEMES,
+    editorOptions,
     type EditorThemeId,
 } from "@/lib/editor/config";
-import { Play, Send, ChevronDown, Palette, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useChallengeStore, type Language } from "@/store/challengeStore";
+import { Editor, useMonaco } from "@monaco-editor/react";
+import { ChevronDown, Loader2, Palette, Play, Send } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 const LANGUAGES: { value: Language; label: string }[] = [
     { value: "javascript", label: "JavaScript" },
@@ -38,9 +38,20 @@ function getStoredTheme(): EditorThemeId {
 export function CodeEditor() {
     const monaco = useMonaco();
     const {
-        currentQuestion, code, setCode, language, setLanguage,
-        executeCode, isExecuting, testResults,
-        generateQuestion, isGenerating, apiKey, provider
+        currentQuestion,
+        code,
+        setCode,
+        language,
+        setLanguage,
+        executeCode,
+        isRunning,
+        isSubmitting,
+        testResults,
+        generateQuestion,
+        isGenerating,
+        apiKey,
+        provider,
+        isRunPass,
     } = useChallengeStore();
 
     const [selectedTheme, setSelectedTheme] = useState<EditorThemeId>(getStoredTheme);
@@ -137,28 +148,32 @@ export function CodeEditor() {
                         size="sm"
                         variant="outline"
                         onClick={() => executeCode("run")}
-                        disabled={isExecuting || isGenerating}
-                        className="gap-1.5 border-white/8 text-zinc-300 hover:text-white hover:border-green-500/40 bg-white/3 text-xs h-8 min-w-[72px]"
+                        disabled={isRunning || isGenerating}
+                        className="gap-1.5 border-white/8 text-zinc-300 hover:text-white hover:border-green-500/40 bg-white/3 text-xs h-8 min-w-18"
                     >
-                        {isExecuting ? (
+                        {isRunning ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-green-400" />
                         ) : (
                             <Play className="h-3.5 w-3.5 text-green-400" />
                         )}
-                        {isExecuting ? "Running…" : "Run"}
+                        {isRunning ? "Running…" : "Run"}
                     </Button>
                     <Button
                         size="sm"
                         onClick={() => executeCode("submit")}
-                        disabled={isExecuting || isGenerating}
-                        className="gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs h-8 shadow-lg shadow-orange-500/20 min-w-[80px]"
+                        disabled={isSubmitting || isGenerating || !isRunPass}
+                        title={!isRunPass ? "Run your code first" : "Submit solution"}
+                        className={`gap-1.5 text-xs h-8 shadow-lg min-w-20 ${!isRunPass
+                            ? "bg-zinc-700 text-zinc-400 cursor-not-allowed shadow-none"
+                            : "bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/20"
+                            }`}
                     >
-                        {isExecuting ? (
+                        {isSubmitting ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
                         ) : (
                             <Send className="h-3.5 w-3.5" />
                         )}
-                        {isExecuting ? "Submitting…" : "Submit"}
+                        {isSubmitting ? "Submitting…" : "Submit"}
                     </Button>
 
                     {isSolved && (
@@ -206,6 +221,6 @@ export function CodeEditor() {
                     }}
                 />
             </div>
-        </div >
+        </div>
     );
 }

@@ -1,18 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Tag, AlertCircle, FileText, List } from "lucide-react";
-
-interface Question {
-    title: string;
-    difficulty: "Easy" | "Medium" | "Hard";
-    description: string;
-    constraints: string[];
-    examples: { input: string; output: string; explanation?: string }[];
-    tags: string[];
-}
+import { AlertCircle, BookOpen, List, Tag } from "lucide-react";
+import { useState } from "react";
+import { Question } from "@/store/challengeStore";
 
 const difficultyConfig = {
     Easy: "difficulty-easy",
@@ -125,7 +116,9 @@ export function ProblemPanel({ question }: { question: Question }) {
                                                     </div>
                                                     {ex.explanation && (
                                                         <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed border-t border-white/5 pt-2">
-                                                            <span className="text-zinc-600">Explanation: </span>
+                                                            <span className="text-zinc-600">
+                                                                Explanation:{" "}
+                                                            </span>
                                                             {ex.explanation}
                                                         </p>
                                                     )}
@@ -149,8 +142,12 @@ export function ProblemPanel({ question }: { question: Question }) {
                                     <ul className="space-y-1.5">
                                         {question.constraints.map((c, i) => (
                                             <li key={i} className="flex items-start gap-2 text-sm">
-                                                <span className="text-orange-500 shrink-0 mt-0.5 text-xs">•</span>
-                                                <code className="text-zinc-400 font-mono text-xs">{c}</code>
+                                                <span className="text-orange-500 shrink-0 mt-0.5 text-xs">
+                                                    •
+                                                </span>
+                                                <code className="text-zinc-400 font-mono text-xs">
+                                                    {c}
+                                                </code>
                                             </li>
                                         ))}
                                     </ul>

@@ -1,4 +1,4 @@
-import { ExecutionResult, GeneratedQuestion, LLMConfig, TestCase } from "@/types";
+import { ExecutionResult, GeneratedQuestion, LLMConfig, TestCase } from "@/@types";
 import OpenAI from "openai";
 
 export class LLMGateway {

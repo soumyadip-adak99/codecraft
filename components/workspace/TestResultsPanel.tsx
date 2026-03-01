@@ -1,26 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-    CheckCircle2,
-    XCircle,
-    AlertTriangle,
-    Clock,
-    Zap,
-    Brain,
-    BarChart3,
-    Lightbulb,
-    Terminal,
-} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { animations } from "@/lib/animations/config";
 import { useChallengeStore } from "@/store/challengeStore";
+import {
+    AlertTriangle,
+    BarChart3,
+    Brain,
+    CheckCircle2,
+    Clock,
+    Lightbulb,
+    Terminal,
+    XCircle,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 type ResultTab = "testcases" | "analysis";
 
+interface TestCase {
+    status: "PASS" | "ERROR" | "FAIL";
+    input?: string;
+    expectedOutput?: string;
+    actualOutput?: string;
+    errorMessage?: string;
+    executionTime: number;
+    memoryUsed?: number;
+}
+
 export function TestResultsPanel() {
-    const { testResults, isExecuting } = useChallengeStore();
+    const { testResults, isRunning, isSubmitting } = useChallengeStore();
     const containerRef = useRef<HTMLDivElement>(null);
     const itemsRef = useRef<HTMLDivElement[]>([]);
     const [tab, setTab] = useState<ResultTab>("testcases");
@@ -34,7 +42,7 @@ export function TestResultsPanel() {
     }, [testResults]);
 
     /* ── Loading state ── */
-    if (isExecuting) {
+    if (isRunning || isSubmitting) {
         return (
             <div className="flex flex-col h-full bg-[#0a0a0a]">
                 {/* Mini tab bar (greyed out) */}
@@ -77,7 +85,9 @@ export function TestResultsPanel() {
                 <div className="flex flex-col items-center justify-center flex-1 gap-3 text-center px-6">
                     <Terminal className="h-9 w-9 text-zinc-800" />
                     <p className="text-sm text-zinc-500">Run your code to see results</p>
-                    <p className="text-xs text-zinc-700">Test cases and AI analysis will appear here</p>
+                    <p className="text-xs text-zinc-700">
+                        Test cases and AI analysis will appear here
+                    </p>
                 </div>
             </div>
         );
@@ -133,7 +143,9 @@ export function TestResultsPanel() {
                         <XCircle className="h-5 w-5 text-red-400 shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
-                        <p className={`font-bold text-sm ${isAccepted ? "text-green-400" : "text-red-400"}`}>
+                        <p
+                            className={`font-bold text-sm ${isAccepted ? "text-green-400" : "text-red-400"}`}
+                        >
                             {isAccepted ? "Accepted ✓" : testResults.status.replace(/_/g, " ")}
                         </p>
                         <Progress
@@ -146,13 +158,15 @@ export function TestResultsPanel() {
                 {/* ── Test Cases tab ── */}
                 {tab === "testcases" && (
                     <div className="space-y-2">
-                        {testResults.testCases.map((tc, i) => {
-                            const isPassed = tc.status === "PASS";
-                            const isError = tc.status === "ERROR";
+                        {testResults.testCases.map((tc: TestCase, i: number) => {
+                            const isPassed: boolean = tc.status === "PASS";
+                            const isError: boolean = tc.status === "ERROR";
                             return (
                                 <div
                                     key={i}
-                                    ref={(el) => { if (el) itemsRef.current[i] = el; }}
+                                    ref={(el: HTMLDivElement | null) => {
+                                        if (el) itemsRef.current[i] = el;
+                                    }}
                                     className={`rounded-xl border p-3.5 text-sm ${isPassed
                                             ? "bg-green-500/5 border-green-500/15"
                                             : isError
@@ -185,23 +199,39 @@ export function TestResultsPanel() {
                                     {tc.input && (
                                         <div className="space-y-1">
                                             <div className="flex gap-2">
-                                                <span className="text-xs text-zinc-600 w-16 shrink-0">Input:</span>
-                                                <code className="text-xs text-zinc-300 font-mono break-all">{tc.input}</code>
+                                                <span className="text-xs text-zinc-600 w-16 shrink-0">
+                                                    Input:
+                                                </span>
+                                                <code className="text-xs text-zinc-300 font-mono break-all">
+                                                    {tc.input}
+                                                </code>
                                             </div>
                                             <div className="flex gap-2">
-                                                <span className="text-xs text-zinc-600 w-16 shrink-0">Expected:</span>
-                                                <code className="text-xs text-green-300 font-mono break-all">{tc.expectedOutput}</code>
+                                                <span className="text-xs text-zinc-600 w-16 shrink-0">
+                                                    Expected:
+                                                </span>
+                                                <code className="text-xs text-green-300 font-mono break-all">
+                                                    {tc.expectedOutput}
+                                                </code>
                                             </div>
                                             {!isPassed && tc.actualOutput && (
                                                 <div className="flex gap-2">
-                                                    <span className="text-xs text-zinc-600 w-16 shrink-0">Got:</span>
-                                                    <code className="text-xs text-red-300 font-mono break-all">{tc.actualOutput}</code>
+                                                    <span className="text-xs text-zinc-600 w-16 shrink-0">
+                                                        Got:
+                                                    </span>
+                                                    <code className="text-xs text-red-300 font-mono break-all">
+                                                        {tc.actualOutput}
+                                                    </code>
                                                 </div>
                                             )}
                                             {tc.errorMessage && (
                                                 <div className="flex gap-2 mt-1">
-                                                    <span className="text-xs text-amber-500 w-16 shrink-0">Error:</span>
-                                                    <code className="text-xs text-amber-300 font-mono break-all">{tc.errorMessage}</code>
+                                                    <span className="text-xs text-amber-500 w-16 shrink-0">
+                                                        Error:
+                                                    </span>
+                                                    <code className="text-xs text-amber-300 font-mono break-all">
+                                                        {tc.errorMessage}
+                                                    </code>
                                                 </div>
                                             )}
                                         </div>
@@ -235,13 +265,17 @@ export function TestResultsPanel() {
                         {/* Complexity */}
                         <div className="grid grid-cols-2 gap-2">
                             <div className="glass rounded-lg p-3 border border-white/5">
-                                <p className="text-[10px] text-zinc-600 uppercase tracking-wide">Time</p>
+                                <p className="text-[10px] text-zinc-600 uppercase tracking-wide">
+                                    Time
+                                </p>
                                 <p className="text-sm font-bold text-white mt-0.5 font-mono">
                                     {testResults.aiAnalysis.complexity}
                                 </p>
                             </div>
                             <div className="glass rounded-lg p-3 border border-white/5">
-                                <p className="text-[10px] text-zinc-600 uppercase tracking-wide">Space</p>
+                                <p className="text-[10px] text-zinc-600 uppercase tracking-wide">
+                                    Space
+                                </p>
                                 <p className="text-sm font-bold text-white mt-0.5 font-mono">
                                     {testResults.aiAnalysis.spaceComplexity || "O(1)"}
                                 </p>
@@ -269,12 +303,17 @@ export function TestResultsPanel() {
                                     Suggestions
                                 </h4>
                                 <ul className="space-y-1.5">
-                                    {testResults.aiAnalysis.suggestions.map((s, i) => (
-                                        <li key={i} className="flex items-start gap-2 text-xs text-zinc-500">
-                                            <span className="text-orange-500 shrink-0">•</span>
-                                            <span>{s}</span>
-                                        </li>
-                                    ))}
+                                    {testResults.aiAnalysis.suggestions.map(
+                                        (s: string, i: number) => (
+                                            <li
+                                                key={i}
+                                                className="flex items-start gap-2 text-xs text-zinc-500"
+                                            >
+                                                <span className="text-orange-500 shrink-0">•</span>
+                                                <span>{s}</span>
+                                            </li>
+                                        )
+                                    )}
                                 </ul>
                             </div>
                         )}
