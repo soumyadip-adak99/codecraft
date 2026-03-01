@@ -1,6 +1,6 @@
 # CodeCraft 🚀
 
-![CodeCraft Banner](https://via.placeholder.com/1200x400.png?text=CodeCraft+-+AI+Powered+Coding+Platform)
+![CodeCraft Banner](https://res.cloudinary.com/dzunlgq2p/image/upload/v1772396005/Screenshot_2026-03-02_013706_fk6lhf.png)
 
 **CodeCraft** is an advanced, AI-powered coding practice platform designed to help developers ace their next technical interview. Built with **Next.js 16**, **Convex**, and **Monaco Editor**, it dynamically generates coding challenges tailored to your skill level, provides a real-time execution environment, and tracks your progress across sessions.
 
@@ -23,6 +23,7 @@
 ## 🛠️ Tech Stack
 
 **Frontend & Framework:**
+
 - [![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/) (App Router, Turbopack)
 - [![React](https://img.shields.io/badge/React-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)](https://react.dev/)
 - [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
@@ -30,14 +31,17 @@
 - [![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-%231E1E1E.svg?style=flat)](https://microsoft.github.io/monaco-editor/)
 
 **Backend & Database:**
+
 - [![Convex](https://img.shields.io/badge/Convex-%23FF8000.svg?style=flat)](https://www.convex.dev/) (Real-time Database & Serverless Functions)
 - [![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/) (User Identity & App metadata mapping)
 - ⚡ **Next.js API Routes** (Serverless backend for LLM & execution)
 
 **Authentication:**
-- [![NextAuth.js](https://img.shields.io/badge/NextAuth.js-%23000000.svg?style=flat)](https://next-auth.js.org/) v5 (Beta) 
+
+- [![NextAuth.js](https://img.shields.io/badge/NextAuth.js-%23000000.svg?style=flat)](https://next-auth.js.org/) v5 (Beta)
 
 **Utilities & Animations:**
+
 - [![GSAP](https://img.shields.io/badge/GSAP-%2388CE02.svg?style=flat&logo=greensock&logoColor=white)](https://gsap.com/)
 - [![Motion](https://img.shields.io/badge/Motion-%23FF0080.svg?style=flat)](https://motion.dev/)
 - [![Lucide React](https://img.shields.io/badge/Lucide_React-%23F97316.svg?style=flat)](https://lucide.dev/) (Icons)
@@ -48,21 +52,25 @@
 ## ⚙️ Local Development Setup
 
 ### 1. Prerequisites
+
 Ensure you have the following installed on your machine:
+
 - **Node.js** (v18.17 or higher)
 - **npm**, **yarn**, or **pnpm**
 - A [Convex](https://www.convex.dev/) account
-- A [MongoDB](https://www.mongodb.com/atlas) cluster 
+- A [MongoDB](https://www.mongodb.com/atlas) cluster
 - Google OAuth credentials for NextAuth
 - API Keys for your preferred LLM (e.g., [Groq](https://console.groq.com/))
 
 ### 2. Clone the Repository
+
 ```bash
 git clone https://github.com/your-username/codecraft.git
 cd codecraft
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 npm install
 # or
@@ -70,6 +78,7 @@ yarn install
 ```
 
 ### 4. Environment Variables
+
 Create a `.env.local` file in the root of your project and configure the following variables:
 
 ```env
@@ -101,17 +110,21 @@ EMAIL_FROM=noreply@yourdomain.com
 ```
 
 ### 5. Start the Convex Backend
+
 In a separate terminal, initialize and run your Convex database:
+
 ```bash
 npx convex dev
 ```
 
 ### 6. Start the Development Server
+
 ```bash
 npm run dev
 # or
 yarn dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application running.
 
 ---
@@ -150,4 +163,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-*Built with ❤️ for developers leveling up their coding skills.*
+_Built with ❤️ for developers leveling up their coding skills._
