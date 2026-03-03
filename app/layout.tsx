@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { SmoothScrolling } from "@/components/providers/SmoothScrolling";
 import { Toaster } from "@/components/ui/sonner";
-
-const inter = Inter({
-    subsets: ["latin"],
-    variable: "--font-inter",
-    display: "swap",
-});
 
 export const metadata: Metadata = {
     title: {
@@ -41,24 +35,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en" className="dark">
             <head>
                 <link
-                    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+                    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;900&display=swap"
                     rel="stylesheet"
                 />
             </head>
-            <body className={`${inter.variable} font-sans antialiased bg-black text-white`}>
-                <SessionProvider>
-                    {children}
-                    <Toaster
-                        theme="dark"
-                        toastOptions={{
-                            style: {
-                                background: "#111",
-                                border: "1px solid #222",
-                                color: "#fff",
-                            },
-                        }}
-                    />
-                </SessionProvider>
+            <body className={`font-sans antialiased bg-black text-white`}>
+                <SmoothScrolling>
+                    <SessionProvider>
+                        {children}
+                        <Toaster
+                            theme="dark"
+                            toastOptions={{
+                                style: {
+                                    background: "#111",
+                                    border: "1px solid #222",
+                                    color: "#fff",
+                                },
+                            }}
+                        />
+                    </SessionProvider>
+                </SmoothScrolling>
             </body>
         </html>
     );

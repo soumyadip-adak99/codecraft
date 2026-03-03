@@ -5,7 +5,7 @@ import { animations } from "@/lib/animations/config";
 import { useChallengeStore } from "@/store/challengeStore";
 import {
     AlertTriangle,
-    BarChart3,
+    BarChart2,
     Brain,
     CheckCircle2,
     Clock,
@@ -107,8 +107,8 @@ export function TestResultsPanel() {
                         key={t}
                         onClick={() => setTab(t)}
                         className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 -mb-px ${tab === t
-                                ? "border-orange-500 text-white"
-                                : "border-transparent text-zinc-500 hover:text-zinc-300"
+                            ? "border-orange-500 text-white"
+                            : "border-transparent text-zinc-500 hover:text-zinc-300"
                             }`}
                     >
                         {t === "testcases" ? "Test Cases" : "AI Analysis"}
@@ -119,8 +119,8 @@ export function TestResultsPanel() {
                 <div className="ml-auto pr-2">
                     <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isAccepted
-                                ? "bg-green-500/15 text-green-400"
-                                : "bg-red-500/15 text-red-400"
+                            ? "bg-green-500/15 text-green-400"
+                            : "bg-red-500/15 text-red-400"
                             }`}
                     >
                         {passed}/{total} passed
@@ -133,8 +133,8 @@ export function TestResultsPanel() {
                 {/* Status banner */}
                 <div
                     className={`flex items-center gap-3 rounded-xl p-3.5 border ${isAccepted
-                            ? "bg-green-500/10 border-green-500/20"
-                            : "bg-red-500/10 border-red-500/20"
+                        ? "bg-green-500/10 border-green-500/20"
+                        : "bg-red-500/10 border-red-500/20"
                         }`}
                 >
                     {isAccepted ? (
@@ -168,10 +168,10 @@ export function TestResultsPanel() {
                                         if (el) itemsRef.current[i] = el;
                                     }}
                                     className={`rounded-xl border p-3.5 text-sm ${isPassed
-                                            ? "bg-green-500/5 border-green-500/15"
-                                            : isError
-                                                ? "bg-amber-500/5 border-amber-500/15"
-                                                : "bg-red-500/5 border-red-500/15"
+                                        ? "bg-green-500/5 border-green-500/15"
+                                        : isError
+                                            ? "bg-amber-500/5 border-amber-500/15"
+                                            : "bg-red-500/5 border-red-500/15"
                                         }`}
                                 >
                                     <div className="flex items-center justify-between mb-2">
@@ -249,7 +249,7 @@ export function TestResultsPanel() {
                         <div className="glass rounded-xl p-4 border border-white/5">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs text-zinc-400 flex items-center gap-1.5">
-                                    <BarChart3 className="h-3.5 w-3.5 text-orange-500" />
+                                    <BarChart2 className="h-3.5 w-3.5 text-orange-500" />
                                     Code Quality
                                 </span>
                                 <span className="text-lg font-black text-orange-500">
