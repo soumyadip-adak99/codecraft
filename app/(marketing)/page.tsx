@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
 import { useQuery } from "convex/react";
-import { ArrowRight, BarChart3, Brain, Code2, Globe, Shield, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, BarChart2, Brain, Code2, Globe, Shield, Sparkles, Zap } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -219,7 +219,7 @@ export default function LandingPage() {
                             desc: "JavaScript, TypeScript, Python, Java, and C++ — all with language-specific starter code.",
                         },
                         {
-                            icon: BarChart3,
+                            icon: BarChart2,
                             title: "Progress Analytics",
                             desc: "Track easy, medium, and hard problems solved across all your sessions.",
                         },
