@@ -1,32 +1,18 @@
 "use client";
 
 import { Review } from "@/@types";
+import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import {
-    ArrowRight,
-    BarChart3,
-    Brain,
-    Code2,
-    Globe,
-    Loader2,
-    MessageSquarePlus,
-    Send,
-    Shield,
-    Sparkles,
-    Star,
-    Zap,
-} from "lucide-react";
+import { ArrowRight, BarChart3, Brain, Code2, Globe, Shield, Sparkles, Zap } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
+import { api } from "../../convex/_generated/api";
 
 export default function LandingPage() {
     const { data: session, status } = useSession();
@@ -118,7 +104,7 @@ export default function LandingPage() {
                     ) : (
                         <Link href="/login">
                             <Button className="bg-orange-500 hover:bg-orange-400 text-white">
-                                Get Started Free
+                                Sing In
                             </Button>
                         </Link>
                     )}
@@ -282,16 +268,12 @@ export default function LandingPage() {
                                         <div
                                             key={r._id}
                                             className="min-w-[320px] rounded-2xl border border-white/10 
-                           bg-white/5 backdrop-blur-xl p-6 
-                           shadow-lg shadow-black/30
-                           transition-all duration-300
-                           hover:border-white/20 hover:scale-[1.02]"
+                                                    bg-white/5 backdrop-blur-xl p-6 
+                                                    shadow-lg shadow-black/30 w-10
+                                                    transition-all duration-300
+                                                    hover:border-white/20 hover:scale-[1.02]"
                                         >
-                                            <p className="text-zinc-300 text-sm leading-relaxed mb-4 line-clamp-4">
-                                                &ldquo;{(r as any).reviewText}&rdquo;
-                                            </p>
-
-                                            <div className="flex items-center gap-3 mt-4">
+                                            <div className="flex items-center gap-3 mt-4 mb-5">
                                                 {(r as any).userImageUrl ? (
                                                     <img
                                                         src={(r as any).userImageUrl as string}
@@ -307,6 +289,10 @@ export default function LandingPage() {
                                                     {r.userName}
                                                 </p>
                                             </div>
+
+                                            <p className="text-zinc-300 text-sm leading-relaxed mb-4 line-clamp-4">
+                                                {(r as any).reviewText};
+                                            </p>
                                         </div>
                                     ))}
                                 </div>

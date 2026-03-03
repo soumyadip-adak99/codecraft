@@ -113,7 +113,7 @@ export default function DashboardPage() {
                 <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-black text-white">
-                            Welcome back,{" "}
+                            {loading ? "Welcome" : (!stats || (stats.totalAttempts === 0 && stats.totalSolved === 0)) ? "Welcome" : "Welcome back"}{" "}
                             <span className="text-orange-500">
                                 {session?.user?.name?.split(" ")[0]}
                             </span>{" "}
