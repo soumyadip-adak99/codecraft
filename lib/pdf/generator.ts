@@ -185,7 +185,7 @@ export async function generateSessionPDF(data: SessionReportData): Promise<Buffe
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(160, 160, 160);
-        doc.text("© 2024 codeCarft AI — Keep Coding, Keep Growing", margin, 290);
+        doc.text(`© ${new Date().getFullYear()} codeCarft — Keep Coding, Keep Growing`, margin, 290);
         doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, 290, { align: "right" });
     }
 

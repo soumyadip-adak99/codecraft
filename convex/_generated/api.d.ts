@@ -10,7 +10,6 @@
 
 import type * as platformStats from "../platformStats.js";
 import type * as reviews from "../reviews.js";
-import type * as submissions from "../submissions.js";
 import type * as userStatus from "../userStatus.js";
 
 import type {
@@ -22,7 +21,6 @@ import type {
 declare const fullApi: ApiFromModules<{
   platformStats: typeof platformStats;
   reviews: typeof reviews;
-  submissions: typeof submissions;
   userStatus: typeof userStatus;
 }>;
 
