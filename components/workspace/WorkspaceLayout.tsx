@@ -1,10 +1,6 @@
 "use client";
 
-import {
-    Group,
-    Panel,
-    Separator,
-} from "react-resizable-panels";
+import { Group, Panel, Separator } from "react-resizable-panels";
 import { ProblemPanel } from "./ProblemPanel";
 import { CodeEditor } from "./CodeEditor";
 import { TestResultsPanel } from "./TestResultsPanel";
@@ -27,48 +23,23 @@ export function WorkspaceLayout({ question }: { question: Question }) {
     const {
         solvedQuestions,
         canGoNext,
-        endSession,
         generateQuestion,
         apiKey,
         provider,
-        sessionId,
         isGenerating,
+        openExitModal,
     } = useChallengeStore();
     const { openChallengeModal } = useUIStore();
-    const router = useRouter();
-    const [isEndingSession, setIsEndingSession] = useState(false);
 
-    const handleEndSession = async () => {
-        setIsEndingSession(true);
-        try {
-            // Fire-and-forget — server responds immediately
-            fetch("/api/session/end", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ solvedQuestions, sessionId }),
-            }).catch((err) => console.error("Session end network error:", err));
-
-            // Immediately update UI
-            toast.success("✅ Email sent successfully", {
-                description: "Your performance report is on the way!",
-            });
-            endSession();
-            router.push("/dashboard");
-        } catch (error) {
-            console.error(error);
-            toast.error("Error ending session. Please try again.");
-            setIsEndingSession(false);
-        }
+    const handleEndSession = () => {
+        // Open the global exit modal which will handle confirmation
+        openExitModal("/dashboard");
     };
 
     const handleNextQuestion = async () => {
         if (!canGoNext) return;
         // Generate next question with the same difficulty, preventing repeats
-        await generateQuestion(
-            question.difficulty,
-            apiKey,
-            provider,
-        );
+        await generateQuestion(question.difficulty, apiKey, provider);
     };
 
     return (
@@ -86,7 +57,9 @@ export function WorkspaceLayout({ question }: { question: Question }) {
                 <span className="text-zinc-300 text-xs font-medium truncate max-w-[200px]">
                     {question.title}
                 </span>
-                <span className={`ml-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${diff.cls}`}>
+                <span
+                    className={`ml-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${diff.cls}`}
+                >
                     {question.difficulty}
                 </span>
 
@@ -120,14 +93,9 @@ export function WorkspaceLayout({ question }: { question: Question }) {
                     {/* End Session Button */}
                     <button
                         onClick={handleEndSession}
-                        disabled={isEndingSession}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors border border-red-500/20 text-xs font-medium disabled:opacity-50 cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors border border-red-500/20 text-xs font-medium cursor-pointer"
                     >
-                        {isEndingSession ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                            <LogOut className="h-3.5 w-3.5" />
-                        )}
+                        <LogOut className="h-3.5 w-3.5" />
                         End Session
                     </button>
                 </div>

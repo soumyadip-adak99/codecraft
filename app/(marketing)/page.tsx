@@ -1,6 +1,7 @@
 "use client";
 
 import { Review } from "@/@types";
+import { AuthLoader } from "@/components/shared/AuthLoader";
 import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,15 +29,6 @@ export default function LandingPage() {
     const totalSolved = platformStats?.totalProblemsSolved ?? 0;
 
     const [reviews, setReviews] = useState<Review[]>([]);
-    const [reviewText, setReviewText] = useState("");
-    const [submittingReview, setSubmittingReview] = useState(false);
-
-    // ── Auth redirect ──
-    useEffect(() => {
-        if (status === "authenticated") {
-            router.push("/dashboard");
-        }
-    }, [status, router]);
 
     // Fetch reviews from convex directly
     const fetchedReviews = useQuery(api.reviews.getReviews);
@@ -68,13 +60,18 @@ export default function LandingPage() {
         animations.staggerCards(cards, reviewsRef.current);
     }, [reviews]);
 
-    // Reviews are now submitted via the Dashboard.
-    // We remove the handleSubmitReview from Landing Page.
-
-    // Don't render if redirecting
-    if (status === "authenticated") return null;
-
-    //  console.log(reviews);
+    // ── Auth gate: blocks render & redirects automatically ──
+    // - status "loading"         → full-screen overlay (no page flash)
+    // - status "authenticated"   → overlay stays up, router.replace("/dashboard")
+    // - status "unauthenticated" → hide overlay, render the landing page
+    if (status === "loading" || status === "authenticated") {
+        return (
+            <AuthLoader
+                authenticatedRedirect="/dashboard"
+                unauthenticatedRedirect="/"
+            />
+        );
+    }
 
     return (
         <div className="relative overflow-hidden">
@@ -90,20 +87,23 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Link href="/docs">
-                        <Button variant="ghost" className="text-zinc-400 hover:text-white">
+                        <Button
+                            variant="ghost"
+                            className="text-zinc-400 hover:text-white cursor-pointer"
+                        >
                             Docs
                         </Button>
                     </Link>
                     {session ? (
                         <Button
                             onClick={() => router.push("/dashboard")}
-                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2"
+                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2 cursor-pointer"
                         >
                             Dashboard <ArrowRight className="h-4 w-4" />
                         </Button>
                     ) : (
                         <Link href="/login">
-                            <Button className="bg-orange-500 hover:bg-orange-400 text-white">
+                            <Button className="bg-orange-500 hover:bg-orange-400 text-white cursor-pointer">
                                 Sing In
                             </Button>
                         </Link>
@@ -314,7 +314,7 @@ export default function LandingPage() {
                     <Link href="/login">
                         <Button
                             size="lg"
-                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-2xl shadow-orange-500/30 text-base px-10 py-7 animate-pulse-orange"
+                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-2xl shadow-orange-500/30 text-base px-10 py-7 animate-pulse-orange cursor-pointer"
                         >
                             <Zap className="h-5 w-5" />
                             Get Started — It&apos;s Free

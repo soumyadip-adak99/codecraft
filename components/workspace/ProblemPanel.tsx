@@ -17,7 +17,7 @@ export function ProblemPanel({ question }: { question: Question }) {
     const [tab, setTab] = useState<Tab>("description");
 
     return (
-        <div className="h-full flex flex-col bg-[#0a0a0a]">
+        <div className="h-full w-full min-h-0 min-w-0 flex flex-col bg-[#0a0a0a]">
             {/* Tab bar */}
             <div className="flex items-center gap-0 border-b border-white/5 shrink-0 px-2 pt-1">
                 {(["description", "hints"] as Tab[]).map((t) => (
@@ -25,8 +25,8 @@ export function ProblemPanel({ question }: { question: Question }) {
                         key={t}
                         onClick={() => setTab(t)}
                         className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 -mb-px capitalize ${tab === t
-                                ? "border-orange-500 text-white"
-                                : "border-transparent text-zinc-500 hover:text-zinc-300"
+                            ? "border-orange-500 text-white"
+                            : "border-transparent text-zinc-500 hover:text-zinc-300"
                             }`}
                     >
                         {t === "description" ? "Description" : "Hints"}
@@ -35,7 +35,7 @@ export function ProblemPanel({ question }: { question: Question }) {
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+            <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5 scrollbar-thin">
                 {tab === "description" ? (
                     <>
                         {/* Title & Difficulty */}

@@ -57,15 +57,36 @@ interface ChallengeState {
     apiKey: string;
     provider: string;
 
+    // ── Session Exit Protection ──
+    isEndingSession: boolean;
+    hasUnsavedChanges: boolean; // Acts mostly as 'session is active and requires protection'
+    
+    // ── Exit Modal UI State ──
+    isExitModalOpen: boolean;
+    exitTargetUrl: string | null;
+
+    // ── Session Progress Modal (shown on dashboard after back-button exit) ──
+    showSessionProgressModal: boolean;
+
     // ── Actions ──
     startSession: () => void;
-    endSession: () => void;
+    endSession: () => Promise<void>;
     setQuestion: (q: Question | null) => void;
     setCode: (code: string) => void;
     setLanguage: (lang: Language) => void;
     setApiKey: (key: string) => void;
     setProvider: (p: string) => void;
     clearResults: () => void;
+    setHasUnsavedChanges: (val: boolean) => void;
+    
+    // ── Exit Modal Actions ──
+    openExitModal: (targetUrl?: string) => void;
+    closeExitModal: () => void;
+    setExitTargetUrl: (url: string | null) => void;
+
+    // ── Session Progress Modal Actions ──
+    openSessionProgressModal: () => void;
+    closeSessionProgressModal: () => void;
 
     generateQuestion: (
         difficulty: string,
@@ -102,6 +123,13 @@ export const useChallengeStore = create<ChallengeState>()(
                 // ── Run→Submit gate ──
                 isRunPass: false,
 
+                // ── Session Exit Protection Defaults ──
+                isEndingSession: false,
+                hasUnsavedChanges: false,
+                isExitModalOpen: false,
+                exitTargetUrl: null,
+                showSessionProgressModal: false,
+
                 // ── Credentials ──
                 apiKey: "",
                 provider: "groq",
@@ -119,9 +147,56 @@ export const useChallengeStore = create<ChallengeState>()(
                         testResults: null,
                         generationError: null,
                         isRunPass: false,
+                        isEndingSession: false,
+                        hasUnsavedChanges: true, // Always protect new sessions
+                        isExitModalOpen: false,
+                        exitTargetUrl: null,
                     }),
 
-                endSession: () =>
+                endSession: async () => {
+                    set({ isEndingSession: true });
+                    const { solvedQuestions, sessionId } = get();
+                    
+                    if (sessionId && solvedQuestions.length > 0) {
+                        let attempts = 0;
+                        const maxAttempts = 3;
+                        let delay = 1000;
+                        
+                        while (attempts < maxAttempts) {
+                            try {
+                                const response = await fetch("/api/session/end", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ solvedQuestions, sessionId }),
+                                });
+                                
+                                if (response.ok) {
+                                    // Make sure toast is available (need to import it)
+                                    if (typeof window !== "undefined") {
+                                        import("sonner").then((mod) => {
+                                            mod.toast.success("✅ Email sent successfully", {
+                                                description: "Your performance report is on the way!",
+                                            });
+                                        });
+                                    }
+                                    break;
+                                }
+                                throw new Error("API not ok");
+                            } catch (error) {
+                                attempts++;
+                                if (attempts >= maxAttempts) {
+                                    console.error("Session end failed after retries:", error);
+                                } else {
+                                    await new Promise((res) => setTimeout(res, delay));
+                                    delay *= 2; // Exponential backoff
+                                }
+                            }
+                        }
+                    } else {
+                        // Just fake delay if no session questions to submit
+                        await new Promise((resolve) => setTimeout(resolve, 800));
+                    }
+                    
                     set({
                         sessionId: null,
                         sessionActive: false,
@@ -133,10 +208,23 @@ export const useChallengeStore = create<ChallengeState>()(
                         testResults: null,
                         generationError: null,
                         isRunPass: false,
-                    }),
+                        isEndingSession: false,
+                        hasUnsavedChanges: false,
+                        isExitModalOpen: false,
+                        exitTargetUrl: null,
+                    });
+                },
 
-                setQuestion: (q) => set({ currentQuestion: q, isRunPass: false, testResults: null }),
-                setCode: (code) => set({ code, isRunPass: false }),
+                openExitModal: (targetUrl = "/dashboard") => set({ isExitModalOpen: true, exitTargetUrl: targetUrl }),
+                closeExitModal: () => set({ isExitModalOpen: false, exitTargetUrl: null }),
+                setExitTargetUrl: (url) => set({ exitTargetUrl: url }),
+
+                openSessionProgressModal: () => set({ showSessionProgressModal: true }),
+                closeSessionProgressModal: () => set({ showSessionProgressModal: false }),
+
+                setQuestion: (q) => set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true }),
+                setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true }),
+                setHasUnsavedChanges: (val) => set({ hasUnsavedChanges: val }),
                 setLanguage: (language) => {
                     const q = get().currentQuestion;
                     const starter = q?.starterCode?.[language] || "";
@@ -186,6 +274,7 @@ export const useChallengeStore = create<ChallengeState>()(
                             apiKey,
                             provider,
                             usedQuestionIds: [...usedQuestionIds, question.questionId],
+                            hasUnsavedChanges: false,
                         });
                     } catch (error: unknown) {
                         const msg =
@@ -264,6 +353,7 @@ export const useChallengeStore = create<ChallengeState>()(
                             isSubmitting: false,
                             solvedQuestions: updatedSolved,
                             canGoNext: newCanGoNext,
+                            hasUnsavedChanges: type === "submit" && results.status === "ACCEPTED" ? false : get().hasUnsavedChanges,
                             // Mark that a run has completed AND passed — enables the Submit button
                             isRunPass: type === "run" && results.status === "ACCEPTED" ? true : get().isRunPass,
                         });

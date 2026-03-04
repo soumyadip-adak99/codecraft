@@ -44,7 +44,7 @@ export function TestResultsPanel() {
     /* ── Loading state ── */
     if (isRunning || isSubmitting) {
         return (
-            <div className="flex flex-col h-full bg-[#0a0a0a]">
+            <div className="flex flex-col h-full w-full min-h-0 min-w-0 bg-[#0a0a0a]">
                 {/* Mini tab bar (greyed out) */}
                 <div className="flex items-center border-b border-white/5 px-2 pt-1 shrink-0">
                     <div className="px-4 py-2 text-xs font-medium text-zinc-600 border-b-2 border-transparent -mb-px">
@@ -72,7 +72,7 @@ export function TestResultsPanel() {
     /* ── Empty state ── */
     if (!testResults) {
         return (
-            <div className="flex flex-col h-full bg-[#0a0a0a]">
+            <div className="flex flex-col h-full w-full min-h-0 min-w-0 bg-[#0a0a0a]">
                 {/* Tab bar */}
                 <div className="flex items-center border-b border-white/5 px-2 pt-1 shrink-0">
                     <div className="px-4 py-2 text-xs font-medium text-zinc-600 border-b-2 border-transparent -mb-px">
@@ -99,7 +99,7 @@ export function TestResultsPanel() {
     const passRate = total > 0 ? (passed / total) * 100 : 0;
 
     return (
-        <div ref={containerRef} className="flex flex-col h-full bg-[#0a0a0a]">
+        <div ref={containerRef} className="flex flex-col h-full w-full min-h-0 min-w-0 bg-[#0a0a0a]">
             {/* ── Tab bar ── */}
             <div className="flex items-center border-b border-white/5 px-2 pt-1 shrink-0">
                 {(["testcases", "analysis"] as ResultTab[]).map((t) => (
@@ -129,7 +129,7 @@ export function TestResultsPanel() {
             </div>
 
             {/* ── Scrollable content ── */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
                 {/* Status banner */}
                 <div
                     className={`flex items-center gap-3 rounded-xl p-3.5 border ${isAccepted

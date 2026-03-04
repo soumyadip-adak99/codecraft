@@ -94,7 +94,7 @@ export default function LoginPage() {
                                 signIn("google", { callbackUrl: "/dashboard" });
                             }}
                             disabled={isLoggingIn}
-                            className="w-full flex items-center justify-center gap-3 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold py-5 text-base transition-all duration-200 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-3 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold py-5 text-base transition-all duration-200 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                             size="lg"
                         >
                             {isLoggingIn ? (

@@ -37,19 +37,19 @@ export function Navbar() {
                 <div className="hidden md:flex items-center gap-6">
                     <Link
                         href="/docs"
-                        className="text-sm text-zinc-400 hover:text-white transition-colors"
+                        className="text-sm text-zinc-400 hover:text-white transition-colors cursor-pointer"
                     >
                         Docs
                     </Link>
                     <Link
                         href="/dashboard"
-                        className="text-sm text-zinc-400 hover:text-white transition-colors"
+                        className="text-sm text-zinc-400 hover:text-white transition-colors cursor-pointer"
                     >
                         Dashboard
                     </Link>
                     <Link
                         href="/settings"
-                        className="text-sm text-zinc-400 hover:text-white transition-colors"
+                        className="text-sm text-zinc-400 hover:text-white transition-colors cursor-pointer"
                     >
                         Settings
                     </Link>
@@ -61,7 +61,7 @@ export function Navbar() {
                         <>
                             <Button
                                 onClick={openChallengeModal}
-                                className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300"
+                                className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 cursor-pointer"
                                 size="sm"
                             >
                                 <Zap className="h-4 w-4" />
@@ -70,7 +70,7 @@ export function Navbar() {
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 rounded-full hover:bg-white/5 p-1 pr-2 transition-colors">
+                                    <button className="flex items-center gap-2 rounded-full hover:bg-white/5 p-1 pr-2 transition-colors cursor-pointer">
                                         <Avatar className="h-8 w-8 ring-2 ring-orange-500/30">
                                             <AvatarImage src={session.user?.image || ""} />
                                             <AvatarFallback className="bg-orange-500/20 text-orange-400 text-xs font-bold">
