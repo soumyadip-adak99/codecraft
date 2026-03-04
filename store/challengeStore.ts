@@ -2,6 +2,11 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { ExecutionResult } from "@/@types";
 import { v4 as uuidv4 } from "uuid";
+import {
+    saveSubmission,
+    clearSessionSubmissions,
+    getSessionSolvedList,
+} from "@/lib/localStorage/sessionStorage";
 
 export type Language = "javascript" | "typescript" | "python" | "java" | "cpp";
 export type Difficulty = "Easy" | "Medium" | "Hard";
@@ -19,6 +24,12 @@ export interface Question {
     tags: string[];
 }
 
+/**
+ * In-memory representation of a solved question (held in Zustand for UI).
+ * Source code is persisted to localStorage; this shape is for runtime use only.
+ * NOTE: `code` is intentionally kept here for the email payload — it is read
+ *       from localStorage on endSession and is NOT written to Convex.
+ */
 export interface SolvedQuestion {
     questionId: string;
     title: string;
@@ -34,6 +45,11 @@ interface ChallengeState {
     sessionId: string | null;
     sessionActive: boolean;
     usedQuestionIds: string[];
+    /**
+     * In-memory list of solved questions for UI (progress modal, stats).
+     * Full submission data (incl. code) lives in localStorage.
+     * This array is NOT persisted to Zustand storage.
+     */
     solvedQuestions: SolvedQuestion[];
     canGoNext: boolean;
 
@@ -50,8 +66,6 @@ interface ChallengeState {
     isSubmitting: boolean;
 
     // ── Run→Submit gate ──
-    // True only after the user has successfully run code (i.e. all tests passed).
-    // Resets when a new question is loaded, session changes, code changes, or language changes.
     isRunPass: boolean;
 
     // ── Credentials ──
@@ -60,8 +74,8 @@ interface ChallengeState {
 
     // ── Session Exit Protection ──
     isEndingSession: boolean;
-    hasUnsavedChanges: boolean; // Acts mostly as 'session is active and requires protection'
-    
+    hasUnsavedChanges: boolean;
+
     // ── Exit Modal UI State ──
     isExitModalOpen: boolean;
     exitTargetUrl: string | null;
@@ -79,7 +93,7 @@ interface ChallengeState {
     setProvider: (p: string) => void;
     clearResults: () => void;
     setHasUnsavedChanges: (val: boolean) => void;
-    
+
     // ── Exit Modal Actions ──
     openExitModal: (targetUrl?: string) => void;
     closeExitModal: () => void;
@@ -136,9 +150,12 @@ export const useChallengeStore = create<ChallengeState>()(
                 provider: "groq",
 
                 // ── Session actions ──
-                startSession: () =>
+                startSession: () => {
+                    const newSessionId = uuidv4();
+                    // Clear any stale localStorage data for this new session id (belt-and-suspenders)
+                    clearSessionSubmissions(newSessionId);
                     set({
-                        sessionId: uuidv4(),
+                        sessionId: newSessionId,
                         sessionActive: true,
                         usedQuestionIds: [],
                         solvedQuestions: [],
@@ -152,31 +169,48 @@ export const useChallengeStore = create<ChallengeState>()(
                         hasUnsavedChanges: true, // Always protect new sessions
                         isExitModalOpen: false,
                         exitTargetUrl: null,
-                    }),
+                    });
+                },
 
                 endSession: async () => {
                     set({ isEndingSession: true });
-                    const { solvedQuestions, sessionId } = get();
-                    
-                    if (sessionId && solvedQuestions.length > 0) {
+                    const { sessionId } = get();
+
+                    // ── Read full submission data from localStorage ──
+                    // solvedQuestions from localStorage includes the actual code
+                    // for the email report. Convex never sees this.
+                    const localSubmissions = sessionId ? getSessionSolvedList(sessionId) : [];
+
+                    // Fall back to in-memory Zustand list if localStorage was cleared
+                    // (e.g. private browsing mode) — code fields may be present there too
+                    const solvedForEmail =
+                        localSubmissions.length > 0 ? localSubmissions : get().solvedQuestions;
+
+                    if (sessionId && solvedForEmail.length > 0) {
                         let attempts = 0;
                         const maxAttempts = 3;
                         let delay = 1000;
-                        
+
                         while (attempts < maxAttempts) {
                             try {
                                 const response = await fetch("/api/session/end", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ solvedQuestions, sessionId }),
+                                    body: JSON.stringify({
+                                        solvedQuestions: solvedForEmail,
+                                        sessionId,
+                                    }),
                                 });
-                                
+
                                 if (response.ok) {
-                                    // Make sure toast is available (need to import it)
+                                    // ── Email confirmed → clear localStorage NOW ──
+                                    clearSessionSubmissions(sessionId);
+
                                     if (typeof window !== "undefined") {
                                         import("sonner").then((mod) => {
                                             mod.toast.success("✅ Email sent successfully", {
-                                                description: "Your performance report is on the way!",
+                                                description:
+                                                    "Your performance report is on the way!",
                                             });
                                         });
                                     }
@@ -187,6 +221,7 @@ export const useChallengeStore = create<ChallengeState>()(
                                 attempts++;
                                 if (attempts >= maxAttempts) {
                                     console.error("Session end failed after retries:", error);
+                                    // Do NOT clear localStorage on failure — user can retry
                                 } else {
                                     await new Promise((res) => setTimeout(res, delay));
                                     delay *= 2; // Exponential backoff
@@ -194,10 +229,11 @@ export const useChallengeStore = create<ChallengeState>()(
                             }
                         }
                     } else {
-                        // Just fake delay if no session questions to submit
+                        // No questions solved — short delay, then clear any empty session data
                         await new Promise((resolve) => setTimeout(resolve, 800));
+                        if (sessionId) clearSessionSubmissions(sessionId);
                     }
-                    
+
                     set({
                         sessionId: null,
                         sessionActive: false,
@@ -216,20 +252,26 @@ export const useChallengeStore = create<ChallengeState>()(
                     });
                 },
 
-                openExitModal: (targetUrl = "/dashboard") => set({ isExitModalOpen: true, exitTargetUrl: targetUrl }),
+                openExitModal: (targetUrl = "/dashboard") =>
+                    set({ isExitModalOpen: true, exitTargetUrl: targetUrl }),
                 closeExitModal: () => set({ isExitModalOpen: false, exitTargetUrl: null }),
                 setExitTargetUrl: (url) => set({ exitTargetUrl: url }),
 
                 openSessionProgressModal: () => set({ showSessionProgressModal: true }),
                 closeSessionProgressModal: () => set({ showSessionProgressModal: false }),
 
-                setQuestion: (q) => set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true }),
+                setQuestion: (q) =>
+                    set({
+                        currentQuestion: q,
+                        isRunPass: false,
+                        testResults: null,
+                        hasUnsavedChanges: true,
+                    }),
                 setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true }),
                 setHasUnsavedChanges: (val) => set({ hasUnsavedChanges: val }),
                 setLanguage: (language) => {
                     const q = get().currentQuestion;
                     const starter = q?.starterCode?.[language] || "";
-                    // Language change resets the run gate — new language = new run required
                     set({ language, code: starter, isRunPass: false, testResults: null });
                 },
                 setApiKey: (apiKey) => set({ apiKey }),
@@ -288,8 +330,15 @@ export const useChallengeStore = create<ChallengeState>()(
 
                 // ── Execute / Submit ──
                 executeCode: async (type: "run" | "submit") => {
-                    const { currentQuestion, code, language, apiKey, provider, solvedQuestions } =
-                        get();
+                    const {
+                        currentQuestion,
+                        code,
+                        language,
+                        apiKey,
+                        provider,
+                        solvedQuestions,
+                        sessionId,
+                    } = get();
                     if (!currentQuestion) return;
 
                     if (type === "run") {
@@ -298,7 +347,6 @@ export const useChallengeStore = create<ChallengeState>()(
                         set({ isSubmitting: true, testResults: null });
                     }
                     try {
-                        // Pass test cases from localStorage so server doesn't need DB lookup
                         const casesToSend =
                             type === "run"
                                 ? currentQuestion.testCases.filter((tc) => !tc.isHidden)
@@ -327,24 +375,37 @@ export const useChallengeStore = create<ChallengeState>()(
                         let newCanGoNext = get().canGoNext;
 
                         if (type === "submit" && results.status === "ACCEPTED") {
-                            // Avoid duplicate if re-submitted
-                            if (
-                                !solvedQuestions.some(
-                                    (q) => q.questionId === currentQuestion.questionId
-                                )
-                            ) {
-                                updatedSolved = [
-                                    ...solvedQuestions,
-                                    {
-                                        questionId: currentQuestion.questionId,
+                            const alreadySolved = solvedQuestions.some(
+                                (q) => q.questionId === currentQuestion.questionId
+                            );
+
+                            if (!alreadySolved) {
+                                const solvedEntry: SolvedQuestion = {
+                                    questionId: currentQuestion.questionId,
+                                    title: currentQuestion.title,
+                                    difficulty: currentQuestion.difficulty,
+                                    code,
+                                    language,
+                                    executionTime: results.summary?.totalExecutionTime ?? 0,
+                                    description: currentQuestion.description,
+                                };
+
+                                // ── Save to localStorage (source code stays in browser) ──
+                                if (sessionId) {
+                                    saveSubmission({
+                                        sessionId,
+                                        problemId: currentQuestion.questionId,
                                         title: currentQuestion.title,
                                         difficulty: currentQuestion.difficulty,
-                                        code,
+                                        submittedCode: code,
                                         language,
                                         executionTime: results.summary?.totalExecutionTime ?? 0,
                                         description: currentQuestion.description,
-                                    },
-                                ];
+                                    });
+                                }
+
+                                // Keep in-memory list for UI (SessionProgressModal stats etc.)
+                                updatedSolved = [...solvedQuestions, solvedEntry];
                             }
                             newCanGoNext = true;
                         }
@@ -355,9 +416,14 @@ export const useChallengeStore = create<ChallengeState>()(
                             isSubmitting: false,
                             solvedQuestions: updatedSolved,
                             canGoNext: newCanGoNext,
-                            hasUnsavedChanges: type === "submit" && results.status === "ACCEPTED" ? false : get().hasUnsavedChanges,
-                            // Mark that a run has completed AND passed — enables the Submit button
-                            isRunPass: type === "run" && results.status === "ACCEPTED" ? true : get().isRunPass,
+                            hasUnsavedChanges:
+                                type === "submit" && results.status === "ACCEPTED"
+                                    ? false
+                                    : get().hasUnsavedChanges,
+                            isRunPass:
+                                type === "run" && results.status === "ACCEPTED"
+                                    ? true
+                                    : get().isRunPass,
                         });
                     } catch (error) {
                         console.error("Execution error:", error);
@@ -390,12 +456,14 @@ export const useChallengeStore = create<ChallengeState>()(
             {
                 name: "cc-session",
                 partialize: (state) => ({
+                    // ✅ Persisted: session metadata and credentials only
                     sessionId: state.sessionId,
                     sessionActive: state.sessionActive,
                     usedQuestionIds: state.usedQuestionIds,
-                    solvedQuestions: state.solvedQuestions,
                     apiKey: state.apiKey,
                     language: state.language,
+                    // ❌ NOT persisted: solvedQuestions (code lives in localStorage)
+                    // ❌ NOT persisted: currentQuestion, code, testResults (transient)
                 }),
             }
         )

@@ -65,39 +65,27 @@ export async function POST(req: NextRequest) {
         const isAccepted = results.status === "ACCEPTED";
 
         // ── Update Convex stats on submit ──
+        // Only aggregate counts are recorded in Convex — source code stays in localStorage.
         if (type === "submit") {
             try {
                 const userEmail = session.user?.email;
                 if (userEmail) {
                     const convex = getConvexClient();
 
-                    // Record attempt in user status (scoped by email — safe)
+                    // Track attempt (accepted or not) — scoped by email, safe
                     await convex.mutation(api.userStatus.recordAttempt, {
                         email: userEmail,
                         accepted: isAccepted,
                         difficulty: difficulty as "Easy" | "Medium" | "Hard",
                     });
 
-                    // Increment global solved counter
+                    // Increment global platform-wide solved counter
                     if (isAccepted) {
                         await convex.mutation(api.platformStats.increment, {
                             totalProblemsSolved: 1,
                         });
-
-                        // Record in submissions history
-                        await convex.mutation(api.submissions.recordSubmission, {
-                            email: userEmail,
-                            userId: session.user.id || undefined,
-                            questionId,
-                            title,
-                            difficulty,
-                            code,
-                            language,
-                            status: results.status,
-                            executionTime: results.summary?.totalExecutionTime || 0,
-                            userImageUrl: session.user.image || undefined,
-                        });
                     }
+                    // ✅ No recordSubmission call — source code is NEVER sent to Convex
                 }
             } catch (err) {
                 console.error("Convex stats update error:", err);

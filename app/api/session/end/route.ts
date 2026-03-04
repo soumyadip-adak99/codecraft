@@ -1,7 +1,9 @@
 import { SessionSolvedQuestion } from "@/@types";
 import { auth } from "@/lib/auth/config";
+import { getConvexClient } from "@/lib/db/convex";
 import { EmailService } from "@/lib/email/service";
 import { generateSessionPDF } from "@/lib/pdf/generator";
+import { api } from "@/convex/_generated/api";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
@@ -21,6 +23,27 @@ export async function POST(req: NextRequest) {
 
         const userName = session.user.name || "Coder";
         const userEmail = session.user.email;
+
+        // ── Update Convex solve counts (counts only — no source code) ──
+        // Each accepted submission increments totalSolved + the difficulty counter.
+        // This is the ONLY thing stored in Convex from a session.
+        if (solvedQuestions.length > 0) {
+            try {
+                const convex = getConvexClient();
+                await Promise.all(
+                    solvedQuestions.map((q) =>
+                        convex.mutation(api.userStatus.recordAttempt, {
+                            email: userEmail,
+                            accepted: true,
+                            difficulty: q.difficulty as "Easy" | "Medium" | "Hard",
+                        })
+                    )
+                );
+            } catch (convexError) {
+                // Non-fatal — counts can be reconciled; email is the priority
+                console.error("Convex recordAttempt error:", convexError);
+            }
+        }
 
         // ── Generate PDF + send email ──
         const sendEmail = async () => {
@@ -59,10 +82,10 @@ export async function POST(req: NextRequest) {
                 );
             } catch (err) {
                 console.error("Session end email error:", err);
+                throw err; // Re-throw so client knows email failed and keeps localStorage
             }
         };
 
-        // Wait for the email to send before responding
         await sendEmail();
 
         return NextResponse.json({ success: true });
