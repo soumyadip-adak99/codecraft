@@ -59,7 +59,7 @@ export class EmailService {
             </a>
           </div>
           <div style="border-top:1px solid #222;padding:20px 40px;text-align:center;">
-            <p style="color:#444;font-size:12px;margin:0;">© 2024 codeCarft · All rights reserved</p>
+            <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCarft · All rights reserved</p>
           </div>
         </div>
       </body>
