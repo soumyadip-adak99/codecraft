@@ -100,7 +100,7 @@ export function CodeEditor() {
                         : "#0f0f0f";
 
     return (
-        <div className="flex flex-col h-full" style={{ background: editorBg }}>
+        <div className="flex flex-col h-full w-full min-h-0 min-w-0" style={{ background: editorBg }}>
             {/* ── Toolbar ── */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 bg-[#0a0a0a] shrink-0 gap-2">
                 {/* Left: Language + Theme selectors */}
@@ -164,8 +164,8 @@ export function CodeEditor() {
                         disabled={isSubmitting || isGenerating || !isRunPass}
                         title={!isRunPass ? "Run your code first" : "Submit solution"}
                         className={`gap-1.5 text-xs h-8 shadow-lg min-w-20 ${!isRunPass
-                            ? "bg-zinc-700 text-zinc-400 cursor-not-allowed shadow-none"
-                            : "bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/20"
+                                ? "bg-zinc-700 text-zinc-400 cursor-not-allowed shadow-none"
+                                : "bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/20"
                             }`}
                     >
                         {isSubmitting ? (
@@ -194,7 +194,7 @@ export function CodeEditor() {
             </div>
 
             {/* ── Editor ── */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden relative">
                 <Editor
                     height="100%"
                     language={MONACO_LANG_MAP[language]}

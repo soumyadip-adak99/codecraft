@@ -3,19 +3,33 @@
 import { UserStats } from "@/@types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SessionProgressModal } from "@/components/challenge/SessionProgressModal";
 import { useUIStore } from "@/store";
 import { useChallengeStore } from "@/store/challengeStore";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { BarChart2, BookOpen, Flame, Target, Trophy, Zap, MessageSquarePlus, Star, Loader2, Send } from "lucide-react";
+import {
+    BarChart2,
+    BookOpen,
+    Flame,
+    Target,
+    Trophy,
+    Zap,
+    MessageSquarePlus,
+    Star,
+    Loader2,
+    Send,
+    ArrowRight,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
     const { openChallengeModal } = useUIStore();
-    const { sessionActive, solvedQuestions } = useChallengeStore();
+    const { sessionActive, solvedQuestions, currentQuestion } = useChallengeStore();
 
     // ── Real-time user stats from Convex ──
     const userStatus = useQuery(
@@ -108,12 +122,18 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-black">
+            {/* Session progress modal — shown when user navigated back from /challenge */}
+            <SessionProgressModal />
             <div className="max-w-5xl mx-auto px-4 py-10">
                 {/* Welcome */}
                 <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-black text-white">
-                            {loading ? "Welcome" : (!stats || (stats.totalAttempts === 0 && stats.totalSolved === 0)) ? "Welcome" : "Welcome back"}{" "}
+                            {loading
+                                ? "Welcome"
+                                : !stats || (stats.totalAttempts === 0 && stats.totalSolved === 0)
+                                    ? "Welcome"
+                                    : "Welcome back"}{" "}
                             <span className="text-orange-500">
                                 {session?.user?.name?.split(" ")[0]}
                             </span>{" "}
@@ -127,7 +147,7 @@ export default function DashboardPage() {
                     </div>
                     <Button
                         onClick={openChallengeModal}
-                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 self-start sm:self-auto"
+                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 self-start sm:self-auto cursor-pointer"
                     >
                         <Zap className="h-4 w-4" />
                         {sessionActive ? "New Question" : "Start Session"}
@@ -135,20 +155,24 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Active session banner */}
-                {sessionActive && (
-                    <div className="mb-6 flex items-center gap-3 glass rounded-2xl border border-orange-500/20 bg-orange-500/5 px-5 py-4">
-                        <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-                        <div>
-                            <p className="text-sm font-semibold text-orange-300">
+                {sessionActive && currentQuestion && (
+                    <Link
+                        href={`/challenge/${currentQuestion.questionId}`}
+                        className="mb-6 flex items-center gap-3 glass rounded-2xl border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10 transition-colors px-5 py-4 cursor-pointer group"
+                    >
+                        <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse shrink-0" />
+                        <div className="flex-1">
+                            <p className="text-sm font-semibold text-orange-300 group-hover:text-orange-400 transition-colors">
                                 Session in progress
                             </p>
                             <p className="text-xs text-zinc-400 mt-0.5">
                                 {solvedQuestions.length} question
-                                {solvedQuestions.length !== 1 ? "s" : ""} solved — go to your
-                                challenge page to continue or end the session
+                                {solvedQuestions.length !== 1 ? "s" : ""} solved — click to
+                                continue or end the session
                             </p>
                         </div>
-                    </div>
+                        <ArrowRight className="h-5 w-5 text-orange-500/50 group-hover:text-orange-500 group-hover:translate-x-1 transition-all shrink-0" />
+                    </Link>
                 )}
 
                 {/* Stats Grid */}
@@ -208,7 +232,7 @@ export default function DashboardPage() {
                             <Button
                                 onClick={() => setShowReviewForm(true)}
                                 variant="outline"
-                                className="border-orange-500/20 text-orange-400 hover:bg-orange-500/10"
+                                className="border-orange-500/20 text-orange-400 hover:bg-orange-500/10 cursor-pointer"
                                 size="sm"
                             >
                                 <MessageSquarePlus className="h-4 w-4 mr-2" />
@@ -239,7 +263,7 @@ export default function DashboardPage() {
                                         onClick={() => setShowReviewForm(false)}
                                         variant="ghost"
                                         size="sm"
-                                        className="text-zinc-400 hover:text-white"
+                                        className="text-zinc-400 hover:text-white cursor-pointer"
                                         disabled={submittingReview}
                                     >
                                         Cancel
@@ -248,7 +272,7 @@ export default function DashboardPage() {
                                         onClick={handleSubmitReview}
                                         disabled={submittingReview || reviewText.trim().length < 10}
                                         size="sm"
-                                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 disabled:opacity-50"
+                                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 disabled:opacity-50 cursor-pointer"
                                     >
                                         {submittingReview ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />

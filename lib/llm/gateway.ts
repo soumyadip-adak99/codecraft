@@ -292,9 +292,25 @@ Return ONLY a valid JSON object in this exact format:
     }
 
     private parseJSON<T>(text: string): T {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("No JSON found in LLM response");
-        return JSON.parse(jsonMatch[0]) as T;
+        try {
+            // 1. Remove markdown code blocks if present
+            let cleanText = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "");
+
+            // 2. Find the first '{' and last '}'
+            const startIdx = cleanText.indexOf("{");
+            const endIdx = cleanText.lastIndexOf("}");
+
+            if (startIdx === -1 || endIdx === -1) {
+                throw new Error("No JSON object found in response");
+            }
+
+            cleanText = cleanText.substring(startIdx, endIdx + 1);
+
+            return JSON.parse(cleanText) as T;
+        } catch (err) {
+            console.error("Failed to parse JSON from LLM response:", text);
+            throw err;
+        }
     }
 
     async generateQuestion(

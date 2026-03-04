@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { steps } from "@/constant";
 import { animations } from "@/lib/animations/config";
-import {
-    ArrowRight,
-    BookOpen,
-    CheckCircle2,
-    Github,
-    Mail,
-    Shield
-} from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, Github, Mail, Shield } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,8 +24,6 @@ export default function DocsPage() {
         animations.heroEntrance(elements);
     }, []);
 
-
-
     return (
         <div className="relative overflow-hidden min-h-screen bg-black">
             {/* Background elements */}
@@ -46,21 +37,24 @@ export default function DocsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Link href="/">
-                        <Button variant="ghost" className="text-zinc-400 hover:text-white">
+                        <Button
+                            variant="ghost"
+                            className="text-zinc-400 hover:text-white cursor-pointer"
+                        >
                             Home
                         </Button>
                     </Link>
                     {session ? (
                         <Button
                             onClick={() => router.push("/dashboard")}
-                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2"
+                            className="bg-orange-500 hover:bg-orange-400 text-white gap-2 cursor-pointer"
                         >
                             Dashboard <ArrowRight className="h-4 w-4" />
                         </Button>
                     ) : (
                         <Link href="/login">
-                            <Button className="bg-orange-500 hover:bg-orange-400 text-white">
-                                Get Started
+                            <Button className="bg-orange-500 hover:bg-orange-400 text-white cursor-pointer">
+                                Sing In
                             </Button>
                         </Link>
                     )}
@@ -154,9 +148,10 @@ export default function DocsPage() {
                             Comprehensive API Key <span className="text-orange-500">Guide</span>
                         </h2>
                         <p className="text-zinc-400 max-w-3xl mx-auto text-lg leading-relaxed">
-                            codeCarft uses large language models (LLMs) to dynamically generate interview questions.
-                            While we provide a free default server-side Groq key, supplying your own API key guarantees
-                            zero rate limits and lets you harness the most capable models on the market.
+                            codeCarft uses large language models (LLMs) to dynamically generate
+                            interview questions. While we provide a free default server-side Groq
+                            key, supplying your own API key guarantees zero rate limits and lets you
+                            harness the most capable models on the market.
                         </p>
                     </div>
 
@@ -167,15 +162,23 @@ export default function DocsPage() {
                         </h3>
                         <div className="grid sm:grid-cols-2 gap-6">
                             <div>
-                                <h4 className="font-semibold text-white mb-2 text-sm">Client-Side Storage Only</h4>
+                                <h4 className="font-semibold text-white mb-2 text-sm">
+                                    Client-Side Storage Only
+                                </h4>
                                 <p className="text-zinc-400 text-sm leading-relaxed">
-                                    When you enter an API key into the "New Challenge" modal, it is <strong>strictly saved in your browser's local storage</strong>. Our backend databases never see, record, or store your API keys.
+                                    When you enter an API key into the "New Challenge" modal, it is{" "}
+                                    <strong>strictly saved in your browser's local storage</strong>.
+                                    Our backend databases never see, record, or store your API keys.
                                 </p>
                             </div>
                             <div>
-                                <h4 className="font-semibold text-white mb-2 text-sm">Secure Transmission</h4>
+                                <h4 className="font-semibold text-white mb-2 text-sm">
+                                    Secure Transmission
+                                </h4>
                                 <p className="text-zinc-400 text-sm leading-relaxed">
-                                    Your key is transmitted directly via secure HTTPS headers to our proxy backend, which immediately forwards it to the respective AI provider without logging it anywhere.
+                                    Your key is transmitted directly via secure HTTPS headers to our
+                                    proxy backend, which immediately forwards it to the respective
+                                    AI provider without logging it anywhere.
                                 </p>
                             </div>
                         </div>
@@ -193,19 +196,47 @@ export default function DocsPage() {
                                     Insanely Fast & Free Tier
                                 </p>
                                 <div className="space-y-1 text-sm">
-                                    <p className="text-zinc-500"><strong className="text-white">Model:</strong> llama-3.3-70b-versatile</p>
-                                    <p className="text-zinc-500"><strong className="text-white">Cost:</strong> Generous free tier</p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Model:</strong>{" "}
+                                        llama-3.3-70b-versatile
+                                    </p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Cost:</strong> Generous free
+                                        tier
+                                    </p>
                                 </div>
                             </div>
                             <div className="md:w-2/3">
                                 <h4 className="text-white font-bold mb-3">Generation Steps:</h4>
                                 <ol className="list-decimal list-outside ml-4 space-y-2 text-sm text-zinc-300">
-                                    <li>Navigate to the <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-orange-400 font-semibold hover:underline">Groq Cloud Console</a>.</li>
+                                    <li>
+                                        Navigate to the{" "}
+                                        <a
+                                            href="https://console.groq.com/keys"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-orange-400 font-semibold hover:underline"
+                                        >
+                                            Groq Cloud Console
+                                        </a>
+                                        .
+                                    </li>
                                     <li>Sign in using your Google, GitHub, or email account.</li>
                                     <li>On the left sidebar, click on "API Keys".</li>
-                                    <li>Click the <strong>"Create API Key"</strong> button on the top right.</li>
-                                    <li>Name your key (e.g. "codecarft-access") and click Submit.</li>
-                                    <li>Copy the generated string starting with <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-orange-200">gsk_</code> and paste it into the platform.</li>
+                                    <li>
+                                        Click the <strong>"Create API Key"</strong> button on the
+                                        top right.
+                                    </li>
+                                    <li>
+                                        Name your key (e.g. "codecarft-access") and click Submit.
+                                    </li>
+                                    <li>
+                                        Copy the generated string starting with{" "}
+                                        <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-orange-200">
+                                            gsk_
+                                        </code>{" "}
+                                        and paste it into the platform.
+                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -221,18 +252,44 @@ export default function DocsPage() {
                                     Excellent Reasoning & Context Window
                                 </p>
                                 <div className="space-y-1 text-sm">
-                                    <p className="text-zinc-500"><strong className="text-white">Models:</strong> gemini-1.5-pro / flash</p>
-                                    <p className="text-zinc-500"><strong className="text-white">Cost:</strong> High limits on free tier</p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Models:</strong>{" "}
+                                        gemini-1.5-pro / flash
+                                    </p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Cost:</strong> High limits on
+                                        free tier
+                                    </p>
                                 </div>
                             </div>
                             <div className="md:w-2/3">
                                 <h4 className="text-white font-bold mb-3">Generation Steps:</h4>
                                 <ol className="list-decimal list-outside ml-4 space-y-2 text-sm text-zinc-300">
-                                    <li>Navigate to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-blue-400 font-semibold hover:underline">Google AI Studio</a>.</li>
+                                    <li>
+                                        Navigate to{" "}
+                                        <a
+                                            href="https://aistudio.google.com/app/apikey"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-blue-400 font-semibold hover:underline"
+                                        >
+                                            Google AI Studio
+                                        </a>
+                                        .
+                                    </li>
                                     <li>Sign in with your Google account.</li>
-                                    <li>Click on <strong>"Get API Key"</strong> in the left navigation menu.</li>
-                                    <li>Click "Create API Key in new project" (or use an existing Google Cloud project).</li>
-                                    <li>Once generated, copy the key and paste it directly into codeCarft.</li>
+                                    <li>
+                                        Click on <strong>"Get API Key"</strong> in the left
+                                        navigation menu.
+                                    </li>
+                                    <li>
+                                        Click "Create API Key in new project" (or use an existing
+                                        Google Cloud project).
+                                    </li>
+                                    <li>
+                                        Once generated, copy the key and paste it directly into
+                                        codeCarft.
+                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -248,18 +305,49 @@ export default function DocsPage() {
                                     The Industry Standard for Coding
                                 </p>
                                 <div className="space-y-1 text-sm">
-                                    <p className="text-zinc-500"><strong className="text-white">Models:</strong> gpt-4o / gpt-4o-mini</p>
-                                    <p className="text-zinc-500"><strong className="text-white">Cost:</strong> Pay-as-you-go ($5 min)</p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Models:</strong> gpt-4o /
+                                        gpt-4o-mini
+                                    </p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Cost:</strong> Pay-as-you-go
+                                        ($5 min)
+                                    </p>
                                 </div>
                             </div>
                             <div className="md:w-2/3">
                                 <h4 className="text-white font-bold mb-3">Generation Steps:</h4>
                                 <ol className="list-decimal list-outside ml-4 space-y-2 text-sm text-zinc-300">
-                                    <li>Head over to the <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-green-400 font-semibold hover:underline">OpenAI Developer Platform</a>.</li>
+                                    <li>
+                                        Head over to the{" "}
+                                        <a
+                                            href="https://platform.openai.com/api-keys"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-green-400 font-semibold hover:underline"
+                                        >
+                                            OpenAI Developer Platform
+                                        </a>
+                                        .
+                                    </li>
                                     <li>Log into your OpenAI account.</li>
-                                    <li>Note: You must fund your developer account with at least $5.00 in the <strong>Billing</strong> section to use the API. ChatGPT Plus subscription does <i>not</i> cover API usage.</li>
-                                    <li>In the "API keys" tab, click <strong>"Create new secret key"</strong>.</li>
-                                    <li>Give it a temporary name and copy the <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-green-200">sk-...</code> string into codeCarft.</li>
+                                    <li>
+                                        Note: You must fund your developer account with at least
+                                        $5.00 in the <strong>Billing</strong> section to use the
+                                        API. ChatGPT Plus subscription does <i>not</i> cover API
+                                        usage.
+                                    </li>
+                                    <li>
+                                        In the "API keys" tab, click{" "}
+                                        <strong>"Create new secret key"</strong>.
+                                    </li>
+                                    <li>
+                                        Give it a temporary name and copy the{" "}
+                                        <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-green-200">
+                                            sk-...
+                                        </code>{" "}
+                                        string into codeCarft.
+                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -275,18 +363,47 @@ export default function DocsPage() {
                                     Best-in-Class for Programming Tasks
                                 </p>
                                 <div className="space-y-1 text-sm">
-                                    <p className="text-zinc-500"><strong className="text-white">Models:</strong> claude-3-5-sonnet</p>
-                                    <p className="text-zinc-500"><strong className="text-white">Cost:</strong> Pay-as-you-go ($5 min)</p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Models:</strong>{" "}
+                                        claude-3-5-sonnet
+                                    </p>
+                                    <p className="text-zinc-500">
+                                        <strong className="text-white">Cost:</strong> Pay-as-you-go
+                                        ($5 min)
+                                    </p>
                                 </div>
                             </div>
                             <div className="md:w-2/3">
                                 <h4 className="text-white font-bold mb-3">Generation Steps:</h4>
                                 <ol className="list-decimal list-outside ml-4 space-y-2 text-sm text-zinc-300">
-                                    <li>Visit the <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" className="text-purple-400 font-semibold hover:underline">Anthropic Console</a>.</li>
+                                    <li>
+                                        Visit the{" "}
+                                        <a
+                                            href="https://console.anthropic.com/settings/keys"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-purple-400 font-semibold hover:underline"
+                                        >
+                                            Anthropic Console
+                                        </a>
+                                        .
+                                    </li>
                                     <li>Create an account or sign in.</li>
-                                    <li>Similar to OpenAI, you must preload credits (minimum $5) in the <strong>Billing</strong> tab before keys become active.</li>
-                                    <li>Navigate to the "API Keys" section and click <strong>"Create Key"</strong>.</li>
-                                    <li>Copy the string starting with <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-purple-200">sk-ant-...</code>.</li>
+                                    <li>
+                                        Similar to OpenAI, you must preload credits (minimum $5) in
+                                        the <strong>Billing</strong> tab before keys become active.
+                                    </li>
+                                    <li>
+                                        Navigate to the "API Keys" section and click{" "}
+                                        <strong>"Create Key"</strong>.
+                                    </li>
+                                    <li>
+                                        Copy the string starting with{" "}
+                                        <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-purple-200">
+                                            sk-ant-...
+                                        </code>
+                                        .
+                                    </li>
                                 </ol>
                             </div>
                         </div>

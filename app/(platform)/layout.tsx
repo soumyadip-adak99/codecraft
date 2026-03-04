@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { ChallengeModal } from "@/components/challenge/ChallengeModal";
+import { AuthLoader } from "@/components/shared/AuthLoader";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
     const { data: session, status } = useSession();
@@ -12,18 +13,17 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
     useEffect(() => {
         if (status === "unauthenticated") {
-            router.push("/login");
+            router.replace("/login");
         }
     }, [status, router]);
 
-    if (status === "loading") {
+    // Block render until auth is resolved
+    if (status === "loading" || status === "unauthenticated") {
         return (
-            <div className="flex h-screen items-center justify-center bg-black">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 rounded-lg bg-orange-500 animate-pulse" />
-                    <p className="text-zinc-500 text-sm animate-pulse">Loading codeCarft...</p>
-                </div>
-            </div>
+            <AuthLoader
+                authenticatedRedirect="/dashboard"
+                unauthenticatedRedirect="/login"
+            />
         );
     }
 
