@@ -35,7 +35,7 @@ export function ProblemPanel({ question }: { question: Question }) {
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+            <div data-lenis-prevent="true" className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5 scrollbar-thin">
                 {tab === "description" ? (
                     <>
                         {/* Title & Difficulty */}

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Key, Save, Trash2, Check, AlertTriangle, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useUserStore } from "@/store";
 import { API_KEY_PROVIDER_LINK, PROVIDERS } from "@/constant";
+import { useUserStore } from "@/store";
+import { AlertTriangle, Check, ChevronDown, Info, Key, Save, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
     const { hasApiKey, setHasApiKey } = useUserStore();

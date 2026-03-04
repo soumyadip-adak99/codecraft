@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/config";
 import connectDB from "@/lib/db/mongoose";
 import Review from "@/models/Review";
 import User from "@/models/User";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 

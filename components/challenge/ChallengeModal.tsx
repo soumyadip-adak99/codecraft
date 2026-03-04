@@ -27,6 +27,7 @@ export function ChallengeModal() {
         isGenerating,
         generationError,
         currentQuestion,
+        canGoNext,
     } = useChallengeStore();
     const router = useRouter();
 
@@ -128,15 +129,14 @@ export function ChallengeModal() {
                                 <button
                                     key={d}
                                     onClick={() => setDifficulty(d)}
-                                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
-                                        difficulty === d
-                                            ? d === "Easy"
-                                                ? "bg-green-500/20 border-green-500/40 text-green-400"
-                                                : d === "Medium"
-                                                  ? "bg-orange-500/20 border-orange-500/40 text-orange-400"
-                                                  : "bg-red-500/20 border-red-500/40 text-red-400"
-                                            : "border-white/5 text-zinc-500 hover:border-white/10 hover:text-zinc-300 bg-white/2"
-                                    }`}
+                                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${difficulty === d
+                                        ? d === "Easy"
+                                            ? "bg-green-500/20 border-green-500/40 text-green-400"
+                                            : d === "Medium"
+                                                ? "bg-orange-500/20 border-orange-500/40 text-orange-400"
+                                                : "bg-red-500/20 border-red-500/40 text-red-400"
+                                        : "border-white/5 text-zinc-500 hover:border-white/10 hover:text-zinc-300 bg-white/2"
+                                        }`}
                                 >
                                     {d}
                                 </button>
@@ -160,11 +160,10 @@ export function ChallengeModal() {
                     {/* Default key toggle */}
                     <div
                         onClick={() => setUseDefaultKey(!useDefaultKey)}
-                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${
-                            useDefaultKey
-                                ? "bg-orange-500/10 border-orange-500/30"
-                                : "bg-white/3 border-white/8 hover:border-white/15"
-                        }`}
+                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${useDefaultKey
+                            ? "bg-orange-500/10 border-orange-500/30"
+                            : "bg-white/3 border-white/8 hover:border-white/15"
+                            }`}
                     >
                         <div
                             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${useDefaultKey ? "bg-orange-500/20" : "bg-white/5"}`}
@@ -259,10 +258,17 @@ export function ChallengeModal() {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 pb-6">
+                <div className="px-6 pb-6 space-y-3">
+                    {/* Hint when button is locked mid-session */}
+                    {sessionActive && !canGoNext && !isGenerating && (
+                        <p className="text-center text-xs text-zinc-500 mb-3">
+                            Submit the current challenge first to unlock the next one.
+                        </p>
+                    )}
                     <Button
                         onClick={handleGenerate}
-                        disabled={isGenerating || (!useDefaultKey && !apiKey.trim())}
+                        disabled={isGenerating || (!useDefaultKey && !apiKey.trim()) || (sessionActive && !canGoNext)}
+                        title={sessionActive && !canGoNext ? "Submit the current challenge first" : undefined}
                         className="w-full bg-orange-500 hover:bg-orange-400 text-white gap-2 py-5 text-base font-semibold shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         {isGenerating ? (

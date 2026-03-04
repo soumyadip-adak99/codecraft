@@ -129,7 +129,7 @@ export function TestResultsPanel() {
             </div>
 
             {/* ── Scrollable content ── */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+            <div data-lenis-prevent="true" className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
                 {/* Status banner */}
                 <div
                     className={`flex items-center gap-3 rounded-xl p-3.5 border ${isAccepted

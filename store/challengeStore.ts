@@ -26,6 +26,7 @@ export interface SolvedQuestion {
     code: string;
     language: Language;
     executionTime: number;
+    description: string;
 }
 
 interface ChallengeState {
@@ -341,6 +342,7 @@ export const useChallengeStore = create<ChallengeState>()(
                                         code,
                                         language,
                                         executionTime: results.summary?.totalExecutionTime ?? 0,
+                                        description: currentQuestion.description,
                                     },
                                 ];
                             }

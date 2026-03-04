@@ -1,16 +1,12 @@
 "use client";
 
-import { Group, Panel, Separator } from "react-resizable-panels";
-import { ProblemPanel } from "./ProblemPanel";
-import { CodeEditor } from "./CodeEditor";
-import { TestResultsPanel } from "./TestResultsPanel";
-import { ChevronRight, Code2, LogOut, Loader2, SkipForward, Zap } from "lucide-react";
-import Link from "next/link";
 import { useChallengeStore, type Question } from "@/store/challengeStore";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useUIStore } from "@/store";
+import { ChevronRight, Code2, Loader2, Lock, LogOut, SkipForward } from "lucide-react";
+import Link from "next/link";
+import { Group, Panel, Separator } from "react-resizable-panels";
+import { CodeEditor } from "./CodeEditor";
+import { ProblemPanel } from "./ProblemPanel";
+import { TestResultsPanel } from "./TestResultsPanel";
 
 const difficultyConfig = {
     Easy: { cls: "bg-green-500/15 text-green-400 border-green-500/30" },
@@ -29,7 +25,6 @@ export function WorkspaceLayout({ question }: { question: Question }) {
         isGenerating,
         openExitModal,
     } = useChallengeStore();
-    const { openChallengeModal } = useUIStore();
 
     const handleEndSession = () => {
         // Open the global exit modal which will handle confirmation
@@ -76,18 +71,20 @@ export function WorkspaceLayout({ question }: { question: Question }) {
                     <button
                         onClick={handleNextQuestion}
                         disabled={!canGoNext || isGenerating}
-                        title={canGoNext ? "Go to next question" : "Submit current question first"}
+                        title={canGoNext ? "Go to next question" : "Submit the current question first to unlock"}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${canGoNext
                             ? "bg-orange-500/15 text-orange-400 border-orange-500/30 hover:bg-orange-500/25 hover:text-orange-300 cursor-pointer"
-                            : "bg-white/5 text-zinc-600 border-white/5 cursor-not-allowed opacity-50"
+                            : "bg-white/5 text-zinc-500 border-white/8 cursor-not-allowed"
                             }`}
                     >
                         {isGenerating ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
+                        ) : canGoNext ? (
                             <SkipForward className="h-3.5 w-3.5" />
+                        ) : (
+                            <Lock className="h-3 w-3" />
                         )}
-                        Next
+                        {canGoNext ? "Next" : "Submit first"}
                     </button>
 
                     {/* End Session Button */}

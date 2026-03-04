@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
-import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { SmoothScrolling } from "@/components/providers/SmoothScrolling";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
     title: {
