@@ -59,13 +59,13 @@ export class EmailService {
             </a>
           </div>
           <div style="border-top:1px solid #222;padding:20px 40px;text-align:center;">
-            <p style="color:#444;font-size:12px;margin:0;">© 2024 codeCarft AI · All rights reserved</p>
+            <p style="color:#444;font-size:12px;margin:0;">© 2024 codeCarft · All rights reserved</p>
           </div>
         </div>
       </body>
       </html>
     `;
-        await this.send({ to, subject: "Welcome to codeCarft AI 🚀", html });
+        await this.send({ to, subject: "Welcome to codeCarft 🚀", html });
     }
 
     async sendSessionReport(to: string, name: string, data: SessionReportData, pdfBuffer: Buffer) {
@@ -84,6 +84,42 @@ export class EmailService {
             };font-weight:bold;">${q.difficulty}</td>
             <td style="padding:10px 16px;color:#aaa;font-size:13px;">${q.language}</td>
           </tr>`
+            )
+            .join("");
+
+        const questionDetails = data.solvedQuestions
+            .map(
+                (q, i) => `
+              <div style="margin-top: 32px; background: #0f0f0f; border-radius: 8px; border: 1px solid #222; overflow: hidden;">
+                <div style="background: #111; padding: 16px 20px; border-bottom: 1px solid #222;">
+                  <h4 style="color: #fff; margin: 0; font-size: 16px;">${i + 1}. ${q.title}</h4>
+                  <div style="margin-top: 8px;">
+                    <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background: ${
+                        q.difficulty === "Easy"
+                            ? "rgba(34,197,94,0.1)"
+                            : q.difficulty === "Hard"
+                              ? "rgba(239,68,68,0.1)"
+                              : "rgba(251,191,36,0.1)"
+                    }; color: ${
+                        q.difficulty === "Easy"
+                            ? "#22c55e"
+                            : q.difficulty === "Hard"
+                              ? "#ef4444"
+                              : "#fbbf24"
+                    };">${q.difficulty}</span>
+                    <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; background: #222; color: #aaa;">${q.language}</span>
+                  </div>
+                </div>
+                <div style="padding: 20px;">
+                  <h5 style="color: #aaa; margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase;">Problem Description</h5>
+                  <div style="color: #ddd; font-size: 14px; line-height: 1.6; background: #1a1a1a; padding: 16px; border-radius: 6px; margin-bottom: 24px;">
+                    ${q.description ? q.description.replace(/\\n/g, "<br/>") : "No description provided."}
+                  </div>
+                  <h5 style="color: #aaa; margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase;">Your Solution</h5>
+                  <pre style="background: #000; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 0; border: 1px solid #333;"><code style="color: #4ade80; font-family: monospace; font-size: 13px;">${q.code ? q.code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ""}</code></pre>
+                </div>
+              </div>
+            `
             )
             .join("");
 
@@ -137,7 +173,11 @@ export class EmailService {
                   </tr>
                 </thead>
                 <tbody>${questionRows}</tbody>
-              </table>`
+              </table>
+              <div style="margin-top: 32px;">
+                <h3 style="color:#fff;margin:24px 0 12px;">Detailed Solutions</h3>
+                ${questionDetails}
+              </div>`
                     : `<p style="color:#666;text-align:center;margin:24px 0;">No problems solved this session.</p>`
             }
 
@@ -177,7 +217,7 @@ export class EmailService {
     private async send(options: { to: string; subject: string; html: string }) {
         try {
             await this.transporter.sendMail({
-                from: `"codeCarft AI" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+                from: `"codeCarft" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
                 ...options,
             });
         } catch (error) {

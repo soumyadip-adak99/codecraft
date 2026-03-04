@@ -50,7 +50,7 @@ interface SessionAuthGuardProps {
 export function SessionAuthGuard({ children }: SessionAuthGuardProps) {
     const { status } = useSession();
     const router = useRouter();
-    const { currentQuestion, sessionActive } = useChallengeStore();
+    const { currentQuestion, sessionActive, isGenerating } = useChallengeStore();
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
@@ -65,22 +65,28 @@ export function SessionAuthGuard({ children }: SessionAuthGuardProps) {
             return;
         }
 
-        // State 3: User is authenticated but there is no active challenge session
+        // State 3: A new question is being generated — hold position, don't redirect.
+        // The ChallengePage useEffect will handle the URL update when ready.
+        if (isGenerating) {
+            return;
+        }
+
+        // State 4: User is authenticated but there is no active challenge session
         if (status === "authenticated" && (!sessionActive || !currentQuestion)) {
             router.replace("/dashboard");
             return;
         }
 
-        // State 4: User is authenticated and has an active session
+        // State 5: User is authenticated and has an active session
         if (status === "authenticated" && sessionActive && currentQuestion) {
             // Need a slight delay to allow rendering phase to switch safely without flashing
             const timer = setTimeout(() => setIsAuthorized(true), 100);
             return () => clearTimeout(timer);
         }
-    }, [status, sessionActive, currentQuestion, router]);
+    }, [status, sessionActive, currentQuestion, isGenerating, router]);
 
-    // Show loading skeleton while verifying or waiting for redirect
-    if (status === "loading" || !isAuthorized) {
+    // Show loading skeleton while verifying, generating, or waiting for redirect
+    if (status === "loading" || (!isAuthorized && !isGenerating)) {
         return <ChallengeSkeleton />;
     }
 

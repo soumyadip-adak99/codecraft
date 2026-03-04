@@ -4,6 +4,7 @@ import connectDB from "@/lib/db/mongoose";
 import User from "@/models/User";
 import { getConvexClient } from "@/lib/db/convex";
 import { api } from "../../convex/_generated/api";
+import { EmailService } from "@/lib/email/service";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
@@ -23,28 +24,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async signIn({ user }) {
             if (!user?.email) return false;
             try {
-                // Upsert minimal user in MongoDB (email + image only)
+                // Upsert user in MongoDB — the raw result tells us if this was an INSERT (new user)
                 await connectDB();
-                await User.findOneAndUpdate(
+                const result = await User.findOneAndUpdate(
                     { email: user.email },
                     {
                         $set: { image: user.image },
                         $setOnInsert: { email: user.email },
                     },
-                    { upsert: true, new: true }
+                    { upsert: true, new: true, includeResultMetadata: true }
                 );
 
-                // Ensure Convex userStatus row exists + increment developer count on first visit
-                const convex = getConvexClient();
-                const isNewUser = await convex.mutation(api.userStatus.ensureUser, {
-                    email: user.email,
-                });
-                
+                // `updatedExisting: false` means the document was just inserted → new user
+                const isNewUser = result?.lastErrorObject?.updatedExisting === false;
+
                 if (isNewUser) {
-                    // Increment total developers (idempotent counting per sign-up handled by ensureUser)
+                    // Increment platform stats via Convex (keep existing behaviour)
+                    const convex = getConvexClient();
                     await convex.mutation(api.platformStats.increment, {
                         totalDevelopers: 1,
                     });
+
+                    // Fire welcome email asynchronously — never blocks sign-in
+                    const firstName = (user.name ?? user.email?.split("@")[0] ?? "Coder");
+                    new EmailService()
+                        .sendWelcomeEmail(user.email, firstName)
+                        .catch((err) =>
+                            console.error("[Welcome Email] Failed to send:", err)
+                        );
                 }
             } catch (error) {
                 console.error("SignIn error:", error);

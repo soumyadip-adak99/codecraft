@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/config";
-import { LLMGateway } from "@/lib/llm/gateway";
 import { getConvexClient } from "@/lib/db/convex";
-import { api } from "../../../../convex/_generated/api";
+import { LLMGateway } from "@/lib/llm/gateway";
+import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import { api } from "../../../../convex/_generated/api";
 
 export const maxDuration = 30;
 export const dynamic = "force-dynamic";

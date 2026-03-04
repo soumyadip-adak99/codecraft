@@ -5,6 +5,7 @@ export interface SessionSolvedQuestion {
     code: string;
     language: string;
     executionTime: number;
+    description: string;
 }
 
 export interface ISession {

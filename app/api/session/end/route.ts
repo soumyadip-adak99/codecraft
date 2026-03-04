@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { SessionSolvedQuestion } from "@/@types";
 import { auth } from "@/lib/auth/config";
 import { EmailService } from "@/lib/email/service";
 import { generateSessionPDF } from "@/lib/pdf/generator";
-import { SessionSolvedQuestion } from "@/@types";
+import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
 export const dynamic = "force-dynamic";

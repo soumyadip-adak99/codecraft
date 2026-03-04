@@ -1,11 +1,11 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import Logo from "@/components/ui/logo";
+import { Brain, Globe, Loader2, Zap } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Code2, Zap, Brain, Globe, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Logo from "@/components/ui/logo";
 
 export default function LoginPage() {
     const { data: session, status } = useSession();

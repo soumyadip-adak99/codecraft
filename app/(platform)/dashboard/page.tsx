@@ -1,30 +1,30 @@
 "use client";
 
 import { UserStats } from "@/@types";
+import { SessionProgressModal } from "@/components/challenge/SessionProgressModal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SessionProgressModal } from "@/components/challenge/SessionProgressModal";
 import { useUIStore } from "@/store";
 import { useChallengeStore } from "@/store/challengeStore";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 import {
+    ArrowRight,
     BarChart2,
     BookOpen,
     Flame,
+    Loader2,
+    MessageSquarePlus,
+    Send,
+    Star,
     Target,
     Trophy,
     Zap,
-    MessageSquarePlus,
-    Star,
-    Loader2,
-    Send,
-    ArrowRight,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import Link from "next/link";
+import { api } from "../../../convex/_generated/api";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
