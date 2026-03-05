@@ -68,7 +68,7 @@ export class EmailService {
         await this.send({ to, subject: "Welcome to codeCarft 🚀", html });
     }
 
-    async sendSessionReport(to: string, name: string, data: SessionReportData, pdfBuffer: Buffer) {
+    async sendSessionReport(to: string, name: string, data: SessionReportData, pdfBuffer: Buffer, githubRepoUrl?: string) {
         const questionRows = data.solvedQuestions
             .map(
                 (q, i) =>
@@ -185,6 +185,18 @@ export class EmailService {
                style="display:inline-block;margin-top:32px;background:#f97316;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;">
               Start Another Session →
             </a>
+
+            ${githubRepoUrl ? `
+            <div style="margin-top:24px;padding:20px;background:#0f0f0f;border-radius:8px;border-left:3px solid #6e40c9;">
+              <p style="color:#9f7aea;font-weight:bold;margin:0 0 8px;">🐙 GitHub Repository Updated</p>
+              <p style="color:#aaa;font-size:13px;margin:0 0 12px;">
+                Your solutions were automatically pushed to your GitHub repository.
+              </p>
+              <a href="${githubRepoUrl}" 
+                 style="display:inline-block;background:#6e40c9;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;font-size:13px;font-weight:bold;">
+                View on GitHub →
+              </a>
+            </div>` : ''}
           </div>
           <div style="border-top:1px solid #222;padding:20px 40px;text-align:center;">
             <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCarft AI · Keep Coding, Keep Growing</p>

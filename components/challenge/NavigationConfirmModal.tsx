@@ -3,6 +3,7 @@
 import { useChallengeStore } from "@/store/challengeStore";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2, LogOut, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 /**
  * NavigationConfirmModal
@@ -12,104 +13,104 @@ import { AlertTriangle, Loader2, LogOut, X } from "lucide-react";
  * navigates away only after confirmation.
  */
 export function NavigationConfirmModal() {
-    const { isEndingSession, endSession, isExitModalOpen, closeExitModal, exitTargetUrl } =
-        useChallengeStore();
+  const router = useRouter();
+  const { isEndingSession, endSession, isExitModalOpen, closeExitModal, exitTargetUrl } =
+    useChallengeStore();
 
-    const handleConfirm = async () => {
-        await endSession();
-        closeExitModal();
+  const handleConfirm = async () => {
+    await endSession();
+    closeExitModal();
 
-        // Use window.location so we bypass the patched history API
-        const destination = exitTargetUrl || "/dashboard";
-        window.location.href = destination;
-    };
+    const destination = exitTargetUrl || "/dashboard";
+    router.push(destination);
+  };
 
-    if (!isExitModalOpen) return null;
+  if (!isExitModalOpen) return null;
 
-    return (
-        <>
-            {/* ── Backdrop ── */}
-            <div
-                className="ncm-backdrop"
-                onClick={() => !isEndingSession && closeExitModal()}
-                aria-hidden="true"
-            />
+  return (
+    <>
+      {/* ── Backdrop ── */}
+      <div
+        className="ncm-backdrop"
+        onClick={() => !isEndingSession && closeExitModal()}
+        aria-hidden="true"
+      />
 
-            {/* ── Modal ── */}
-            <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="ncm-title"
-                aria-describedby="ncm-desc"
-                className="ncm-modal"
-            >
-                {/* Close button */}
-                {!isEndingSession && (
-                    <button className="ncm-close" onClick={closeExitModal} aria-label="Cancel">
-                        <X size={16} />
-                    </button>
-                )}
+      {/* ── Modal ── */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ncm-title"
+        aria-describedby="ncm-desc"
+        className="ncm-modal"
+      >
+        {/* Close button */}
+        {!isEndingSession && (
+          <button className="ncm-close" onClick={closeExitModal} aria-label="Cancel">
+            <X size={16} />
+          </button>
+        )}
 
-                {/* Icon */}
-                <div className="ncm-icon-wrap" aria-hidden="true">
-                    <div className="ncm-icon-ring" />
-                    <AlertTriangle className="ncm-icon" />
-                </div>
+        {/* Icon */}
+        <div className="ncm-icon-wrap" aria-hidden="true">
+          <div className="ncm-icon-ring" />
+          <AlertTriangle className="ncm-icon" />
+        </div>
 
-                {/* Copy */}
-                <h2 id="ncm-title" className="ncm-title">
-                    Exit Active Session?
-                </h2>
-                <p id="ncm-desc" className="ncm-desc">
-                    You have an{" "}
-                    <span className="ncm-highlight">active coding session</span> in progress.
-                    Leaving now will <strong>end the session</strong> and send your performance
-                    report. This action cannot be undone.
-                </p>
+        {/* Copy */}
+        <h2 id="ncm-title" className="ncm-title">
+          Exit Active Session?
+        </h2>
+        <p id="ncm-desc" className="ncm-desc">
+          You have an{" "}
+          <span className="ncm-highlight">active coding session</span> in progress.
+          Leaving now will <strong>end the session</strong> and send your performance
+          report. This action cannot be undone.
+        </p>
 
-                {/* Progress indicator while ending */}
-                {isEndingSession && (
-                    <div className="ncm-progress" aria-live="polite">
-                        <div className="ncm-progress-bar" />
-                        <span className="ncm-progress-label">Ending session &amp; sending report…</span>
-                    </div>
-                )}
+        {/* Progress indicator while ending */}
+        {isEndingSession && (
+          <div className="ncm-progress" aria-live="polite">
+            <div className="ncm-progress-bar" />
+            <span className="ncm-progress-label">Ending session &amp; sending report…</span>
+          </div>
+        )}
 
-                {/* Actions */}
-                <div className="ncm-actions">
-                    <Button
-                        variant="ghost"
-                        onClick={closeExitModal}
-                        disabled={isEndingSession}
-                        className="ncm-btn-cancel"
-                    >
-                        Keep Coding
-                    </Button>
+        {/* Actions */}
+        <div className="ncm-actions">
+          <Button
+            variant="ghost"
+            onClick={closeExitModal}
+            disabled={isEndingSession}
+            className="ncm-btn-cancel"
+          >
+            Keep Coding
+          </Button>
 
-                    <Button
-                        variant="destructive"
-                        onClick={handleConfirm}
-                        disabled={isEndingSession}
-                        className="ncm-btn-confirm"
-                    >
-                        {isEndingSession ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Ending Session…
-                            </>
-                        ) : (
-                            <>
-                                <LogOut className="h-4 w-4" />
-                                End &amp; Leave
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
+          <Button
+            variant="destructive"
+            onClick={handleConfirm}
+            disabled={isEndingSession}
+            className="ncm-btn-confirm"
+          >
+            {isEndingSession ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Ending Session…
+              </>
+            ) : (
+              <>
+                <LogOut className="h-4 w-4" />
+                End &amp; Leave
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
 
-            <style>{css}</style>
-        </>
-    );
+      <style>{css}</style>
+    </>
+  );
 }
 
 const css = `

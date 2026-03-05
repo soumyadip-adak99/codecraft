@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Zap, ChevronDown, Key, X, AlertCircle, Loader2, Server, Play } from "lucide-react";
+import { Zap, ChevronDown, Key, X, AlertCircle, Loader2, Server, Play, BookKey } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUIStore, useChallengeStore } from "@/store";
@@ -17,6 +17,8 @@ const PROVIDERS = [
     { value: "groq", label: "Groq (Llama 3.3)" },
     { value: "custom", label: "Custom / Local" },
 ];
+
+type KeyMode = "default" | "saved" | "custom";
 
 export function ChallengeModal() {
     const { isChallengeModalOpen, closeChallengeModal } = useUIStore();
@@ -39,7 +41,34 @@ export function ChallengeModal() {
     const [apiKey, setApiKey] = useState("");
     const [topic, setTopic] = useState("");
     const [customBaseUrl, setCustomBaseUrl] = useState("");
-    const [useDefaultKey, setUseDefaultKey] = useState(true);
+    const [keyMode, setKeyMode] = useState<KeyMode>("default");
+
+    // Saved key status
+    const [savedKeyStatus, setSavedKeyStatus] = useState<{
+        hasKey: boolean;
+        provider: string | null;
+        loaded: boolean;
+    }>({ hasKey: false, provider: null, loaded: false });
+
+    // Fetch saved API key status on mount
+    useEffect(() => {
+        fetch("/api/user/apikey")
+            .then((res) => res.json())
+            .then((data) => {
+                setSavedKeyStatus({
+                    hasKey: !!data.hasKey,
+                    provider: data.provider ?? null,
+                    loaded: true,
+                });
+                // Auto-select saved key mode if available and not mid-session
+                if (data.hasKey && !sessionActive) {
+                    setKeyMode("saved");
+                }
+            })
+            .catch(() => {
+                setSavedKeyStatus({ hasKey: false, provider: null, loaded: true });
+            });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (!backdropRef.current || !contentRef.current) return;
@@ -54,8 +83,7 @@ export function ChallengeModal() {
     };
 
     const handleGenerate = async () => {
-        const effectiveKey = useDefaultKey ? "" : apiKey.trim();
-        if (!useDefaultKey && !effectiveKey) {
+        if (keyMode === "custom" && !apiKey.trim()) {
             toast.error("Please enter your API key or use the default server key");
             return;
         }
@@ -65,12 +93,25 @@ export function ChallengeModal() {
             startSession();
         }
 
-        await generateQuestion(
-            difficulty,
-            effectiveKey,
-            useDefaultKey ? "groq" : provider,
-            topic.trim() || undefined
-        );
+        if (keyMode === "saved") {
+            // Server will fetch and decrypt the saved key — send useSavedKey flag
+            await generateQuestion(
+                difficulty,
+                "__SAVED__", // sentinel: server resolves this
+                savedKeyStatus.provider || "groq",
+                topic.trim() || undefined,
+                true // useSavedKey
+            );
+        } else {
+            const effectiveKey = keyMode === "default" ? "" : apiKey.trim();
+            await generateQuestion(
+                difficulty,
+                effectiveKey,
+                keyMode === "default" ? "groq" : provider,
+                topic.trim() || undefined,
+                false
+            );
+        }
     };
 
     useEffect(() => {
@@ -81,6 +122,11 @@ export function ChallengeModal() {
     }, [currentQuestion, isGenerating]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!isChallengeModalOpen) return null;
+
+    const isButtonDisabled =
+        isGenerating ||
+        (keyMode === "custom" && !apiKey.trim()) ||
+        (sessionActive && !canGoNext);
 
     return (
         <div
@@ -157,42 +203,92 @@ export function ChallengeModal() {
                         />
                     </div>
 
-                    {/* Default key toggle */}
-                    <div
-                        onClick={() => setUseDefaultKey(!useDefaultKey)}
-                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${useDefaultKey
-                            ? "bg-orange-500/10 border-orange-500/30"
-                            : "bg-white/3 border-white/8 hover:border-white/15"
-                            }`}
-                    >
+                    {/* ── Key Mode Selector ── */}
+                    <div className="space-y-2">
+                        <label className="block text-xs font-medium text-zinc-400">API Key</label>
+
+                        {/* Default server key */}
                         <div
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${useDefaultKey ? "bg-orange-500/20" : "bg-white/5"}`}
+                            onClick={() => setKeyMode("default")}
+                            className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${keyMode === "default"
+                                ? "bg-orange-500/10 border-orange-500/30"
+                                : "bg-white/3 border-white/8 hover:border-white/15"
+                                }`}
                         >
-                            <Server
-                                className={`h-4 w-4 ${useDefaultKey ? "text-orange-400" : "text-zinc-500"}`}
-                            />
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${keyMode === "default" ? "bg-orange-500/20" : "bg-white/5"}`}>
+                                <Server className={`h-4 w-4 ${keyMode === "default" ? "text-orange-400" : "text-zinc-500"}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${keyMode === "default" ? "text-orange-300" : "text-zinc-300"}`}>
+                                    Use Default Server Key
+                                </p>
+                                <p className="text-[11px] text-zinc-500 mt-0.5">
+                                    Powered by Groq Llama 3.3 — no key needed
+                                </p>
+                            </div>
+                            <div className={`h-5 w-9 rounded-full transition-colors ${keyMode === "default" ? "bg-orange-500" : "bg-zinc-700"}`}>
+                                <div className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${keyMode === "default" ? "translate-x-4" : "translate-x-0"}`} />
+                            </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p
-                                className={`text-sm font-medium ${useDefaultKey ? "text-orange-300" : "text-zinc-300"}`}
-                            >
-                                Use Default Server Key
-                            </p>
-                            <p className="text-[11px] text-zinc-500 mt-0.5">
-                                Powered by Groq Llama 3.3 — no key needed
-                            </p>
-                        </div>
-                        <div
-                            className={`h-5 w-9 rounded-full transition-colors ${useDefaultKey ? "bg-orange-500" : "bg-zinc-700"}`}
-                        >
+
+                        {/* Saved key (only shown if user has a saved key) */}
+                        {savedKeyStatus.loaded && savedKeyStatus.hasKey && (
                             <div
-                                className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${useDefaultKey ? "translate-x-4" : "translate-x-0"}`}
-                            />
+                                onClick={() => setKeyMode("saved")}
+                                className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${keyMode === "saved"
+                                    ? "bg-green-500/10 border-green-500/30"
+                                    : "bg-white/3 border-white/8 hover:border-white/15"
+                                    }`}
+                            >
+                                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${keyMode === "saved" ? "bg-green-500/20" : "bg-white/5"}`}>
+                                    <BookKey className={`h-4 w-4 ${keyMode === "saved" ? "text-green-400" : "text-zinc-500"}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <p className={`text-sm font-medium ${keyMode === "saved" ? "text-green-300" : "text-zinc-300"}`}>
+                                            Use Saved API Key
+                                        </p>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-medium">
+                                            {savedKeyStatus.provider?.toUpperCase() ?? "SAVED"}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                                        Securely saved in Settings — key never sent from browser
+                                    </p>
+                                </div>
+                                <div className={`h-5 w-9 rounded-full transition-colors ${keyMode === "saved" ? "bg-green-500" : "bg-zinc-700"}`}>
+                                    <div className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${keyMode === "saved" ? "translate-x-4" : "translate-x-0"}`} />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Custom key */}
+                        <div
+                            onClick={() => setKeyMode("custom")}
+                            className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${keyMode === "custom"
+                                ? "bg-blue-500/10 border-blue-500/30"
+                                : "bg-white/3 border-white/8 hover:border-white/15"
+                                }`}
+                        >
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${keyMode === "custom" ? "bg-blue-500/20" : "bg-white/5"}`}>
+                                <Key className={`h-4 w-4 ${keyMode === "custom" ? "text-blue-400" : "text-zinc-500"}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${keyMode === "custom" ? "text-blue-300" : "text-zinc-300"}`}>
+                                    Use Custom Key
+                                </p>
+                                <p className="text-[11px] text-zinc-500 mt-0.5">
+                                    Enter your own API key for this session
+                                </p>
+                            </div>
+                            <div className={`h-5 w-9 rounded-full transition-colors ${keyMode === "custom" ? "bg-blue-500" : "bg-zinc-700"}`}>
+                                <div className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${keyMode === "custom" ? "translate-x-4" : "translate-x-0"}`} />
+                            </div>
                         </div>
                     </div>
 
                     {/* Custom key section */}
-                    {!useDefaultKey && (
+                    {keyMode === "custom" && (
                         <>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-2">
@@ -267,7 +363,7 @@ export function ChallengeModal() {
                     )}
                     <Button
                         onClick={handleGenerate}
-                        disabled={isGenerating || (!useDefaultKey && !apiKey.trim()) || (sessionActive && !canGoNext)}
+                        disabled={isButtonDisabled}
                         title={sessionActive && !canGoNext ? "Submit the current challenge first" : undefined}
                         className="w-full bg-orange-500 hover:bg-orange-400 text-white gap-2 py-5 text-base font-semibold shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >

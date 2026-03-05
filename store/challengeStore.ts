@@ -107,7 +107,8 @@ interface ChallengeState {
         difficulty: string,
         apiKey: string,
         provider: string,
-        topic?: string
+        topic?: string,
+        useSavedKey?: boolean
     ) => Promise<void>;
     executeCode: (type: "run" | "submit") => Promise<void>;
 }
@@ -277,7 +278,7 @@ export const useChallengeStore = create<ChallengeState>()(
                 clearResults: () => set({ testResults: null }),
 
                 // ── Generate question ──
-                generateQuestion: async (difficulty, apiKey, provider, topic) => {
+                generateQuestion: async (difficulty, apiKey, provider, topic, useSavedKey = false) => {
                     const { usedQuestionIds } = get();
                     set({
                         isGenerating: true,
@@ -291,10 +292,11 @@ export const useChallengeStore = create<ChallengeState>()(
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 difficulty,
-                                apiKey,
+                                apiKey: useSavedKey ? "" : apiKey,
                                 provider,
                                 topic,
                                 usedQuestionIds,
+                                useSavedKey,
                             }),
                         });
 

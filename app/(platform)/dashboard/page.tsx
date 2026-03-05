@@ -2,6 +2,7 @@
 
 import { UserStats } from "@/@types";
 import { SessionProgressModal } from "@/components/challenge/SessionProgressModal";
+import { GitHubDashboardBanner } from "@/components/github/GitHubDashboardBanner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUIStore } from "@/store";
@@ -153,6 +154,9 @@ export default function DashboardPage() {
                         {sessionActive ? "New Question" : "Start Session"}
                     </Button>
                 </div>
+
+                {/* GitHub Status nudge */}
+                <GitHubDashboardBanner />
 
                 {/* Active session banner */}
                 {sessionActive && currentQuestion && (
