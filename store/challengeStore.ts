@@ -93,6 +93,8 @@ interface ChallengeState {
     setProvider: (p: string) => void;
     clearResults: () => void;
     setHasUnsavedChanges: (val: boolean) => void;
+    codeModified: boolean;
+    setCodeModified: (val: boolean) => void;
 
     // ── Exit Modal Actions ──
     openExitModal: (targetUrl?: string) => void;
@@ -142,6 +144,7 @@ export const useChallengeStore = create<ChallengeState>()(
                 // ── Session Exit Protection Defaults ──
                 isEndingSession: false,
                 hasUnsavedChanges: false,
+                codeModified: false,
                 isExitModalOpen: false,
                 exitTargetUrl: null,
                 showSessionProgressModal: false,
@@ -265,9 +268,10 @@ export const useChallengeStore = create<ChallengeState>()(
                 closeSessionProgressModal: () => set({ showSessionProgressModal: false }),
 
                 setQuestion: (q) =>
-                    set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true }),
-                setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true }),
+                    set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true, codeModified: false }),
+                setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true, codeModified: true }),
                 setHasUnsavedChanges: (val) => set({ hasUnsavedChanges: val }),
+                setCodeModified: (val) => set({ codeModified: val }),
                 setLanguage: (language) => {
                     const q = get().currentQuestion;
                     const starter = q?.starterCode?.[language] || "";
@@ -318,6 +322,7 @@ export const useChallengeStore = create<ChallengeState>()(
                             provider,
                             usedQuestionIds: [...usedQuestionIds, question.questionId],
                             hasUnsavedChanges: false,
+                            codeModified: false,
                         });
                     } catch (error: unknown) {
                         const msg =
@@ -420,6 +425,10 @@ export const useChallengeStore = create<ChallengeState>()(
                                 type === "submit" && results.status === "ACCEPTED"
                                     ? false
                                     : get().hasUnsavedChanges,
+                            codeModified:
+                                type === "submit" && results.status === "ACCEPTED"
+                                    ? false
+                                    : get().codeModified,
                             isRunPass:
                                 type === "run" && results.status === "ACCEPTED"
                                     ? true
