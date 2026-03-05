@@ -8,7 +8,7 @@ function logo() {
                     <Code2 className="h-5 w-5 text-white" strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-black text-white">
-                    code<span className="text-orange-500">Carft</span>
+                    code<span className="text-orange-500">Craft</span>
                 </span>
             </Link>
         </>
