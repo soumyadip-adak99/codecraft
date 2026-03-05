@@ -1,66 +1,192 @@
 # CodeCraft 🚀
 
-![CodeCraft Banner](https://res.cloudinary.com/dzunlgq2p/image/upload/v1772396005/Screenshot_2026-03-02_013706_fk6lhf.png)
+<div align="center">
+<img src="https://res.cloudinary.com/dzunlgq2p/image/upload/v1772396005/Screenshot_2026-03-02_013706_fk6lhf.png" alt="CodeCraft Banner" width="100%" />
 
-**CodeCraft** is an advanced, AI-powered coding practice platform designed to help developers ace their next technical interview. Built with **Next.js 16**, **Convex**, and **Monaco Editor**, it dynamically generates coding challenges tailored to your skill level, provides a real-time execution environment, and tracks your progress across sessions.
+**An advanced AI‑powered coding practice platform designed to help developers ace technical interviews.**
+
+</div>
 
 ---
 
-## ✨ Features
+## 📖 Table of Contents
 
-- **🤖 AI Question Generation**: Generate unique Easy, Medium, or Hard algorithmic challenges using powerful LLMs like Groq, OpenAI GPT-4, or Google Gemini.
-- **💻 VS Code-Like Editor**: Interactive code environment powered by `monaco-editor` with syntax highlighting and IntelliSense.
-- **🌍 Multi-Language Support**: Write solutions in JavaScript, TypeScript, Python, Java, or C++, complete with language-specific starter code.
-- **✅ Robust Execution Engine**: Built-in syntax checking, multiple test case evaluation, compilation error tracing, and runtime analysis.
-- **🚥 Run-to-Submit Workflow**: Strict validation to ensure users can only submit code to the database after successfully passing all generated test cases.
-- **📊 Progress & Analytics**: Real-time stats synchronization via Convex. Track problems solved, difficulty breakdowns, and total active developers.
-- **📑 PDF Session Reports**: At the end of a session, automatically generate and email a detailed PDF performance report encompassing all solved questions.
-- **🔐 Secure Authentication**: OAuth login via NextAuth.js (Google Provider) seamlessly saving user identity across MongoDB and Convex.
-- **💬 Community Reviews**: Share and view platform feedback directly populated from the real-time Convex database.
+* About the Project
+* Key Features
+* System Architecture
+* Tech Stack
+* Getting Started
+* Project Structure
+* Contributing
+* License
+
+---
+
+## 💡 About the Project
+
+CodeCraft is a modern coding practice environment designed to simulate real-world technical interviews.
+
+By leveraging advanced Large Language Models (LLMs), CodeCraft dynamically generates algorithmic challenges tailored to your skill level.
+
+With a built‑in execution engine, real‑time analytics, and seamless GitHub integration, CodeCraft provides an end‑to‑end experience that helps developers practice, track progress, and build a coding portfolio.
+
+---
+
+## ✨ Key Features
+
+### 🤖 AI‑Driven Question Generation
+
+Generate algorithmic challenges (Easy, Medium, Hard) using powerful LLMs such as:
+
+* OpenAI GPT‑4
+* Google Gemini
+* Anthropic
+* Groq
+
+### 💻 Professional Editor Experience
+
+* Monaco Editor (VS Code engine)
+* Syntax highlighting
+* IntelliSense
+* Clean developer workflow
+
+### 🌍 Multi‑Language Support
+
+Solve problems in multiple languages:
+
+* JavaScript
+* TypeScript
+* Python
+* Java
+* C++
+
+### ⚡ Robust Code Execution Engine
+
+* Syntax checking
+* Multi test case evaluation
+* Compilation error tracing
+* Runtime analysis
+
+### 🚦 Run → Submit Workflow
+
+Code must pass all generated test cases before submission, ensuring strict validation similar to real interview platforms.
+
+### 📊 Real‑Time Analytics
+
+Live progress tracking powered by **Convex**:
+
+* Problems solved
+* Difficulty distribution
+* Community statistics
+
+### 🐙 GitHub Integration
+
+Connect your GitHub account to:
+
+* Create repositories automatically
+* Push accepted solutions
+* Build your coding portfolio
+
+### 🔐 Enterprise‑Grade Security
+
+* OAuth authentication via NextAuth
+* AES‑256‑GCM encryption for tokens
+* Secure API handling
+
+### 📧 Automated Reports
+
+Receive email reports containing:
+
+* Session performance
+* Submitted code
+* Detailed analytics
+
+---
+
+## 🏗️ System Architecture
+
+CodeCraft uses a modern serverless architecture:
+
+### Frontend (Next.js)
+
+* UI rendering
+* Monaco editor integration
+* Global state management with Zustand
+
+### Backend (Next.js API Routes)
+
+Handles:
+
+* AI challenge generation
+* Code execution validation
+* GitHub integrations
+* Email services
+
+### Primary Database (MongoDB)
+
+Stores:
+
+* User profiles
+* Encrypted tokens
+* Repository metadata
+
+### Real‑Time Database (Convex)
+
+Provides:
+
+* Live analytics
+* Active developer tracking
+* Community reviews
+
+### External Integrations
+
+* OpenAI
+* Google Gemini
+* Anthropic
+* Groq
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Frontend & Framework:**
+### Frontend
 
-- [![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/) (App Router, Turbopack)
-- [![React](https://img.shields.io/badge/React-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)](https://react.dev/)
-- [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-- [![Zustand](https://img.shields.io/badge/Zustand-%2330363d.svg?style=flat)](https://github.com/pmndrs/zustand) (State Management)
-- [![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-%231E1E1E.svg?style=flat)](https://microsoft.github.io/monaco-editor/)
+* Next.js
+* React
+* TypeScript
+* TailwindCSS
+* Monaco Editor
 
-**Backend & Database:**
+### Backend
 
-- [![Convex](https://img.shields.io/badge/Convex-%23FF8000.svg?style=flat)](https://www.convex.dev/) (Real-time Database & Serverless Functions)
-- [![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/) (User Identity & App metadata mapping)
-- ⚡ **Next.js API Routes** (Serverless backend for LLM & execution)
+* Next.js Serverless API
+* Node.js
 
-**Authentication:**
+### Database
 
-- [![NextAuth.js](https://img.shields.io/badge/NextAuth.js-%23000000.svg?style=flat)](https://next-auth.js.org/) v5 (Beta)
+* MongoDB
+* Convex
 
-**Utilities & Animations:**
+### Security
 
-- [![GSAP](https://img.shields.io/badge/GSAP-%2388CE02.svg?style=flat&logo=greensock&logoColor=white)](https://gsap.com/)
-- [![Motion](https://img.shields.io/badge/Motion-%23FF0080.svg?style=flat)](https://motion.dev/)
-- [![Lucide React](https://img.shields.io/badge/Lucide_React-%23F97316.svg?style=flat)](https://lucide.dev/) (Icons)
-- [![Nodemailer](https://img.shields.io/badge/Nodemailer-%2314A03D.svg?style=flat)](https://nodemailer.com/) & [![jsPDF](https://img.shields.io/badge/jsPDF-%23FF0000.svg?style=flat)](https://parall.ax/products/jspdf)
+* NextAuth
+* AES‑256‑GCM encryption
 
 ---
 
-## ⚙️ Local Development Setup
+## 🚀 Getting Started
 
 ### 1. Prerequisites
 
-Ensure you have the following installed on your machine:
+Ensure the following are installed:
 
-- **Node.js** (v18.17 or higher)
-- **npm**, **yarn**, or **pnpm**
-- A [Convex](https://www.convex.dev/) account
-- A [MongoDB](https://www.mongodb.com/atlas) cluster
-- Google OAuth credentials for NextAuth
-- API Keys for your preferred LLM (e.g., [Groq](https://console.groq.com/))
+* Node.js (v18+)
+* npm / yarn / pnpm
+* MongoDB Atlas
+* Convex account
+* OAuth credentials (Google & GitHub)
+
+---
 
 ### 2. Clone the Repository
 
@@ -69,98 +195,115 @@ git clone https://github.com/your-username/codecraft.git
 cd codecraft
 ```
 
+---
+
 ### 3. Install Dependencies
 
 ```bash
 npm install
-# or
+```
+
+or
+
+```bash
 yarn install
 ```
 
+---
+
 ### 4. Environment Variables
 
-Create a `.env.local` file in the root of your project and configure the following variables:
+Create a `.env.local` file in the root directory.
 
-```env
-# URL Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+You will need configuration for:
 
-# NextAuth Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret_key
+* NextAuth secrets
+* Google OAuth credentials
+* GitHub OAuth credentials
+* MongoDB connection string
+* Convex deployment URL
+* AES encryption keys
+* SMTP email configuration
 
-# Google OAuth Credentials
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+---
 
-# MongoDB Connection
-MONGODB_URI=your_mongodb_connection_string
-
-# Convex Deployment (Will be auto-generated when running `npx convex dev`)
-CONVEX_DEPLOYMENT=your_convex_deployment_name
-NEXT_PUBLIC_CONVEX_URL=your_convex_url
-
-# LLM Provider Keys
-GROQ_API_KEY=your_groq_api_key
-
-# Email/Nodemailer Configuration (For Session Reports)
-EMAIL_SERVER_USER=your_smtp_email
-EMAIL_SERVER_PASSWORD=your_smtp_password
-EMAIL_FROM=noreply@yourdomain.com
-```
-
-### 5. Start the Convex Backend
-
-In a separate terminal, initialize and run your Convex database:
+### 5. Initialize Convex
 
 ```bash
 npx convex dev
 ```
 
-### 6. Start the Development Server
+---
+
+### 6. Run the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application running.
+Open your browser and navigate to:
+
+```
+http://localhost:3000
+```
 
 ---
 
 ## 📁 Project Structure
 
-```text
-├── @types/               # Global TypeScript definitions
-├── app/                  # Next.js 14 App Router routes (API, Dashboard, Marketing, Editor)
-├── components/           # Reusable UI components (shadcn/ui, Layouts, Forms)
-├── convex/               # Convex database schema, queries, and mutations
-├── lib/                  # Utility functions, Auth config, Email service, PDF Generator
-├── models/               # MongoDB Mongoose schemas
-├── store/                # Zustand global state management (Challenge Store)
-├── public/               # Static assets
-└── package.json          # Dependencies and scripts
+```
+codecraft/
+
+├── @types/        Global TypeScript definitions
+├── app/           Next.js App Router
+├── components/    Reusable UI components
+├── convex/        Convex schema and functions
+├── lib/           Core services (crypto, email, engine, GitHub)
+├── models/        MongoDB schemas
+├── store/         Zustand state management
+├── public/        Static assets
+└── package.json
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are always welcome! Whether it's reporting a bug, proposing a feature, or writing code.
+Contributions are welcome!
 
-1. Fork the project.
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
-5. Open a Pull Request.
+1. Fork the repository
+2. Create a feature branch
+
+```bash
+git checkout -b feature/amazing-feature
+```
+
+3. Commit changes
+
+```bash
+git commit -m "Add amazing feature"
+```
+
+4. Push to your branch
+
+```bash
+git push origin feature/amazing-feature
+```
+
+5. Open a Pull Request
 
 ---
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.
+
+See `LICENSE` for more information.
 
 ---
 
-_Built with ❤️ for developers leveling up their coding skills._
+<div align="center">
+
+Built with ❤️ for developers leveling up their coding skills.
+
+</div>
