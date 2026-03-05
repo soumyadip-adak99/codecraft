@@ -95,3 +95,20 @@ export const recordAttempt = mutation({
         await ctx.db.patch(row._id, patch);
     },
 });
+
+/**
+ * Delete a user's status row by email.
+ * Called when the user permanently deletes their account.
+ */
+export const deleteByEmail = mutation({
+    args: { email: v.string() },
+    handler: async (ctx, { email }) => {
+        const row = await ctx.db
+            .query("userStatus")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+        if (row) {
+            await ctx.db.delete(row._id);
+        }
+    },
+});

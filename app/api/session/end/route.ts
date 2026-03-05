@@ -1,9 +1,8 @@
 import { SessionSolvedQuestion } from "@/@types";
 import { auth } from "@/lib/auth/config";
-import { getConvexClient } from "@/lib/db/convex";
 import { EmailService } from "@/lib/email/service";
 import { generateSessionPDF } from "@/lib/pdf/generator";
-import { api } from "@/convex/_generated/api";
+import { pushSolutionsToGitHub } from "@/lib/github/push";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
@@ -24,36 +23,44 @@ export async function POST(req: NextRequest) {
         const userName = session.user.name || "Coder";
         const userEmail = session.user.email;
 
-        // ── Update Convex solve counts (counts only — no source code) ──
-        // Each accepted submission increments totalSolved + the difficulty counter.
-        // This is the ONLY thing stored in Convex from a session.
+        // ── Push solutions to GitHub (non-fatal) ──────────────────────────────
+        // NOTE: Stats (totalSolved, easySolved, etc.) are recorded at code-submit
+        // time in /api/code/execute — no double-write needed here.
+        let githubCommitUrls: string[] = [];
+        let githubRepoUrl: string | undefined;
+
         if (solvedQuestions.length > 0) {
             try {
-                const convex = getConvexClient();
-                await Promise.all(
-                    solvedQuestions.map((q) =>
-                        convex.mutation(api.userStatus.recordAttempt, {
-                            email: userEmail,
-                            accepted: true,
-                            difficulty: q.difficulty as "Easy" | "Medium" | "Hard",
-                        })
-                    )
+                const pushResult = await pushSolutionsToGitHub(
+                    userEmail,
+                    solvedQuestions.map((q) => ({
+                        title:       q.title,
+                        description: q.description,
+                        code:        q.code,
+                        language:    q.language,
+                    }))
                 );
-            } catch (convexError) {
-                // Non-fatal — counts can be reconciled; email is the priority
-                console.error("Convex recordAttempt error:", convexError);
+                githubCommitUrls = pushResult.commitUrls;
+                // Use first commit URL's repo portion as repo URL for email
+                if (githubCommitUrls.length > 0) {
+                    // e.g. https://github.com/user/repo/commit/abc => https://github.com/user/repo
+                    githubRepoUrl = githubCommitUrls[0].replace(/\/commit\/[a-f0-9]+$/, "");
+                }
+                if (pushResult.pushed > 0) {
+                    console.log(`[GitHub Push] Pushed ${pushResult.pushed} solutions for ${userEmail}`);
+                }
+            } catch (ghErr) {
+                console.error("[GitHub Push] Non-fatal error:", ghErr);
             }
         }
 
-        // ── Generate PDF + send email ──
+        // ── Generate PDF + send email ─────────────────────────────────────────
         const sendEmail = async () => {
             try {
-                const easySolved = solvedQuestions.filter((q) => q.difficulty === "Easy").length;
-                const mediumSolved = solvedQuestions.filter(
-                    (q) => q.difficulty === "Medium"
-                ).length;
-                const hardSolved = solvedQuestions.filter((q) => q.difficulty === "Hard").length;
-                const totalSolved = solvedQuestions.length;
+                const easySolved   = solvedQuestions.filter((q) => q.difficulty === "Easy").length;
+                const mediumSolved = solvedQuestions.filter((q) => q.difficulty === "Medium").length;
+                const hardSolved   = solvedQuestions.filter((q) => q.difficulty === "Hard").length;
+                const totalSolved  = solvedQuestions.length;
 
                 const pdfBuffer = await generateSessionPDF({
                     userName,
@@ -78,7 +85,8 @@ export async function POST(req: NextRequest) {
                         solvedQuestions,
                         sessionId,
                     },
-                    pdfBuffer
+                    pdfBuffer,
+                    githubRepoUrl  // pass repo URL to email template
                 );
             } catch (err) {
                 console.error("Session end email error:", err);
@@ -88,7 +96,7 @@ export async function POST(req: NextRequest) {
 
         await sendEmail();
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, githubCommitUrls });
     } catch (error) {
         console.error("Session end error:", error);
         return NextResponse.json(

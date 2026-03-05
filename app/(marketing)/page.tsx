@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
 import { useQuery } from "convex/react";
-import { ArrowRight, BarChart2, Brain, Code2, Globe, Shield, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, BarChart2, Brain, Code2, Github, Globe, Shield, Sparkles, Zap } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -213,11 +213,11 @@ export default function LandingPage() {
                             title: "Session-Based Learning",
                             desc: "Start a session, solve questions, unlock next on correct submission, end with a full PDF report.",
                         },
-                        {
-                            icon: Globe,
-                            title: "5 Languages",
-                            desc: "JavaScript, TypeScript, Python, Java, and C++ — all with language-specific starter code.",
-                        },
+                        // {
+                        //     icon: Globe,
+                        //     title: "5 Languages",
+                        //     desc: "JavaScript, TypeScript, Python, Java, and C++ — all with language-specific starter code.",
+                        // },
                         {
                             icon: BarChart2,
                             title: "Progress Analytics",
@@ -227,6 +227,11 @@ export default function LandingPage() {
                             icon: Shield,
                             title: "Privacy First",
                             desc: "Code is never stored in our database. Only your stats are saved — nothing else.",
+                        },
+                        {
+                            icon: Github,
+                            title: "GitHub Integration",
+                            desc: "Connect GitHub and automatically save all solutions into a personal repository. Build your public coding portfolio with every submission.",
                         },
                     ].map(({ icon: Icon, title, desc }) => (
                         <div

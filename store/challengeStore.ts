@@ -107,7 +107,8 @@ interface ChallengeState {
         difficulty: string,
         apiKey: string,
         provider: string,
-        topic?: string
+        topic?: string,
+        useSavedKey?: boolean
     ) => Promise<void>;
     executeCode: (type: "run" | "submit") => Promise<void>;
 }
@@ -179,12 +180,16 @@ export const useChallengeStore = create<ChallengeState>()(
                     // ── Read full submission data from localStorage ──
                     // solvedQuestions from localStorage includes the actual code
                     // for the email report. Convex never sees this.
-                    const localSubmissions = sessionId ? getSessionSolvedList(sessionId) : [];
+                    const localSubmissions = sessionId
+                        ? getSessionSolvedList(sessionId)
+                        : [];
 
                     // Fall back to in-memory Zustand list if localStorage was cleared
                     // (e.g. private browsing mode) — code fields may be present there too
                     const solvedForEmail =
-                        localSubmissions.length > 0 ? localSubmissions : get().solvedQuestions;
+                        localSubmissions.length > 0
+                            ? localSubmissions
+                            : get().solvedQuestions;
 
                     if (sessionId && solvedForEmail.length > 0) {
                         let attempts = 0;
@@ -209,8 +214,7 @@ export const useChallengeStore = create<ChallengeState>()(
                                     if (typeof window !== "undefined") {
                                         import("sonner").then((mod) => {
                                             mod.toast.success("✅ Email sent successfully", {
-                                                description:
-                                                    "Your performance report is on the way!",
+                                                description: "Your performance report is on the way!",
                                             });
                                         });
                                     }
@@ -261,12 +265,7 @@ export const useChallengeStore = create<ChallengeState>()(
                 closeSessionProgressModal: () => set({ showSessionProgressModal: false }),
 
                 setQuestion: (q) =>
-                    set({
-                        currentQuestion: q,
-                        isRunPass: false,
-                        testResults: null,
-                        hasUnsavedChanges: true,
-                    }),
+                    set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true }),
                 setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true }),
                 setHasUnsavedChanges: (val) => set({ hasUnsavedChanges: val }),
                 setLanguage: (language) => {
@@ -279,7 +278,7 @@ export const useChallengeStore = create<ChallengeState>()(
                 clearResults: () => set({ testResults: null }),
 
                 // ── Generate question ──
-                generateQuestion: async (difficulty, apiKey, provider, topic) => {
+                generateQuestion: async (difficulty, apiKey, provider, topic, useSavedKey = false) => {
                     const { usedQuestionIds } = get();
                     set({
                         isGenerating: true,
@@ -293,10 +292,11 @@ export const useChallengeStore = create<ChallengeState>()(
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 difficulty,
-                                apiKey,
+                                apiKey: useSavedKey ? "" : apiKey,
                                 provider,
                                 topic,
                                 usedQuestionIds,
+                                useSavedKey,
                             }),
                         });
 
