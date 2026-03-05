@@ -40,14 +40,28 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, description, is_private } = (await req.json()) as {
-        name: string;
+    const { action, name, description, is_private, existingRepo } = (await req.json()) as {
+        action?: "create" | "link"; // Defaults to create for backward compatibility
+        name?: string;
         description?: string;
         is_private?: boolean;
+        existingRepo?: {
+            name: string;
+            html_url: string;
+            owner: { login: string };
+            full_name: string;
+            private: boolean;
+        };
     };
 
-    if (!name?.trim()) {
+    const isLinkAction = action === "link";
+
+    if (!isLinkAction && !name?.trim()) {
         return NextResponse.json({ error: "Repository name is required." }, { status: 400 });
+    }
+
+    if (isLinkAction && !existingRepo) {
+         return NextResponse.json({ error: "Existing repository data is required to link." }, { status: 400 });
     }
 
     try {
@@ -65,26 +79,45 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const token = decryptToken((dbUser as any).github_access_token);
+        let ghRepoRecord = {
+            name: existingRepo?.name || "",
+            html_url: existingRepo?.html_url || "",
+            owner: { login: existingRepo?.owner?.login || "" },
+            full_name: existingRepo?.full_name || "",
+            private: existingRepo?.private || false,
+        };
 
-        // Create repo on GitHub
-        const ghRepo = await createRepository(token, {
-            name: name.trim(),
-            description: description?.trim(),
-            private: is_private ?? false,
-            auto_init: true,
-        });
+        if (!isLinkAction) {
+            const token = decryptToken((dbUser as any).github_access_token);
+
+            // Create repo on GitHub
+            const createdGhRepo = await createRepository(token, {
+                name: name!.trim(),
+                description: description?.trim(),
+                private: is_private ?? false,
+                auto_init: true,
+            });
+
+            ghRepoRecord = {
+                 name: createdGhRepo.name,
+                 html_url: createdGhRepo.html_url,
+                 owner: { login: createdGhRepo.owner.login },
+                 full_name: createdGhRepo.full_name,
+                 private: createdGhRepo.private,
+            }
+        }
+
 
         // Upsert repository record in MongoDB (one repo per user)
         const repoDoc = await Repository.findOneAndUpdate(
             { user_email: session.user.email },
             {
                 $set: {
-                    repo_name:  ghRepo.name,
-                    repo_url:   ghRepo.html_url,
-                    repo_owner: ghRepo.owner.login,
-                    full_name:  ghRepo.full_name,
-                    is_private: ghRepo.private,
+                    repo_name:  ghRepoRecord.name,
+                    repo_url:   ghRepoRecord.html_url,
+                    repo_owner: ghRepoRecord.owner.login,
+                    full_name:  ghRepoRecord.full_name,
+                    is_private: ghRepoRecord.private,
                 },
             },
             { upsert: true, new: true }
