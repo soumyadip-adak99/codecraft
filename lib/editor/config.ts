@@ -34,7 +34,7 @@ export const editorOptions = {
 };
 
 export type EditorThemeId =
-    | "codecarft-dark"
+    | "codeCraft-dark"
     | "vs-dark"
     | "vs"
     | "hc-black"
@@ -47,7 +47,7 @@ export const EDITOR_THEMES: {
     label: string;
     base: "vs-dark" | "vs" | "hc-black";
 }[] = [
-    { value: "codecarft-dark", label: "CodeCraft Dark", base: "vs-dark" },
+    { value: "codeCraft-dark", label: "CodeCraft Dark", base: "vs-dark" },
     { value: "vs-dark", label: "VS Dark", base: "vs-dark" },
     { value: "vs", label: "Light", base: "vs" },
     { value: "hc-black", label: "High Contrast", base: "hc-black" },
@@ -58,7 +58,7 @@ export const EDITOR_THEMES: {
 
 export function defineCustomTheme(monaco: Monaco) {
     // CodeCraft Dark (custom orange-accented VSCode theme)
-    monaco.editor.defineTheme("codecarft-dark", {
+    monaco.editor.defineTheme("codeCraft-dark", {
         base: "vs-dark",
         inherit: true,
         rules: [

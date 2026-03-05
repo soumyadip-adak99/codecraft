@@ -32,7 +32,7 @@ export function Footer() {
                     </div>
 
                     <p className="text-xs text-zinc-600">
-                        © {new Date().getFullYear()} codeCarft. All rights reserved.
+                        © {new Date().getFullYear()} codeCraft. All rights reserved.
                     </p>
                 </div>
             </div>

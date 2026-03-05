@@ -65,7 +65,7 @@ export default function LoginPage() {
                 </div>
 
                 <p className="text-xs text-zinc-600">
-                    @{new Date().getFullYear()} codeCarft· Powered by your LLM API key
+                    @{new Date().getFullYear()} codeCraft· Powered by your LLM API key
                 </p>
             </div>
 

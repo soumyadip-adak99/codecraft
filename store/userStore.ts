@@ -15,7 +15,7 @@ export const useUserStore = create<UserState>()(
                 setHasApiKey: (val) => set({ hasApiKey: val }),
                 reset: () => set({ hasApiKey: false }),
             }),
-            { name: "codecarft-user" }
+            { name: "codeCraft-user" }
         ),
         { name: "UserStore" }
     )

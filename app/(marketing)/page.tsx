@@ -314,7 +314,7 @@ export default function LandingPage() {
                         Ready to <span className="text-orange-500">level up?</span>
                     </h2>
                     <p className="text-zinc-400 text-lg mb-10">
-                        Join developers using codeCarft to ace their next coding interview.
+                        Join developers using codeCraft to ace their next coding interview.
                     </p>
                     <Link href="/login">
                         <Button

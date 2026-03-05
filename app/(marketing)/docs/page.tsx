@@ -76,7 +76,7 @@ export default function DocsPage() {
                     data-animate
                     className="text-4xl sm:text-6xl font-black leading-tight mb-6 text-white"
                 >
-                    How <span className="text-orange-500">codeCarft</span> Works
+                    How <span className="text-orange-500">codeCraft</span> Works
                 </h1>
                 <p data-animate className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
                     Everything you need to know about navigating the platform, generating AI
@@ -217,7 +217,7 @@ export default function DocsPage() {
                             Comprehensive API Key <span className="text-orange-500">Guide</span>
                         </h2>
                         <p className="text-zinc-400 max-w-3xl mx-auto text-lg leading-relaxed">
-                            codeCarft uses large language models (LLMs) to dynamically generate
+                            codeCraft uses large language models (LLMs) to dynamically generate
                             interview questions. While we provide a free default server-side Groq
                             key, supplying your own API key guarantees zero rate limits and lets you
                             harness the most capable models on the market.
@@ -297,7 +297,7 @@ export default function DocsPage() {
                                         top right.
                                     </li>
                                     <li>
-                                        Name your key (e.g. "codecarft-access") and click Submit.
+                                        Name your key (e.g. "codeCraft-access") and click Submit.
                                     </li>
                                     <li>
                                         Copy the generated string starting with{" "}
@@ -357,7 +357,7 @@ export default function DocsPage() {
                                     </li>
                                     <li>
                                         Once generated, copy the key and paste it directly into
-                                        codeCarft.
+                                        codeCraft.
                                     </li>
                                 </ol>
                             </div>
@@ -415,7 +415,7 @@ export default function DocsPage() {
                                         <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-green-200">
                                             sk-...
                                         </code>{" "}
-                                        string into codeCarft.
+                                        string into codeCraft.
                                     </li>
                                 </ol>
                             </div>
