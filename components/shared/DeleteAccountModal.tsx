@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { AlertTriangle, Loader2, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { useChallengeStore } from "@/store/challengeStore";
 import { useUserStore } from "@/store";
+import { useRouter } from "next/navigation";
 
 interface DeleteAccountModalProps {
     onClose: () => void;
@@ -15,6 +15,7 @@ interface DeleteAccountModalProps {
 export function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
     const [deleting, setDeleting] = useState(false);
     const { reset: resetUser } = useUserStore();
+    const router = useRouter();
 
     const handleDelete = async () => {
         setDeleting(true);
@@ -25,7 +26,7 @@ export function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
                 throw new Error(data.error || "Failed to delete account");
             }
 
-            // Clear all local state and sign the user out
+            // Clear all local state
             resetUser();
             useChallengeStore.persist.clearStorage();
 
@@ -33,7 +34,7 @@ export function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
 
             // Short delay so the toast is visible before redirect
             await new Promise((r) => setTimeout(r, 600));
-            await signOut({ callbackUrl: "/login" });
+            router.push("/api/auth/logout");
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Something went wrong";
             toast.error(message);

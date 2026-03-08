@@ -36,7 +36,7 @@ const LEVEL_STYLES: Record<number, string> = {
     4: "bg-[#f97316] border border-[#fb923c] shadow-[0_0_10px_rgba(249,115,22,0.4)]",
 };
 
-const LEVEL_LABELS = ["No activity", "1 solve", "2 solves", "3 solves", "4+ solves"];
+const LEVEL_LABELS = ["No activity", "1 problem solved", "2 problems solved", "3 problems solved", "4+ problems solved"];
 
 function formatDate(dateStr: string): string {
     const d = new Date(dateStr + "T00:00:00");
@@ -45,9 +45,10 @@ function formatDate(dateStr: string): string {
 
 export function DailyActivity({ email }: Props) {
     const rawActivity = useQuery(api.userStatus.getDailyActivity, { email });
+    const userStatus = useQuery(api.userStatus.getByEmail, { email });
     const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
-    const { grid, monthLabels, totalContributions, longestStreak, currentStreak } = useMemo(() => {
+    const { grid, monthLabels, longestStreak, currentStreak } = useMemo(() => {
         const activityMap = new Map<string, number>();
         (rawActivity ?? []).forEach((row) => {
             activityMap.set(row.date, row.count);
@@ -95,8 +96,6 @@ export function DailyActivity({ email }: Props) {
             }
         });
 
-        const totalContributions = [...activityMap.values()].reduce((a, b) => a + b, 0);
-
         // Compute streaks over the flat sorted dates
         const sortedDates = [...activityMap.keys()].filter((d) => activityMap.get(d)! > 0).sort();
         let longestStreak = 0;
@@ -131,10 +130,11 @@ export function DailyActivity({ email }: Props) {
         }
         currentStreak = cs;
 
-        return { grid, monthLabels, totalContributions, longestStreak, currentStreak };
+        return { grid, monthLabels, longestStreak, currentStreak };
     }, [rawActivity]);
 
-    const isLoading = rawActivity === undefined;
+    const totalContributions = userStatus?.totalSolved ?? 0;
+    const isLoading = rawActivity === undefined || userStatus === undefined;
 
     const handleMouseEnter = (cell: Cell, e: React.MouseEvent, col: number, row: number) => {
         if (cell.isFuture) return;
@@ -149,8 +149,8 @@ export function DailyActivity({ email }: Props) {
         const cellY = row * (CELL + GAP);
 
         const text = cell.count === 0
-            ? `No solves — ${formatDate(cell.date)}`
-            : `${cell.count} solve${cell.count !== 1 ? "s" : ""} — ${formatDate(cell.date)}`;
+            ? `No problems solved — ${formatDate(cell.date)}`
+            : `${cell.count} problem${cell.count !== 1 ? "s" : ""} solved — ${formatDate(cell.date)}`;
 
         setTooltip({
             text,

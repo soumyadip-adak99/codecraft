@@ -3,7 +3,7 @@
  *
  * GET: Returns a list of the user's GitHub repositories.
  */
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { decryptToken } from "@/lib/github/crypto";
 import { getUserRepos } from "@/lib/github/client";
 import connectDB from "@/lib/db/mongoose";
@@ -13,12 +13,8 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-    const session = await auth();
-    if (!session?.user?.email) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     try {
+        const { session } = await requireAuth();
         await connectDB();
         
         const dbUser = await User.findOne({ email: session.user.email })
@@ -37,6 +33,7 @@ export async function GET() {
 
         return NextResponse.json({ repositories: repos });
     } catch (err) {
+        if (err instanceof NextResponse) return err;
         console.error("[GitHub Repos GET]", err);
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }

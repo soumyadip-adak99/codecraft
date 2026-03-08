@@ -9,14 +9,14 @@ import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
 import { useQuery } from "convex/react";
 import { ArrowRight, BarChart2, Brain, Code2, Github, Globe, Shield, Sparkles, Zap } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 
 export default function LandingPage() {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useAuth();
     const router = useRouter();
     const heroRef = useRef<HTMLDivElement>(null);
     const statsRef = useRef<HTMLDivElement>(null);

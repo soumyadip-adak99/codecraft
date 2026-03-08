@@ -6,13 +6,13 @@ import Logo from "@/components/ui/logo";
 import { steps } from "@/constant";
 import { animations } from "@/lib/animations/config";
 import { ArrowRight, BookOpen, CheckCircle2, Github, Mail, Shield } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 export default function DocsPage() {
-    const { data: session } = useSession();
+    const { data: session } = useAuth();
     const router = useRouter();
     const headerRef = useRef<HTMLDivElement>(null);
     const stepsRef = useRef<HTMLDivElement>(null);

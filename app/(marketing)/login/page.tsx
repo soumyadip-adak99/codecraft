@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Brain, Globe, Loader2, Zap } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useAuth();
     const router = useRouter();
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isGithubLoggingIn, setIsGithubLoggingIn] = useState(false);
@@ -92,7 +92,7 @@ export default function LoginPage() {
                         <Button
                             onClick={() => {
                                 setIsLoggingIn(true);
-                                signIn("google", { callbackUrl: "/dashboard" });
+                                window.location.href = "/api/auth/google";
                             }}
                             disabled={isLoggingIn}
                             className="w-full flex items-center justify-center gap-3 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold py-5 text-base transition-all duration-200 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
@@ -134,7 +134,7 @@ export default function LoginPage() {
                         <Button
                             onClick={() => {
                                 setIsGithubLoggingIn(true);
-                                signIn("github", { callbackUrl: "/dashboard" });
+                                window.location.href = "/api/auth/github";
                             }}
                             disabled={isGithubLoggingIn || isLoggingIn}
                             className="w-full flex items-center justify-center gap-3 bg-zinc-900 text-white border border-white/10 hover:bg-zinc-800 font-semibold py-5 text-base transition-all duration-200 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"

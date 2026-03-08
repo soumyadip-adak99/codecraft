@@ -12,12 +12,30 @@ import {
 import Logo from "@/components/ui/logo";
 import { useUIStore } from "@/store";
 import { ChevronDown, LogOut, Settings, Trophy, Zap } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
-    const { data: session } = useSession();
+    const { data: session } = useAuth();
+    const router = useRouter();
     const { openChallengeModal } = useUIStore();
+
+    const handleSignOut = () => {
+        // Clear all localStorage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Clear all accessible cookies
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+
+        // Redirect to server-side logout to clear HTTP-only cc_token cookie
+        window.location.href = "/api/auth/logout";
+    };
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur-xl">
@@ -113,7 +131,7 @@ export function Navbar() {
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator className="bg-zinc-800" />
                                     <DropdownMenuItem
-                                        onClick={() => signOut({ callbackUrl: "/" })}
+                                        onClick={handleSignOut}
                                         className="text-red-400 hover:text-red-300 hover:bg-zinc-800 cursor-pointer"
                                     >
                                         <LogOut className="h-4 w-4 mr-2" />
