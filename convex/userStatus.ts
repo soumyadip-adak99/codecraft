@@ -60,6 +60,11 @@ export const recordAttempt = mutation({
         ),
     },
     handler: async (ctx, { email, accepted, difficulty }) => {
+        if (!accepted) {
+            // Only record successful submissions. User state remains unchanged on failure.
+            return;
+        }
+
         let row = await ctx.db
             .query("userStatus")
             .withIndex("by_email", (q) => q.eq("email", email))
@@ -79,21 +84,67 @@ export const recordAttempt = mutation({
 
         const patch: Record<string, number> = {
             totalAttempts: row.totalAttempts + 1,
+            totalSolved: row.totalSolved + 1,
         };
-
-        if (accepted) {
-            patch.totalSolved = row.totalSolved + 1;
-            if (difficulty === "Easy") {
-                patch.easySolved = row.easySolved + 1;
-            } else if (difficulty === "Medium") {
-                patch.mediumSolved = row.mediumSolved + 1;
-            } else {
-                patch.hardSolved = row.hardSolved + 1;
-            }
-            await ctx.runMutation(internal.userStatus.recordDailyActivity, { email });
-        }
+        
+        if (difficulty === "Easy") patch.easySolved = row.easySolved + 1;
+        if (difficulty === "Medium") patch.mediumSolved = row.mediumSolved + 1;
+        if (difficulty === "Hard") patch.hardSolved = row.hardSolved + 1;
 
         await ctx.db.patch(row._id, patch);
+
+        // Record daily activity immediately on successful submission
+        await ctx.runMutation(internal.userStatus.recordDailyActivity, { 
+            email, 
+            count: 1 
+        });
+    },
+});
+
+/**
+ * Record stats and daily activity at the end of a session.
+ */
+export const recordSessionEnd = mutation({
+    args: {
+        email: v.string(),
+        totalSolved: v.number(),
+        easySolved: v.number(),
+        mediumSolved: v.number(),
+        hardSolved: v.number(),
+    },
+    handler: async (ctx, { email, totalSolved, easySolved, mediumSolved, hardSolved }) => {
+        if (totalSolved === 0) return;
+
+        let row = await ctx.db
+            .query("userStatus")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+
+        if (!row) {
+            const id = await ctx.db.insert("userStatus", {
+                email,
+                totalSolved: 0,
+                easySolved: 0,
+                mediumSolved: 0,
+                hardSolved: 0,
+                totalAttempts: 0,
+            });
+            row = (await ctx.db.get(id))!;
+        }
+
+        // Add to existing stats
+        await ctx.db.patch(row._id, {
+            totalSolved: row.totalSolved + totalSolved,
+            easySolved: row.easySolved + easySolved,
+            mediumSolved: row.mediumSolved + mediumSolved,
+            hardSolved: row.hardSolved + hardSolved,
+        });
+
+        // Record daily activity
+        await ctx.runMutation(internal.userStatus.recordDailyActivity, { 
+            email, 
+            count: totalSolved 
+        });
     },
 });
 
@@ -101,8 +152,11 @@ export const recordAttempt = mutation({
  * Internal: upsert (increment) today's daily activity count.
  */
 export const recordDailyActivity = internalMutation({
-    args: { email: v.string() },
-    handler: async (ctx, { email }) => {
+    args: { 
+        email: v.string(),
+        count: v.number() 
+    },
+    handler: async (ctx, { email, count }) => {
         const today = new Date().toISOString().slice(0, 10);
         const existing = await ctx.db
             .query("dailyActivity")
@@ -112,9 +166,9 @@ export const recordDailyActivity = internalMutation({
             .first();
 
         if (existing) {
-            await ctx.db.patch(existing._id, { count: existing.count + 1 });
+            await ctx.db.patch(existing._id, { count: existing.count + count });
         } else {
-            await ctx.db.insert("dailyActivity", { email, date: today, count: 1 });
+            await ctx.db.insert("dailyActivity", { email, date: today, count });
         }
     },
 });

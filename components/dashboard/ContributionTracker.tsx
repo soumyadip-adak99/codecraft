@@ -55,13 +55,12 @@ export function DailyActivity({ email }: Props) {
         });
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
         const todayStr = today.toISOString().slice(0, 10);
 
         // Start from the Sunday WEEKS ago
-        const dayOfWeek = today.getDay();
-        const gridStart = new Date(today);
-        gridStart.setDate(gridStart.getDate() - dayOfWeek - (WEEKS - 1) * DAYS);
+        const gridStart = new Date(todayStr + "T00:00:00Z");
+        const dayOfWeek = gridStart.getUTCDay();
+        gridStart.setUTCDate(gridStart.getUTCDate() - dayOfWeek - (WEEKS - 1) * DAYS);
 
         const grid: Array<Array<Cell>> = [];
         const cursor = new Date(gridStart);
@@ -75,19 +74,19 @@ export function DailyActivity({ email }: Props) {
                     count: activityMap.get(dateStr) ?? 0,
                     isFuture: dateStr > todayStr,
                 });
-                cursor.setDate(cursor.getDate() + 1);
+                cursor.setUTCDate(cursor.getUTCDate() + 1);
             }
             grid.push(week);
         }
 
         // Month labels — track where each month starts
         const monthLabels: Array<{ label: string; col: number }> = [];
-        let lastMonth = new Date(grid[0][0].date + "T00:00:00").getMonth();
+        let lastMonth = new Date(grid[0][0].date + "T00:00:00Z").getUTCMonth();
 
         grid.forEach((week, col) => {
             if (col === 0) return;
             for (const cell of week) {
-                const m = new Date(cell.date + "T00:00:00").getMonth();
+                const m = new Date(cell.date + "T00:00:00Z").getUTCMonth();
                 if (m !== lastMonth) {
                     monthLabels.push({ label: MONTH_NAMES[m], col });
                     lastMonth = m;
@@ -119,13 +118,13 @@ export function DailyActivity({ email }: Props) {
         }
 
         // Current streak: count back from today
-        const cur = new Date(today);
+        const cur = new Date(todayStr + "T00:00:00Z");
         let cs = 0;
         while (true) {
             const ds = cur.toISOString().slice(0, 10);
             if ((activityMap.get(ds) ?? 0) > 0) {
                 cs++;
-                cur.setDate(cur.getDate() - 1);
+                cur.setUTCDate(cur.getUTCDate() - 1);
             } else break;
         }
         currentStreak = cs;

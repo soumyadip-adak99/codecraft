@@ -3,6 +3,8 @@ import { requireAuth } from "@/lib/auth/withAuth";
 import { EmailService } from "@/lib/email/service";
 import { generateSessionPDF } from "@/lib/pdf/generator";
 import { pushSolutionsToGitHub } from "@/lib/github/push";
+import { getConvexClient } from "@/lib/db/convex";
+import { api } from "../../../../convex/_generated/api";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
@@ -50,6 +52,10 @@ export async function POST(req: NextRequest) {
                 console.error("[GitHub Push] Non-fatal error:", ghErr);
             }
         }
+
+        // ── Update User Data in Convex ────────────────────────────────────────
+        // Stats are already updated in real-time in /api/code/execute upon successful submission.
+        // We no longer double-update here.
 
         // ── Generate PDF + send email ─────────────────────────────────────────
         const sendEmail = async () => {

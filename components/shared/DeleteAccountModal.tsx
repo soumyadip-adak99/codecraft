@@ -29,12 +29,15 @@ export function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
             // Clear all local state
             resetUser();
             useChallengeStore.persist.clearStorage();
+            localStorage.clear();
+            sessionStorage.clear();
 
             toast.success("Account deleted. Goodbye! 👋");
 
             // Short delay so the toast is visible before redirect
             await new Promise((r) => setTimeout(r, 600));
-            router.push("/api/auth/logout");
+            // Force a full page reload and clear the cookie by going through the logout API
+            window.location.href = "/api/auth/logout";
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Something went wrong";
             toast.error(message);

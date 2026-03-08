@@ -76,13 +76,13 @@ export async function POST(req: NextRequest) {
                         difficulty: difficulty as "Easy" | "Medium" | "Hard",
                     });
 
-                    // Increment global platform-wide solved counter
+                    // Note: platform stats are updated incrementally here
+                    // to keep global platform statistics in perfect sync in real-time
                     if (isAccepted) {
                         await convex.mutation(api.platformStats.increment, {
                             totalProblemsSolved: 1,
                         });
                     }
-                    // ✅ No recordSubmission call — source code is NEVER sent to Convex
                 }
             } catch (err) {
                 console.error("Convex stats update error:", err);
