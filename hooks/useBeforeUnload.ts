@@ -1,25 +1,22 @@
+"use client";
+
 import { useEffect } from "react";
+import { useChallengeStore } from "@/store/challengeStore";
 
-/**
- * useBeforeUnload
- *
- * Attaches a `beforeunload` event handler to warn the user that they have
- * unsaved code before closing or reloading the browser tab.
- *
- * @param active - When true, the warning is active. Pass `sessionActive && codeModified`.
- */
-export function useBeforeUnload(active: boolean) {
+export function useBeforeUnload() {
+    const { hasUnsavedChanges } = useChallengeStore();
+
     useEffect(() => {
-        if (!active) return;
-
-        const handler = (e: BeforeUnloadEvent) => {
-            e.preventDefault();
-            e.returnValue =
-                "You have unsubmitted code. Leaving now will discard your work.";
-            return e.returnValue;
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                // The browser determines the message to show
+                e.returnValue = "";
+                return "";
+            }
         };
 
-        window.addEventListener("beforeunload", handler);
-        return () => window.removeEventListener("beforeunload", handler);
-    }, [active]);
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [hasUnsavedChanges]);
 }

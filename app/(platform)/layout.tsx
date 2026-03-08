@@ -3,12 +3,12 @@
 import { ChallengeModal } from "@/components/challenge/ChallengeModal";
 import { AuthLoader } from "@/components/shared/AuthLoader";
 import { Navbar } from "@/components/shared/Navbar";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
-    const { data: session, status } = useAuth();
+    const { data: session, status } = useSession();
     const router = useRouter();
 
     useEffect(() => {

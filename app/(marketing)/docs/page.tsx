@@ -6,13 +6,13 @@ import Logo from "@/components/ui/logo";
 import { steps } from "@/constant";
 import { animations } from "@/lib/animations/config";
 import { ArrowRight, BookOpen, CheckCircle2, Github, Mail, Shield } from "lucide-react";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 export default function DocsPage() {
-    const { data: session } = useAuth();
+    const { data: session } = useSession();
     const router = useRouter();
     const headerRef = useRef<HTMLDivElement>(null);
     const stepsRef = useRef<HTMLDivElement>(null);
@@ -76,7 +76,7 @@ export default function DocsPage() {
                     data-animate
                     className="text-4xl sm:text-6xl font-black leading-tight mb-6 text-white"
                 >
-                    How <span className="text-orange-500">codeCraft</span> Works
+                    How <span className="text-orange-500">codeCarft</span> Works
                 </h1>
                 <p data-animate className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
                     Everything you need to know about navigating the platform, generating AI
@@ -140,75 +140,6 @@ export default function DocsPage() {
                 </div>
             </section>
 
-            {/* GitHub Integration Section */}
-            <section className="py-16 px-4 max-w-5xl mx-auto border-t border-white/5">
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-sm text-zinc-300 mb-4">
-                        <Github className="h-3.5 w-3.5" />
-                        New Feature
-                    </div>
-                    <h2 className="text-3xl font-black text-white mb-4">
-                        GitHub <span className="text-orange-500">Integration</span>
-                    </h2>
-                    <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-                        Connect your GitHub account and automatically save all your coding solutions into a personal
-                        repository. Build a public portfolio that showcases your progress to recruiters and collaborators.
-                    </p>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4 mb-10">
-                    {[
-                        {
-                            step: "01",
-                            title: "Connect GitHub",
-                            desc: "Go to Settings → GitHub Integration and click \"Connect GitHub Account\". Authorize with repo, read:user, and user:email scopes.",
-                            color: "text-orange-500",
-                            bg: "bg-orange-500/10",
-                        },
-                        {
-                            step: "02",
-                            title: "Create a Repository",
-                            desc: "After connecting, a modal appears to create your solutions repository. Choose name, description, and visibility (public or private).",
-                            color: "text-blue-400",
-                            bg: "bg-blue-500/10",
-                        },
-                        {
-                            step: "03",
-                            title: "Solve Coding Problems",
-                            desc: "Start a coding session as usual. Solve problems, submit solutions, and navigate through challenges — everything works exactly as before.",
-                            color: "text-green-400",
-                            bg: "bg-green-500/10",
-                        },
-                        {
-                            step: "04",
-                            title: "Solutions Auto-Pushed",
-                            desc: "When you end a session, all accepted solutions are automatically committed to your GitHub repository with question.md and solution files.",
-                            color: "text-purple-400",
-                            bg: "bg-purple-500/10",
-                        },
-                    ].map(({ step, title, desc, color, bg }) => (
-                        <div
-                            key={step}
-                            className="glass p-6 rounded-2xl border border-white/5 hover:border-orange-500/20 transition-all"
-                        >
-                            <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${bg} mb-4`}>
-                                <span className={`text-sm font-black ${color}`}>{step}</span>
-                            </div>
-                            <h4 className="text-white font-bold mb-2">{title}</h4>
-                            <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="glass p-6 rounded-2xl border border-zinc-700/50 bg-zinc-900/30">
-                    <h4 className="text-white font-bold mb-3 flex items-center gap-2">
-                        <Github className="h-4 w-4 text-zinc-400" />
-                        Repository Structure
-                    </h4>
-                    <pre className="text-sm text-zinc-300 leading-relaxed font-mono whitespace-pre">{`your-repo/\n└── coding-solutions/\n    ├── two-sum/\n    │   ├── question.md      ← Problem description\n    │   └── solution.py      ← Your code\n    └── merge-intervals/\n        ├── question.md\n        └── solution.java`}</pre>
-                </div>
-            </section>
-
             {/* API Key Guide Section */}
             <section className="py-24 px-4 bg-white/2 border-t border-white/5">
                 <div className="max-w-5xl mx-auto">
@@ -217,7 +148,7 @@ export default function DocsPage() {
                             Comprehensive API Key <span className="text-orange-500">Guide</span>
                         </h2>
                         <p className="text-zinc-400 max-w-3xl mx-auto text-lg leading-relaxed">
-                            codeCraft uses large language models (LLMs) to dynamically generate
+                            codeCarft uses large language models (LLMs) to dynamically generate
                             interview questions. While we provide a free default server-side Groq
                             key, supplying your own API key guarantees zero rate limits and lets you
                             harness the most capable models on the market.
@@ -297,7 +228,7 @@ export default function DocsPage() {
                                         top right.
                                     </li>
                                     <li>
-                                        Name your key (e.g. "codeCraft-access") and click Submit.
+                                        Name your key (e.g. "codecarft-access") and click Submit.
                                     </li>
                                     <li>
                                         Copy the generated string starting with{" "}
@@ -357,7 +288,7 @@ export default function DocsPage() {
                                     </li>
                                     <li>
                                         Once generated, copy the key and paste it directly into
-                                        codeCraft.
+                                        codeCarft.
                                     </li>
                                 </ol>
                             </div>
@@ -415,7 +346,7 @@ export default function DocsPage() {
                                         <code className="bg-white/10 px-1 py-0.5 rounded text-xs text-green-200">
                                             sk-...
                                         </code>{" "}
-                                        string into codeCraft.
+                                        string into codeCarft.
                                     </li>
                                 </ol>
                             </div>

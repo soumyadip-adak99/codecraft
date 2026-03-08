@@ -1,7 +1,7 @@
 "use client";
 
 import { useChallengeStore, type Question } from "@/store/challengeStore";
-import { ChevronRight, Code2, Loader2, Lock, LogOut, SkipForward, Github, Info } from "lucide-react";
+import { ChevronRight, Code2, Loader2, Lock, LogOut, SkipForward } from "lucide-react";
 import Link from "next/link";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { CodeEditor } from "./CodeEditor";
@@ -88,28 +88,13 @@ export function WorkspaceLayout({ question }: { question: Question }) {
                     </button>
 
                     {/* End Session Button */}
-                    <div className="flex items-center gap-2 border-l border-white/10 pl-2">
-                        {/* GitHub Push Indicator Tooltip Area (CSS group to show tooltip) */}
-                        <div className="relative group/gh flex items-center justify-center h-8 w-8 rounded hover:bg-white/5 cursor-help transition-colors">
-                            <Github className="h-4 w-4 text-zinc-400 group-hover/gh:text-white transition-colors" />
-                            <div className="absolute top-10 right-0 w-64 p-2.5 rounded-xl bg-zinc-900 border border-white/10 shadow-xl opacity-0 invisible group-hover/gh:opacity-100 group-hover/gh:visible select-none pointer-events-none transition-all z-50">
-                                <div className="flex items-start gap-2">
-                                    <Info className="h-4 w-4 text-orange-400 shrink-0 mt-0.5" />
-                                    <p className="text-xs text-zinc-300 leading-relaxed text-left">
-                                        Submissions are saved locally. They will be pushed to your connected GitHub repository <strong className="text-white font-medium">only when you End Session</strong>.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleEndSession}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors border border-red-500/20 text-xs font-medium cursor-pointer"
-                        >
-                            <LogOut className="h-3.5 w-3.5" />
-                            End Session
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleEndSession}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors border border-red-500/20 text-xs font-medium cursor-pointer"
+                    >
+                        <LogOut className="h-3.5 w-3.5" />
+                        End Session
+                    </button>
                 </div>
             </div>
 

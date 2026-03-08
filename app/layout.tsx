@@ -6,8 +6,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
     title: {
-        default: "codeCraft — LLM-Powered Coding Challenges",
-        template: "%s | codeCraft AI",
+        default: "codeCarft — LLM-Powered Coding Challenges",
+        template: "%s | codeCarft AI",
     },
     description:
         "Generate unlimited AI-powered coding challenges, solve them in a VS Code-like environment, and get real-time AI feedback. Built for developers who want to level up.",
@@ -19,9 +19,9 @@ export const metadata: Metadata = {
         "coding challenges",
         "developer tools",
     ],
-    authors: [{ name: "codeCraft" }],
+    authors: [{ name: "codeCarft" }],
     openGraph: {
-        title: "codeCraft AI",
+        title: "codeCarft AI",
         description: "AI-powered coding challenge platform",
         type: "website",
     },

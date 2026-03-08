@@ -1,7 +1,7 @@
-import { requireAuth } from "@/lib/auth/withAuth";
+import { auth } from "@/lib/auth/config";
 import connectDB from "@/lib/db/mongoose";
 import User from "@/models/User";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,9 +9,12 @@ export const dynamic = "force-dynamic";
  * Returns the user's API key status and preferred model.
  * Stats are no longer returned here — they come from Convex subscriptions.
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
-        const { session } = await requireAuth(req);
+        const session = await auth();
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         await connectDB();
         const user = await User.findOne({ email: session.user.email })
@@ -26,7 +29,6 @@ export async function GET(req: NextRequest) {
             preferredModel: (user as any).preferredModel || "groq",
         });
     } catch (error) {
-        if (error instanceof NextResponse) return error;
         console.error("Progress error:", error);
         return NextResponse.json(
             { error: "Something went wrong on the server. Please try again later." },

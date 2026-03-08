@@ -28,7 +28,7 @@ export async function generateSessionPDF(data: SessionReportData): Promise<Buffe
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(26);
     doc.setFont("helvetica", "bold");
-    doc.text("codeCraft", margin, 20);
+    doc.text("codeCarft", margin, 20);
 
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
@@ -185,7 +185,7 @@ export async function generateSessionPDF(data: SessionReportData): Promise<Buffe
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(160, 160, 160);
-        doc.text(`© ${new Date().getFullYear()} codeCraft — Keep Coding, Keep Growing`, margin, 290);
+        doc.text(`© ${new Date().getFullYear()} codeCarft — Keep Coding, Keep Growing`, margin, 290);
         doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, 290, { align: "right" });
     }
 

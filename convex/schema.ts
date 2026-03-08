@@ -20,14 +20,6 @@ export default defineSchema({
         totalAttempts: v.number(),
     }).index("by_email", ["email"]),
 
-    // Per-user daily activity — one row per (email, date) pair.
-    // Powers the GitHub-style contribution heatmap on the dashboard.
-    dailyActivity: defineTable({
-        email: v.string(),
-        date: v.string(),   // "YYYY-MM-DD" in UTC
-        count: v.number(),  // number of accepted solves that day
-    }).index("by_email_date", ["email", "date"]),
-
     // User reviews
     reviews: defineTable({
         reviewText: v.string(),

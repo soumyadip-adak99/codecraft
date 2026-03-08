@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useChallengeStore } from "@/store/challengeStore";
@@ -48,7 +48,7 @@ interface SessionAuthGuardProps {
 }
 
 export function SessionAuthGuard({ children }: SessionAuthGuardProps) {
-    const { status } = useAuth();
+    const { status } = useSession();
     const router = useRouter();
     const { currentQuestion, sessionActive, isGenerating } = useChallengeStore();
     const [isAuthorized, setIsAuthorized] = useState(false);

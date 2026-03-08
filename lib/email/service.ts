@@ -29,13 +29,13 @@ export class EmailService {
       <body style="margin:0;padding:0;background:#0a0a0a;font-family:sans-serif;">
         <div style="max-width:600px;margin:40px auto;background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;">
           <div style="background:linear-gradient(135deg,#f97316,#ea580c);padding:40px;text-align:center;">
-            <h1 style="color:white;margin:0;font-size:32px;font-weight:800;">codeCraft</h1>
+            <h1 style="color:white;margin:0;font-size:32px;font-weight:800;">codeCarft</h1>
             <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">AI-Powered Coding Challenges</p>
           </div>
           <div style="padding:40px;">
             <h2 style="color:#f97316;margin-top:0;">Welcome, ${name}! 🚀</h2>
             <p style="color:#aaa;line-height:1.7;">
-              You're now part of the codeCraft community. Start a session, solve AI-generated challenges,
+              You're now part of the codeCarft community. Start a session, solve AI-generated challenges,
               and get a performance report emailed to you when you're done!
             </p>
             <div style="margin:32px 0;">
@@ -59,16 +59,16 @@ export class EmailService {
             </a>
           </div>
           <div style="border-top:1px solid #222;padding:20px 40px;text-align:center;">
-            <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCraft · All rights reserved</p>
+            <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCarft · All rights reserved</p>
           </div>
         </div>
       </body>
       </html>
     `;
-        await this.send({ to, subject: "Welcome to codeCraft 🚀", html });
+        await this.send({ to, subject: "Welcome to codeCarft 🚀", html });
     }
 
-    async sendSessionReport(to: string, name: string, data: SessionReportData, pdfBuffer: Buffer, githubRepoUrl?: string) {
+    async sendSessionReport(to: string, name: string, data: SessionReportData, pdfBuffer: Buffer) {
         const questionRows = data.solvedQuestions
             .map(
                 (q, i) =>
@@ -139,7 +139,7 @@ export class EmailService {
             <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;">${name}'s coding session summary</p>
           </div>
           <div style="padding:40px;">
-            <p style="color:#aaa;margin-top:0;">Here's how you did in your latest codeCraft session. Your full report is attached as a PDF.</p>
+            <p style="color:#aaa;margin-top:0;">Here's how you did in your latest codeCarft session. Your full report is attached as a PDF.</p>
             
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;">
               <div style="background:#0f0f0f;border-radius:8px;padding:20px;border-left:3px solid #f97316;">
@@ -185,21 +185,9 @@ export class EmailService {
                style="display:inline-block;margin-top:32px;background:#f97316;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;">
               Start Another Session →
             </a>
-
-            ${githubRepoUrl ? `
-            <div style="margin-top:24px;padding:20px;background:#0f0f0f;border-radius:8px;border-left:3px solid #6e40c9;">
-              <p style="color:#9f7aea;font-weight:bold;margin:0 0 8px;">🐙 GitHub Repository Updated</p>
-              <p style="color:#aaa;font-size:13px;margin:0 0 12px;">
-                Your solutions were automatically pushed to your GitHub repository.
-              </p>
-              <a href="${githubRepoUrl}" 
-                 style="display:inline-block;background:#6e40c9;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;font-size:13px;font-weight:bold;">
-                View on GitHub →
-              </a>
-            </div>` : ''}
           </div>
           <div style="border-top:1px solid #222;padding:20px 40px;text-align:center;">
-            <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCraft AI · Keep Coding, Keep Growing</p>
+            <p style="color:#444;font-size:12px;margin:0;">© ${new Date().getFullYear()} codeCarft AI · Keep Coding, Keep Growing</p>
           </div>
         </div>
       </body>
@@ -208,13 +196,13 @@ export class EmailService {
 
         try {
             await this.transporter.sendMail({
-                from: `"codeCraft Team" <${process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@codeCraft.com"}>`,
+                from: `"codeCarft Team" <${process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@codecarft.com"}>`,
                 to,
                 subject: `📊 ${name}'s Session Report — ${data.totalSolved} problem${data.totalSolved !== 1 ? "s" : ""} solved`,
                 html,
                 attachments: [
                     {
-                        filename: `codeCraft-session-report.pdf`,
+                        filename: `codeCarft-session-report.pdf`,
                         content: pdfBuffer,
                         contentType: "application/pdf",
                     },
@@ -229,7 +217,7 @@ export class EmailService {
     private async send(options: { to: string; subject: string; html: string }) {
         try {
             await this.transporter.sendMail({
-                from: `"codeCraft" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+                from: `"codeCarft" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
                 ...options,
             });
         } catch (error) {

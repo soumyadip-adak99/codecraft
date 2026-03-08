@@ -1,14 +1,14 @@
 "use client";
 
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 interface AuthLoaderProps {
-  /** Where to send authenticated users. Defaults to "/dashboard" */
-  authenticatedRedirect?: string;
-  /** Where to send unauthenticated users. Defaults to "/" */
-  unauthenticatedRedirect?: string;
+    /** Where to send authenticated users. Defaults to "/dashboard" */
+    authenticatedRedirect?: string;
+    /** Where to send unauthenticated users. Defaults to "/" */
+    unauthenticatedRedirect?: string;
 }
 
 /**
@@ -18,25 +18,25 @@ interface AuthLoaderProps {
  * based on auth status.  No page content is ever shown before redirect.
  */
 export function AuthLoader({
-  authenticatedRedirect = "/dashboard",
-  unauthenticatedRedirect = "/",
+    authenticatedRedirect = "/dashboard",
+    unauthenticatedRedirect = "/",
 }: AuthLoaderProps) {
-  const { status } = useAuth();
-  const router = useRouter();
+    const { status } = useSession();
+    const router = useRouter();
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace(authenticatedRedirect);
-    } else if (status === "unauthenticated") {
-      router.replace(unauthenticatedRedirect);
+    useEffect(() => {
+        if (status === "authenticated") {
+            router.replace(authenticatedRedirect);
+        } else if (status === "unauthenticated") {
+            router.replace(unauthenticatedRedirect);
+        }
+    }, [status, router, authenticatedRedirect, unauthenticatedRedirect]);
+
+    if (status === "loading" || status === "authenticated" || status === "unauthenticated") {
+        return <AuthSkeleton />;
     }
-  }, [status, router, authenticatedRedirect, unauthenticatedRedirect]);
 
-  if (status === "loading" || status === "authenticated" || status === "unauthenticated") {
-    return <AuthSkeleton />;
-  }
-
-  return null;
+    return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -44,119 +44,119 @@ export function AuthLoader({
 // ---------------------------------------------------------------------------
 
 function Bone({ w, h, r = 8 }: { w: string | number; h: string | number; r?: number }) {
-  return (
-    <div
-      className="auth-sk__bone"
-      style={{
-        width: w,
-        height: h,
-        borderRadius: r,
-      }}
-    />
-  );
+    return (
+        <div
+            className="auth-sk__bone"
+            style={{
+                width: w,
+                height: h,
+                borderRadius: r,
+            }}
+        />
+    );
 }
 
 function AuthSkeleton() {
-  return (
-    <div className="auth-sk" role="status" aria-label="Loading session" aria-live="polite">
-      <style>{css}</style>
+    return (
+        <div className="auth-sk" role="status" aria-label="Loading session" aria-live="polite">
+            <style>{css}</style>
 
-      {/* ── Navbar ── */}
-      <nav className="auth-sk__nav">
-        {/* Logo block */}
-        <div className="auth-sk__nav-left">
-          <Bone w={32} h={32} r={8} />
-          <Bone w={110} h={18} r={6} />
-        </div>
-
-        {/* Nav links */}
-        <div className="auth-sk__nav-center">
-          <Bone w={60} h={14} r={4} />
-          <Bone w={80} h={14} r={4} />
-          <Bone w={70} h={14} r={4} />
-        </div>
-
-        {/* Right actions */}
-        <div className="auth-sk__nav-right">
-          <Bone w={34} h={34} r={17} />
-          <Bone w={90} h={34} r={8} />
-        </div>
-      </nav>
-
-      {/* ── Page body ── */}
-      <div className="auth-sk__body">
-
-        {/* Hero / greeting row */}
-        <div className="auth-sk__hero">
-          <div className="auth-sk__hero-text">
-            <Bone w="55%" h={36} r={8} />
-            <Bone w="35%" h={18} r={5} />
-          </div>
-          <Bone w={140} h={40} r={10} />
-        </div>
-
-        {/* Stat cards */}
-        <div className="auth-sk__stats">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="auth-sk__stat-card">
-              <div className="auth-sk__stat-icon">
-                <Bone w={20} h={20} r={4} />
-              </div>
-              <Bone w="60%" h={13} r={4} />
-              <Bone w="40%" h={30} r={6} />
-              <Bone w="50%" h={11} r={3} />
-            </div>
-          ))}
-        </div>
-
-        {/* Two-column: main content + sidebar */}
-        <div className="auth-sk__grid">
-
-          {/* Main panel */}
-          <div className="auth-sk__main">
-            {/* Section header */}
-            <div className="auth-sk__row" style={{ marginBottom: 20 }}>
-              <Bone w="30%" h={20} r={6} />
-              <Bone w={90} h={32} r={8} />
-            </div>
-
-            {/* Table rows */}
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="auth-sk__table-row">
-                <Bone w={28} h={28} r={6} />
-                <div className="auth-sk__table-text">
-                  <Bone w="55%" h={13} r={4} />
-                  <Bone w="35%" h={10} r={3} />
+            {/* ── Navbar ── */}
+            <nav className="auth-sk__nav">
+                {/* Logo block */}
+                <div className="auth-sk__nav-left">
+                    <Bone w={32} h={32} r={8} />
+                    <Bone w={110} h={18} r={6} />
                 </div>
-                <Bone w={60} h={22} r={11} />
-                <Bone w={70} h={22} r={11} />
-              </div>
-            ))}
-          </div>
 
-          {/* Sidebar panel */}
-          <div className="auth-sk__sidebar">
-            <Bone w="60%" h={18} r={5} />
-            <Bone w="100%" h={120} r={10} />
-            <div className="auth-sk__sidebar-list">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="auth-sk__sidebar-item">
-                  <Bone w={36} h={36} r={18} />
-                  <div className="auth-sk__table-text">
-                    <Bone w="70%" h={12} r={4} />
-                    <Bone w="45%" h={10} r={3} />
-                  </div>
+                {/* Nav links */}
+                <div className="auth-sk__nav-center">
+                    <Bone w={60} h={14} r={4} />
+                    <Bone w={80} h={14} r={4} />
+                    <Bone w={70} h={14} r={4} />
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Orange scan-line shimmer across the entire viewport */}
-      <div className="auth-sk__scanline" aria-hidden="true" />
-    </div>
-  );
+                {/* Right actions */}
+                <div className="auth-sk__nav-right">
+                    <Bone w={34} h={34} r={17} />
+                    <Bone w={90} h={34} r={8} />
+                </div>
+            </nav>
+
+            {/* ── Page body ── */}
+            <div className="auth-sk__body">
+
+                {/* Hero / greeting row */}
+                <div className="auth-sk__hero">
+                    <div className="auth-sk__hero-text">
+                        <Bone w="55%" h={36} r={8} />
+                        <Bone w="35%" h={18} r={5} />
+                    </div>
+                    <Bone w={140} h={40} r={10} />
+                </div>
+
+                {/* Stat cards */}
+                <div className="auth-sk__stats">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="auth-sk__stat-card">
+                            <div className="auth-sk__stat-icon">
+                                <Bone w={20} h={20} r={4} />
+                            </div>
+                            <Bone w="60%" h={13} r={4} />
+                            <Bone w="40%" h={30} r={6} />
+                            <Bone w="50%" h={11} r={3} />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Two-column: main content + sidebar */}
+                <div className="auth-sk__grid">
+
+                    {/* Main panel */}
+                    <div className="auth-sk__main">
+                        {/* Section header */}
+                        <div className="auth-sk__row" style={{ marginBottom: 20 }}>
+                            <Bone w="30%" h={20} r={6} />
+                            <Bone w={90} h={32} r={8} />
+                        </div>
+
+                        {/* Table rows */}
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="auth-sk__table-row">
+                                <Bone w={28} h={28} r={6} />
+                                <div className="auth-sk__table-text">
+                                    <Bone w="55%" h={13} r={4} />
+                                    <Bone w="35%" h={10} r={3} />
+                                </div>
+                                <Bone w={60} h={22} r={11} />
+                                <Bone w={70} h={22} r={11} />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Sidebar panel */}
+                    <div className="auth-sk__sidebar">
+                        <Bone w="60%" h={18} r={5} />
+                        <Bone w="100%" h={120} r={10} />
+                        <div className="auth-sk__sidebar-list">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="auth-sk__sidebar-item">
+                                    <Bone w={36} h={36} r={18} />
+                                    <div className="auth-sk__table-text">
+                                        <Bone w="70%" h={12} r={4} />
+                                        <Bone w="45%" h={10} r={3} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Orange scan-line shimmer across the entire viewport */}
+            <div className="auth-sk__scanline" aria-hidden="true" />
+        </div>
+    );
 }
 
 // ---------------------------------------------------------------------------

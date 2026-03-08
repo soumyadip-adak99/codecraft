@@ -8,15 +8,15 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { animations } from "@/lib/animations/config";
 import { useQuery } from "convex/react";
-import { ArrowRight, BarChart2, Brain, Code2, Github, Globe, Shield, Sparkles, Zap } from "lucide-react";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { ArrowRight, BarChart2, Brain, Code2, Globe, Shield, Sparkles, Zap } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 
 export default function LandingPage() {
-    const { data: session, status } = useAuth();
+    const { data: session, status } = useSession();
     const router = useRouter();
     const heroRef = useRef<HTMLDivElement>(null);
     const statsRef = useRef<HTMLDivElement>(null);
@@ -213,11 +213,11 @@ export default function LandingPage() {
                             title: "Session-Based Learning",
                             desc: "Start a session, solve questions, unlock next on correct submission, end with a full PDF report.",
                         },
-                        // {
-                        //     icon: Globe,
-                        //     title: "5 Languages",
-                        //     desc: "JavaScript, TypeScript, Python, Java, and C++ — all with language-specific starter code.",
-                        // },
+                        {
+                            icon: Globe,
+                            title: "5 Languages",
+                            desc: "JavaScript, TypeScript, Python, Java, and C++ — all with language-specific starter code.",
+                        },
                         {
                             icon: BarChart2,
                             title: "Progress Analytics",
@@ -227,11 +227,6 @@ export default function LandingPage() {
                             icon: Shield,
                             title: "Privacy First",
                             desc: "Code is never stored in our database. Only your stats are saved — nothing else.",
-                        },
-                        {
-                            icon: Github,
-                            title: "GitHub Integration",
-                            desc: "Connect GitHub and automatically save all solutions into a personal repository. Build your public coding portfolio with every submission.",
                         },
                     ].map(({ icon: Icon, title, desc }) => (
                         <div
@@ -314,7 +309,7 @@ export default function LandingPage() {
                         Ready to <span className="text-orange-500">level up?</span>
                     </h2>
                     <p className="text-zinc-400 text-lg mb-10">
-                        Join developers using codeCraft to ace their next coding interview.
+                        Join developers using codeCarft to ace their next coding interview.
                     </p>
                     <Link href="/login">
                         <Button

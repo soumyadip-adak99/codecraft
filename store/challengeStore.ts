@@ -93,8 +93,6 @@ interface ChallengeState {
     setProvider: (p: string) => void;
     clearResults: () => void;
     setHasUnsavedChanges: (val: boolean) => void;
-    codeModified: boolean;
-    setCodeModified: (val: boolean) => void;
 
     // ── Exit Modal Actions ──
     openExitModal: (targetUrl?: string) => void;
@@ -109,8 +107,7 @@ interface ChallengeState {
         difficulty: string,
         apiKey: string,
         provider: string,
-        topic?: string,
-        useSavedKey?: boolean
+        topic?: string
     ) => Promise<void>;
     executeCode: (type: "run" | "submit") => Promise<void>;
 }
@@ -144,7 +141,6 @@ export const useChallengeStore = create<ChallengeState>()(
                 // ── Session Exit Protection Defaults ──
                 isEndingSession: false,
                 hasUnsavedChanges: false,
-                codeModified: false,
                 isExitModalOpen: false,
                 exitTargetUrl: null,
                 showSessionProgressModal: false,
@@ -183,16 +179,12 @@ export const useChallengeStore = create<ChallengeState>()(
                     // ── Read full submission data from localStorage ──
                     // solvedQuestions from localStorage includes the actual code
                     // for the email report. Convex never sees this.
-                    const localSubmissions = sessionId
-                        ? getSessionSolvedList(sessionId)
-                        : [];
+                    const localSubmissions = sessionId ? getSessionSolvedList(sessionId) : [];
 
                     // Fall back to in-memory Zustand list if localStorage was cleared
                     // (e.g. private browsing mode) — code fields may be present there too
                     const solvedForEmail =
-                        localSubmissions.length > 0
-                            ? localSubmissions
-                            : get().solvedQuestions;
+                        localSubmissions.length > 0 ? localSubmissions : get().solvedQuestions;
 
                     if (sessionId && solvedForEmail.length > 0) {
                         let attempts = 0;
@@ -217,7 +209,8 @@ export const useChallengeStore = create<ChallengeState>()(
                                     if (typeof window !== "undefined") {
                                         import("sonner").then((mod) => {
                                             mod.toast.success("✅ Email sent successfully", {
-                                                description: "Your performance report is on the way!",
+                                                description:
+                                                    "Your performance report is on the way!",
                                             });
                                         });
                                     }
@@ -268,10 +261,14 @@ export const useChallengeStore = create<ChallengeState>()(
                 closeSessionProgressModal: () => set({ showSessionProgressModal: false }),
 
                 setQuestion: (q) =>
-                    set({ currentQuestion: q, isRunPass: false, testResults: null, hasUnsavedChanges: true, codeModified: false }),
-                setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true, codeModified: true }),
+                    set({
+                        currentQuestion: q,
+                        isRunPass: false,
+                        testResults: null,
+                        hasUnsavedChanges: true,
+                    }),
+                setCode: (code) => set({ code, isRunPass: false, hasUnsavedChanges: true }),
                 setHasUnsavedChanges: (val) => set({ hasUnsavedChanges: val }),
-                setCodeModified: (val) => set({ codeModified: val }),
                 setLanguage: (language) => {
                     const q = get().currentQuestion;
                     const starter = q?.starterCode?.[language] || "";
@@ -282,7 +279,7 @@ export const useChallengeStore = create<ChallengeState>()(
                 clearResults: () => set({ testResults: null }),
 
                 // ── Generate question ──
-                generateQuestion: async (difficulty, apiKey, provider, topic, useSavedKey = false) => {
+                generateQuestion: async (difficulty, apiKey, provider, topic) => {
                     const { usedQuestionIds } = get();
                     set({
                         isGenerating: true,
@@ -296,11 +293,10 @@ export const useChallengeStore = create<ChallengeState>()(
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 difficulty,
-                                apiKey: useSavedKey ? "" : apiKey,
+                                apiKey,
                                 provider,
                                 topic,
                                 usedQuestionIds,
-                                useSavedKey,
                             }),
                         });
 
@@ -322,7 +318,6 @@ export const useChallengeStore = create<ChallengeState>()(
                             provider,
                             usedQuestionIds: [...usedQuestionIds, question.questionId],
                             hasUnsavedChanges: false,
-                            codeModified: false,
                         });
                     } catch (error: unknown) {
                         const msg =
@@ -425,10 +420,6 @@ export const useChallengeStore = create<ChallengeState>()(
                                 type === "submit" && results.status === "ACCEPTED"
                                     ? false
                                     : get().hasUnsavedChanges,
-                            codeModified:
-                                type === "submit" && results.status === "ACCEPTED"
-                                    ? false
-                                    : get().codeModified,
                             isRunPass:
                                 type === "run" && results.status === "ACCEPTED"
                                     ? true

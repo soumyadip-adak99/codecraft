@@ -2,9 +2,6 @@
 
 import { UserStats } from "@/@types";
 import { SessionProgressModal } from "@/components/challenge/SessionProgressModal";
-import { DailyActivity } from "@/components/dashboard/ContributionTracker";
-import { ReviewModal } from "@/components/dashboard/ReviewModal";
-import { GitHubDashboardBanner } from "@/components/github/GitHubDashboardBanner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUIStore } from "@/store";
@@ -15,31 +12,24 @@ import {
     BarChart2,
     BookOpen,
     Flame,
+    Loader2,
     MessageSquarePlus,
+    Send,
     Star,
     Target,
     Trophy,
     Zap,
 } from "lucide-react";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 
 export default function DashboardPage() {
-    const { data: session } = useAuth();
+    const { data: session } = useSession();
     const { openChallengeModal } = useUIStore();
     const { sessionActive, solvedQuestions, currentQuestion } = useChallengeStore();
-    const backfill = useMutation(api.userStatus.backfillDailyActivity);
-    const backfillRan = useRef(false);
-
-    // Backfill existing users' historical data once per session load
-    useEffect(() => {
-        if (session?.user?.email && !backfillRan.current) {
-            backfillRan.current = true;
-            backfill().catch(() => { /* silent — idempotent */ });
-        }
-    }, [session?.user?.email, backfill]);
 
     // ── Real-time user stats from Convex ──
     const userStatus = useQuery(
@@ -96,22 +86,44 @@ export default function DashboardPage() {
         },
     ];
 
-    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [reviewText, setReviewText] = useState("");
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [showReviewForm, setShowReviewForm] = useState(false);
+
+    // Add review mutation hook
+    const addReview = useMutation(api.reviews.addReview);
+
+    const handleSubmitReview = async () => {
+        if (!session?.user?.name || !session?.user?.email) {
+            toast.error("Please log in to submit a review");
+            return;
+        }
+        if (reviewText.trim().length < 10) {
+            toast.error("Review must be at least 10 characters");
+            return;
+        }
+        setSubmittingReview(true);
+        try {
+            await addReview({
+                reviewText: reviewText,
+                userName: session.user.name,
+                userEmail: session.user.email,
+                userImageUrl: session.user.image || undefined,
+            });
+            toast.success("Review submitted! Thank you 🎉");
+            setReviewText("");
+            setShowReviewForm(false);
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : "Failed to submit review");
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black">
             {/* Session progress modal — shown when user navigated back from /challenge */}
             <SessionProgressModal />
-
-            {/* Floating review modal */}
-            <ReviewModal
-                isOpen={showReviewModal}
-                onClose={() => setShowReviewModal(false)}
-                userName={session?.user?.name ?? ""}
-                userEmail={session?.user?.email ?? ""}
-                userImageUrl={session?.user?.image}
-            />
-
             <div className="max-w-5xl mx-auto px-4 py-10">
                 {/* Welcome */}
                 <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -141,9 +153,6 @@ export default function DashboardPage() {
                         {sessionActive ? "New Question" : "Start Session"}
                     </Button>
                 </div>
-
-                {/* GitHub Status nudge */}
-                <GitHubDashboardBanner />
 
                 {/* Active session banner */}
                 {sessionActive && currentQuestion && (
@@ -212,32 +221,71 @@ export default function DashboardPage() {
                     </div>
                 )}
 
-                {/* Help us improve — review CTA */}
+                {/* Review submission form */}
                 <div className="mt-12">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-white flex items-center gap-2">
                             <Star className="h-5 w-5 text-orange-500 fill-orange-500" />
                             Help us improve
                         </h2>
-                        <Button
-                            onClick={() => setShowReviewModal(true)}
-                            variant="outline"
-                            className="border-orange-500/20 text-orange-400 hover:bg-orange-500/10 cursor-pointer"
-                            size="sm"
-                        >
-                            <MessageSquarePlus className="h-4 w-4 mr-2" />
-                            Write a Review
-                        </Button>
+                        {!showReviewForm && (
+                            <Button
+                                onClick={() => setShowReviewForm(true)}
+                                variant="outline"
+                                className="border-orange-500/20 text-orange-400 hover:bg-orange-500/10 cursor-pointer"
+                                size="sm"
+                            >
+                                <MessageSquarePlus className="h-4 w-4 mr-2" />
+                                Write a Review
+                            </Button>
+                        )}
                     </div>
-                    <p className="text-sm text-zinc-500">
-                        Your feedback helps us make CodeCraft better for everyone.
-                    </p>
-                </div>
 
-                {/* Daily activity heatmap */}
-                {session?.user?.email && (
-                    <DailyActivity email={session.user.email} />
-                )}
+                    {showReviewForm && (
+                        <div className="glass rounded-2xl p-6 border border-orange-500/20 bg-orange-500/5 animate-in fade-in slide-in-from-top-4">
+                            <h3 className="text-base font-bold text-white mb-4">
+                                Share your experience with CodeCraft
+                            </h3>
+                            <textarea
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                placeholder="I really enjoyed using CodeCraft because..."
+                                maxLength={500}
+                                rows={4}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 resize-none transition-colors"
+                            />
+                            <div className="flex items-center justify-between mt-4">
+                                <span className="text-xs text-zinc-500">
+                                    {reviewText.length}/500 characters
+                                </span>
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={() => setShowReviewForm(false)}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-zinc-400 hover:text-white cursor-pointer"
+                                        disabled={submittingReview}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmitReview}
+                                        disabled={submittingReview || reviewText.trim().length < 10}
+                                        size="sm"
+                                        className="bg-orange-500 hover:bg-orange-400 text-white gap-2 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {submittingReview ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Send className="h-4 w-4" />
+                                        )}
+                                        Submit Review
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

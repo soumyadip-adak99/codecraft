@@ -1,9 +1,6 @@
-import { requireAuth } from "@/lib/auth/withAuth";
+import { auth } from "@/lib/auth/config";
 import { getConvexClient } from "@/lib/db/convex";
 import { LLMGateway } from "@/lib/llm/gateway";
-import connectDB from "@/lib/db/mongoose";
-import User from "@/models/User";
-import { decryptApiKey } from "@/lib/crypto/apiKeyCrypto";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { api } from "../../../../convex/_generated/api";
@@ -13,7 +10,10 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
-        const { session } = await requireAuth(req);
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         const {
             difficulty = "Medium",
@@ -21,32 +21,12 @@ export async function POST(req: NextRequest) {
             apiKey: clientApiKey,
             provider: clientProvider = "groq",
             usedQuestionIds = [],
-            useSavedKey = false,
         } = await req.json();
 
-        // ── API key resolution (priority: saved > client > server default) ──
+        // ── Groq default key fallback ──
         let apiKey = clientApiKey?.trim() || "";
         let provider = clientProvider;
 
-        if (useSavedKey && session.user.email) {
-            // Fetch and decrypt the user's stored LLM API key server-side
-            // Plaintext key never crosses the network from the client
-            try {
-                await connectDB();
-                const dbUser = await User.findOne({ email: session.user.email })
-                    .select("llmApiKey preferredModel")
-                    .lean();
-                if ((dbUser as any)?.llmApiKey) {
-                    apiKey = decryptApiKey((dbUser as any).llmApiKey);
-                    provider = (dbUser as any).preferredModel || "groq";
-                }
-            } catch (err) {
-                console.error("[LLM Generate] Failed to load saved key:", err);
-                // Fall through to Groq default
-            }
-        }
-
-        // ── Groq default key fallback ──
         if (!apiKey) {
             const groqKey = process.env.GROQ_API_KEY?.trim();
             if (!groqKey) {
@@ -81,7 +61,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(question, { status: 200 });
     } catch (error: unknown) {
-        if (error instanceof NextResponse) return error;
         const message = error instanceof Error ? error.message : "Generation failed";
         console.error("LLM generate error:", error);
         // Detect LLM-specific errors

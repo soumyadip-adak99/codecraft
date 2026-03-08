@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
 import connectDB from "@/lib/db/mongoose";
 import User from "@/models/User";
 import { getConvexClient } from "@/lib/db/convex";
@@ -20,28 +19,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 },
             },
         }),
-        GitHub({
-            clientId: process.env.GITHUB_LOGIN_CLIENT_ID!,
-            clientSecret: process.env.GITHUB_LOGIN_CLIENT_SECRET!,
-        }),
     ],
     callbacks: {
-        async signIn({ user, account }) {
+        async signIn({ user }) {
             if (!user?.email) return false;
             try {
                 // Upsert user in MongoDB — the raw result tells us if this was an INSERT (new user)
                 await connectDB();
-
-                // Determine auth provider from OAuth account
-                const authProvider = account?.provider === "github" ? "github" : "google";
-
                 const result = await User.findOneAndUpdate(
                     { email: user.email },
                     {
-                        $set: {
-                            image: user.image,
-                            auth_provider: authProvider,
-                        },
+                        $set: { image: user.image },
                         $setOnInsert: { email: user.email },
                     },
                     { upsert: true, new: true, includeResultMetadata: true }

@@ -28,11 +28,11 @@ const MONACO_LANG_MAP: Record<Language, string> = {
     cpp: "cpp",
 };
 
-const THEME_STORAGE_KEY = "codeCraft-editor-theme";
+const THEME_STORAGE_KEY = "codecarft-editor-theme";
 
 function getStoredTheme(): EditorThemeId {
-    if (typeof window === "undefined") return "codeCraft-dark";
-    return (localStorage.getItem(THEME_STORAGE_KEY) as EditorThemeId) || "codeCraft-dark";
+    if (typeof window === "undefined") return "codecarft-dark";
+    return (localStorage.getItem(THEME_STORAGE_KEY) as EditorThemeId) || "codecarft-dark";
 }
 
 export function CodeEditor() {

@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth/withAuth";
+import { auth } from "@/lib/auth/config";
 import connectDB from "@/lib/db/mongoose";
 import Review from "@/models/Review";
 import User from "@/models/User";
@@ -26,7 +26,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
-        const { session } = await requireAuth(req);
+        const session = await auth();
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         const { review } = await req.json();
 
@@ -57,7 +60,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(newReview, { status: 201 });
     } catch (error) {
-        if (error instanceof NextResponse) return error;
         console.error("Review create error:", error);
         return NextResponse.json(
             { error: "Something went wrong on the server. Please try again later." },
