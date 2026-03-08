@@ -1,166 +1,36 @@
-# CodeCraft 🚀
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-![CodeCraft Banner](https://res.cloudinary.com/dzunlgq2p/image/upload/v1772396005/Screenshot_2026-03-02_013706_fk6lhf.png)
+## Getting Started
 
-**CodeCraft** is an advanced, AI-powered coding practice platform designed to help developers ace their next technical interview. Built with **Next.js 16**, **Convex**, and **Monaco Editor**, it dynamically generates coding challenges tailored to your skill level, provides a real-time execution environment, and tracks your progress across sessions.
-
----
-
-## ✨ Features
-
-- **🤖 AI Question Generation**: Generate unique Easy, Medium, or Hard algorithmic challenges using powerful LLMs like Groq, OpenAI GPT-4, or Google Gemini.
-- **💻 VS Code-Like Editor**: Interactive code environment powered by `monaco-editor` with syntax highlighting and IntelliSense.
-- **🌍 Multi-Language Support**: Write solutions in JavaScript, TypeScript, Python, Java, or C++, complete with language-specific starter code.
-- **✅ Robust Execution Engine**: Built-in syntax checking, multiple test case evaluation, compilation error tracing, and runtime analysis.
-- **🚥 Run-to-Submit Workflow**: Strict validation to ensure users can only submit code to the database after successfully passing all generated test cases.
-- **📊 Progress & Analytics**: Real-time stats synchronization via Convex. Track problems solved, difficulty breakdowns, and total active developers.
-- **📑 PDF Session Reports**: At the end of a session, automatically generate and email a detailed PDF performance report encompassing all solved questions.
-- **🔐 Secure Authentication**: OAuth login via NextAuth.js (Google Provider) seamlessly saving user identity across MongoDB and Convex.
-- **💬 Community Reviews**: Share and view platform feedback directly populated from the real-time Convex database.
-
----
-
-## 🛠️ Tech Stack
-
-**Frontend & Framework:**
-
-- [![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/) (App Router, Turbopack)
-- [![React](https://img.shields.io/badge/React-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)](https://react.dev/)
-- [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-- [![Zustand](https://img.shields.io/badge/Zustand-%2330363d.svg?style=flat)](https://github.com/pmndrs/zustand) (State Management)
-- [![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-%231E1E1E.svg?style=flat)](https://microsoft.github.io/monaco-editor/)
-
-**Backend & Database:**
-
-- [![Convex](https://img.shields.io/badge/Convex-%23FF8000.svg?style=flat)](https://www.convex.dev/) (Real-time Database & Serverless Functions)
-- [![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/) (User Identity & App metadata mapping)
-- ⚡ **Next.js API Routes** (Serverless backend for LLM & execution)
-
-**Authentication:**
-
-- [![NextAuth.js](https://img.shields.io/badge/NextAuth.js-%23000000.svg?style=flat)](https://next-auth.js.org/) v5 (Beta)
-
-**Utilities & Animations:**
-
-- [![GSAP](https://img.shields.io/badge/GSAP-%2388CE02.svg?style=flat&logo=greensock&logoColor=white)](https://gsap.com/)
-- [![Motion](https://img.shields.io/badge/Motion-%23FF0080.svg?style=flat)](https://motion.dev/)
-- [![Lucide React](https://img.shields.io/badge/Lucide_React-%23F97316.svg?style=flat)](https://lucide.dev/) (Icons)
-- [![Nodemailer](https://img.shields.io/badge/Nodemailer-%2314A03D.svg?style=flat)](https://nodemailer.com/) & [![jsPDF](https://img.shields.io/badge/jsPDF-%23FF0000.svg?style=flat)](https://parall.ax/products/jspdf)
-
----
-
-## ⚙️ Local Development Setup
-
-### 1. Prerequisites
-
-Ensure you have the following installed on your machine:
-
-- **Node.js** (v18.17 or higher)
-- **npm**, **yarn**, or **pnpm**
-- A [Convex](https://www.convex.dev/) account
-- A [MongoDB](https://www.mongodb.com/atlas) cluster
-- Google OAuth credentials for NextAuth
-- API Keys for your preferred LLM (e.g., [Groq](https://console.groq.com/))
-
-### 2. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/codecraft.git
-cd codecraft
-```
-
-### 3. Install Dependencies
-
-```bash
-npm install
-# or
-yarn install
-```
-
-### 4. Environment Variables
-
-Create a `.env.local` file in the root of your project and configure the following variables:
-
-```env
-# URL Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# NextAuth Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret_key
-
-# Google OAuth Credentials
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# MongoDB Connection
-MONGODB_URI=your_mongodb_connection_string
-
-# Convex Deployment (Will be auto-generated when running `npx convex dev`)
-CONVEX_DEPLOYMENT=your_convex_deployment_name
-NEXT_PUBLIC_CONVEX_URL=your_convex_url
-
-# LLM Provider Keys
-GROQ_API_KEY=your_groq_api_key
-
-# Email/Nodemailer Configuration (For Session Reports)
-EMAIL_SERVER_USER=your_smtp_email
-EMAIL_SERVER_PASSWORD=your_smtp_password
-EMAIL_FROM=noreply@yourdomain.com
-```
-
-### 5. Start the Convex Backend
-
-In a separate terminal, initialize and run your Convex database:
-
-```bash
-npx convex dev
-```
-
-### 6. Start the Development Server
+First, run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application running.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 📁 Project Structure
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-```text
-├── @types/               # Global TypeScript definitions
-├── app/                  # Next.js 14 App Router routes (API, Dashboard, Marketing, Editor)
-├── components/           # Reusable UI components (shadcn/ui, Layouts, Forms)
-├── convex/               # Convex database schema, queries, and mutations
-├── lib/                  # Utility functions, Auth config, Email service, PDF Generator
-├── models/               # MongoDB Mongoose schemas
-├── store/                # Zustand global state management (Challenge Store)
-├── public/               # Static assets
-└── package.json          # Dependencies and scripts
-```
+## Learn More
 
----
+To learn more about Next.js, take a look at the following resources:
 
-## 🤝 Contributing
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Contributions are always welcome! Whether it's reporting a bug, proposing a feature, or writing code.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-1. Fork the project.
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
-5. Open a Pull Request.
+## Deploy on Vercel
 
----
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## 📜 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-_Built with ❤️ for developers leveling up their coding skills._
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
