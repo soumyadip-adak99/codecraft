@@ -1,5 +1,5 @@
 import { SessionSolvedQuestion } from "@/@types";
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { EmailService } from "@/lib/email/service";
 import { generateSessionPDF } from "@/lib/pdf/generator";
 import { pushSolutionsToGitHub } from "@/lib/github/push";
@@ -10,10 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         const { solvedQuestions = [], sessionId } = (await req.json()) as {
             solvedQuestions: SessionSolvedQuestion[];
@@ -98,6 +95,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, githubCommitUrls });
     } catch (error) {
+        if (error instanceof NextResponse) return error;
         console.error("Session end error:", error);
         return NextResponse.json(
             { error: "Something went wrong on the server. Please try again later." },

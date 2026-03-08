@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import connectDB from "@/lib/db/mongoose";
 import User from "@/models/User";
 import { encryptApiKey } from "@/lib/crypto/apiKeyCrypto";
@@ -11,12 +11,9 @@ export const dynamic = "force-dynamic";
  * Returns whether the user has a saved API key and which provider it's for.
  * Never returns the key value itself.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         await connectDB();
         const dbUser = await User.findOne({ email: session.user.email })
@@ -28,6 +25,7 @@ export async function GET() {
 
         return NextResponse.json({ hasKey, provider });
     } catch (error) {
+        if (error instanceof NextResponse) return error;
         console.error("API key fetch error:", error);
         return NextResponse.json({ error: "Failed to fetch API key status" }, { status: 500 });
     }
@@ -40,10 +38,7 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         const { apiKey, provider } = await req.json();
 
@@ -62,6 +57,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, message: "API key saved successfully" });
     } catch (error) {
+        if (error instanceof NextResponse) return error;
         console.error("API key save error:", error);
         return NextResponse.json({ error: "Failed to save API key" }, { status: 500 });
     }
@@ -71,12 +67,9 @@ export async function POST(req: NextRequest) {
  * DELETE /api/user/apikey
  * Removes the stored API key from MongoDB.
  */
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         await connectDB();
         await User.findOneAndUpdate(
@@ -86,6 +79,7 @@ export async function DELETE() {
 
         return NextResponse.json({ success: true, message: "API key removed" });
     } catch (error) {
+        if (error instanceof NextResponse) return error;
         console.error("API key delete error:", error);
         return NextResponse.json({ error: "Failed to remove API key" }, { status: 500 });
     }

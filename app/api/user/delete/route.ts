@@ -5,24 +5,21 @@
  *   2. Removes the linked Repository document from MongoDB
  *   3. Removes user stats from Convex userStatus table
  *   4. Decrements the platform totalDevelopers counter in Convex
- * The client must then call signOut to clear the session.
+ * The client then navigates to /api/auth/logout to clear the cookie.
  */
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import connectDB from "@/lib/db/mongoose";
 import User from "@/models/User";
 import Repository from "@/models/Repository";
 import { getConvexClient } from "@/lib/db/convex";
 import { api } from "../../../../convex/_generated/api";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         const email = session.user.email;
 
@@ -44,6 +41,7 @@ export async function DELETE() {
 
         return NextResponse.json({ success: true });
     } catch (error) {
+        if (error instanceof NextResponse) return error;
         console.error("[Delete Account]", error);
         return NextResponse.json(
             { error: "Failed to delete account. Please try again." },

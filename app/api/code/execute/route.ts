@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { CodeExecutionEngine } from "@/lib/code/execution-engine";
 import { getConvexClient } from "@/lib/db/convex";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,10 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         const {
             questionId,
@@ -94,6 +91,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(results);
     } catch (error: unknown) {
+        if (error instanceof NextResponse) return error;
         const message = error instanceof Error ? error.message : "Execution failed";
         console.error("Code execute error:", error);
         return NextResponse.json(

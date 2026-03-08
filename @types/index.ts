@@ -69,15 +69,13 @@ export type {
     SessionReportData,
 } from "./session";
 
-// NextAuth session extension
-declare module "next-auth" {
-    interface Session {
-        user: {
-            id: string;
-            name?: string | null;
-            email?: string | null;
-            image?: string | null;
-            hasApiKey?: boolean;
-        };
-    }
+export interface JWTSession {
+    user: {
+        id: string;
+        email: string;
+        name?: string | null;
+        image?: string | null;
+        hasApiKey?: boolean;
+    };
+    status: "authenticated" | "unauthenticated" | "loading";
 }

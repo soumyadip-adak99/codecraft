@@ -2,16 +2,13 @@
  * /api/github/connect — Initiates GitHub OAuth authorization flow.
  * Redirects the authenticated user to GitHub with required scopes.
  */
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-    const session = await auth();
-    if (!session?.user?.email) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session } = await requireAuth(req);
 
     const clientId = process.env.GITHUB_CLIENT_ID;
     if (!clientId) {
@@ -22,7 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     const baseUrl =
-        process.env.NEXTAUTH_URL ||
+        process.env.APP_URL ||
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
     const params = new URLSearchParams({

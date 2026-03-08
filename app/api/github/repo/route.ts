@@ -4,7 +4,7 @@
  * POST: Creates a new repo via GitHub API and stores metadata in MongoDB.
  * GET:  Returns the stored repository info for the current user.
  */
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { decryptToken } from "@/lib/github/crypto";
 import { createRepository } from "@/lib/github/client";
 import connectDB from "@/lib/db/mongoose";
@@ -16,18 +16,15 @@ export const dynamic = "force-dynamic";
 
 // ─── GET — fetch existing linked repo ─────────────────────────────────────────
 export async function GET() {
-    const session = await auth();
-    if (!session?.user?.email) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     try {
+        const { session } = await requireAuth();
         await connectDB();
         const repo = await Repository.findOne({ user_email: session.user.email })
             .select("-_id -__v")
             .lean();
         return NextResponse.json({ repository: repo ?? null });
     } catch (err) {
+        if (err instanceof NextResponse) return err;
         console.error("[GitHub Repo GET]", err);
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
@@ -35,10 +32,8 @@ export async function GET() {
 
 // ─── POST — create a new GitHub repository ───────────────────────────────────
 export async function POST(req: NextRequest) {
-    const session = await auth();
-    if (!session?.user?.email) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    try {
+        const { session } = await requireAuth(req);
 
     const { action, name, description, is_private, existingRepo } = (await req.json()) as {
         action?: "create" | "link"; // Defaults to create for backward compatibility
@@ -64,8 +59,7 @@ export async function POST(req: NextRequest) {
          return NextResponse.json({ error: "Existing repository data is required to link." }, { status: 400 });
     }
 
-    try {
-        await connectDB();
+    await connectDB();
 
         // Verify GitHub is connected and grab the encrypted token
         const dbUser = await User.findOne({ email: session.user.email })
@@ -133,6 +127,7 @@ export async function POST(req: NextRequest) {
             },
         });
     } catch (err) {
+        if (err instanceof NextResponse) return err;
         console.error("[GitHub Repo POST]", err);
         const message = err instanceof Error ? err.message : "Server error";
         return NextResponse.json({ error: message }, { status: 500 });

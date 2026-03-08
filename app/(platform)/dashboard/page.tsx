@@ -21,13 +21,13 @@ import {
     Trophy,
     Zap,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 
 export default function DashboardPage() {
-    const { data: session } = useSession();
+    const { data: session } = useAuth();
     const { openChallengeModal } = useUIStore();
     const { sessionActive, solvedQuestions, currentQuestion } = useChallengeStore();
     const backfill = useMutation(api.userStatus.backfillDailyActivity);

@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/withAuth";
 import { getConvexClient } from "@/lib/db/convex";
 import { LLMGateway } from "@/lib/llm/gateway";
 import connectDB from "@/lib/db/mongoose";
@@ -13,10 +13,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { session } = await requireAuth(req);
 
         const {
             difficulty = "Medium",
@@ -84,6 +81,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(question, { status: 200 });
     } catch (error: unknown) {
+        if (error instanceof NextResponse) return error;
         const message = error instanceof Error ? error.message : "Generation failed";
         console.error("LLM generate error:", error);
         // Detect LLM-specific errors
