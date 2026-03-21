@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 export function Navbar() {
     const { data: session } = useAuth();
     const router = useRouter();
-    const { openChallengeModal } = useUIStore();
+    const { openModeModal } = useUIStore();
 
     const handleSignOut = () => {
         // Clear all localStorage
@@ -41,15 +41,9 @@ export function Navbar() {
         <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur-xl">
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2.5 group">
-                    {/* <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 transition-all duration-300">
-                        <Code2 className="h-4.5 w-4.5 text-white" strokeWidth={2.5} />
-                    </div>
-                    <span className="text-xl font-black text-white tracking-tight">
-                        code<span className="text-orange-500">Draft</span>
-                    </span> */}
+                <div className="flex items-center gap-2.5 group">
                     <Logo />
-                </Link>
+                </div>
 
                 {/* Nav links */}
                 <div className="hidden md:flex items-center gap-6">
@@ -78,7 +72,7 @@ export function Navbar() {
                     {session ? (
                         <>
                             <Button
-                                onClick={openChallengeModal}
+                                onClick={openModeModal}
                                 className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 cursor-pointer"
                                 size="sm"
                             >

@@ -14,6 +14,7 @@ import {
     ArrowRight,
     BarChart2,
     BookOpen,
+    Database,
     Flame,
     MessageSquarePlus,
     Star,
@@ -28,7 +29,7 @@ import { api } from "../../../convex/_generated/api";
 
 export default function DashboardPage() {
     const { data: session } = useAuth();
-    const { openChallengeModal } = useUIStore();
+    const { openChallengeModal, openSqlModal, openModeModal } = useUIStore();
     const { sessionActive, solvedQuestions, currentQuestion } = useChallengeStore();
     const backfill = useMutation(api.userStatus.backfillDailyActivity);
     const backfillRan = useRef(false);
@@ -91,8 +92,8 @@ export default function DashboardPage() {
             icon: Target,
             label: "Total Attempts",
             value: stats?.totalAttempts ?? 0,
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
+            color: "text-orange-400",
+            bg: "bg-orange-500/10",
         },
     ];
 
@@ -134,7 +135,7 @@ export default function DashboardPage() {
                         </p>
                     </div>
                     <Button
-                        onClick={openChallengeModal}
+                        onClick={openModeModal}
                         className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 self-start sm:self-auto cursor-pointer"
                     >
                         <Zap className="h-4 w-4" />
@@ -203,14 +204,45 @@ export default function DashboardPage() {
                             Start a session and solve your first AI-generated challenge!
                         </p>
                         <Button
-                            onClick={openChallengeModal}
+                            onClick={openModeModal}
                             className="mt-4 bg-orange-500 hover:bg-orange-400 text-white"
                             size="sm"
                         >
-                            Start Coding
+                            Start Session
                         </Button>
                     </div>
                 )}
+                {/* SQL Practice Feature Card */}
+                <div className="mt-8 mb-2">
+                    <div className="glass rounded-2xl border border-orange-500/15 bg-gradient-to-br from-orange-500/5 to-transparent overflow-hidden">
+                        <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-500/15 border border-orange-500/20">
+                                <Database className="h-7 w-7 text-orange-400" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h2 className="text-lg font-bold text-white">SQL Practice</h2>
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20">NEW</span>
+                                </div>
+                                <p className="text-sm text-zinc-400 mb-3">
+                                    Practice SQL queries with AI-generated challenges. Write, run, and submit queries — schema tables, sample data, and result tables all rendered beautifully.
+                                </p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    {["MySQL", "PostgreSQL", "Oracle SQL", "SQLite"].map((d) => (
+                                        <span key={d} className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/8 text-zinc-400">{d}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            <Button
+                                onClick={openSqlModal}
+                                className="shrink-0 bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 self-start sm:self-auto cursor-pointer"
+                            >
+                                <Zap className="h-4 w-4" />
+                                Start SQL Session
+                            </Button>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Help us improve — review CTA */}
                 <div className="mt-12">

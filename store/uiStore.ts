@@ -8,12 +8,18 @@ interface Toast {
 }
 
 interface UIState {
+    isModeModalOpen: boolean;
     isChallengeModalOpen: boolean;
+    isSqlModalOpen: boolean;
     isSettingsOpen: boolean;
     toasts: Toast[];
 
+    openModeModal: () => void;
+    closeModeModal: () => void;
     openChallengeModal: () => void;
     closeChallengeModal: () => void;
+    openSqlModal: () => void;
+    closeSqlModal: () => void;
     openSettings: () => void;
     closeSettings: () => void;
     addToast: (message: string, type?: Toast["type"]) => void;
@@ -23,12 +29,18 @@ interface UIState {
 export const useUIStore = create<UIState>()(
     devtools(
         (set) => ({
+            isModeModalOpen: false,
             isChallengeModalOpen: false,
+            isSqlModalOpen: false,
             isSettingsOpen: false,
             toasts: [],
 
+            openModeModal: () => set({ isModeModalOpen: true }),
+            closeModeModal: () => set({ isModeModalOpen: false }),
             openChallengeModal: () => set({ isChallengeModalOpen: true }),
             closeChallengeModal: () => set({ isChallengeModalOpen: false }),
+            openSqlModal: () => set({ isSqlModalOpen: true }),
+            closeSqlModal: () => set({ isSqlModalOpen: false }),
             openSettings: () => set({ isSettingsOpen: true }),
             closeSettings: () => set({ isSettingsOpen: false }),
 

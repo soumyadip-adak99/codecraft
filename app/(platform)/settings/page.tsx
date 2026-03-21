@@ -209,8 +209,8 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Security note */}
-                    <div className="flex items-start gap-2 rounded-xl bg-blue-500/5 border border-blue-500/15 p-3">
-                        <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2 rounded-xl bg-orange-500/5 border border-orange-500/15 p-3">
+                        <Info className="h-4 w-4 text-orange-400 shrink-0 mt-0.5" />
                         <p className="text-xs text-zinc-500 leading-relaxed">
                             Your API key is stored securely on your account. It is only used to make
                             requests to your chosen LLM provider and is never shared with anyone.
