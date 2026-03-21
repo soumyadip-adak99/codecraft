@@ -266,22 +266,22 @@ export function ChallengeModal() {
                         <div
                             onClick={() => setKeyMode("custom")}
                             className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all ${keyMode === "custom"
-                                ? "bg-blue-500/10 border-blue-500/30"
+                                ? "bg-orange-500/10 border-orange-500/30"
                                 : "bg-white/3 border-white/8 hover:border-white/15"
                                 }`}
                         >
-                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${keyMode === "custom" ? "bg-blue-500/20" : "bg-white/5"}`}>
-                                <Key className={`h-4 w-4 ${keyMode === "custom" ? "text-blue-400" : "text-zinc-500"}`} />
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${keyMode === "custom" ? "bg-orange-500/20" : "bg-white/5"}`}>
+                                <Key className={`h-4 w-4 ${keyMode === "custom" ? "text-orange-400" : "text-zinc-500"}`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${keyMode === "custom" ? "text-blue-300" : "text-zinc-300"}`}>
+                                <p className={`text-sm font-medium ${keyMode === "custom" ? "text-orange-300" : "text-zinc-300"}`}>
                                     Use Custom Key
                                 </p>
                                 <p className="text-[11px] text-zinc-500 mt-0.5">
                                     Enter your own API key for this session
                                 </p>
                             </div>
-                            <div className={`h-5 w-9 rounded-full transition-colors ${keyMode === "custom" ? "bg-blue-500" : "bg-zinc-700"}`}>
+                            <div className={`h-5 w-9 rounded-full transition-colors ${keyMode === "custom" ? "bg-orange-500" : "bg-zinc-700"}`}>
                                 <div className={`h-4 w-4 bg-white rounded-full shadow m-0.5 transition-transform ${keyMode === "custom" ? "translate-x-4" : "translate-x-0"}`} />
                             </div>
                         </div>

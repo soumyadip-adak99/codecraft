@@ -1,6 +1,8 @@
 "use client";
 
 import { ChallengeModal } from "@/components/challenge/ChallengeModal";
+import { SqlChallengeModal } from "@/components/sql/SqlChallengeModal";
+import { ModeSelectionModal } from "@/components/shared/ModeSelectionModal";
 import { AuthLoader } from "@/components/shared/AuthLoader";
 import { Navbar } from "@/components/shared/Navbar";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -33,7 +35,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <div className="flex min-h-screen flex-col bg-black">
             <Navbar />
             <main className="flex-1">{children}</main>
+            <ModeSelectionModal />
             <ChallengeModal />
+            <SqlChallengeModal />
         </div>
     );
 }
+
+

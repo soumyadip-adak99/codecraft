@@ -60,6 +60,15 @@ Solve problems in multiple languages:
 * Java
 * C++
 
+### 💾 SQL Database Practice
+
+A fully-featured SQL environment featuring:
+
+* **Multiple Dialects:** MySQL, PostgreSQL, Oracle SQL, and SQLite
+* **Dynamic Schemas:** Questions automatically generate relevant mock database tables
+* **Real-time execution:** Queries are instantly evaluated against mock data
+* **Seamless Parity:** SQL sessions contribute directly to your daily activity tracker and GitHub sync
+
 ### ⚡ Robust Code Execution Engine
 
 * Syntax checking

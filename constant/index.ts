@@ -25,8 +25,8 @@ export const steps = [
         title: "2. AI Question Generation",
         description:
             "Our platform uses advanced LLMs (Groq, OpenAI, Anthropic, or Gemini) to generate a unique, completely new coding challenge tailored to your chosen difficulty and topic. We ensure you never see the same question twice in a session.",
-        color: "text-blue-400",
-        bg: "bg-blue-500/10",
+        color: "text-orange-400",
+        bg: "bg-orange-500/10",
     },
     {
         icon: Code2,
@@ -79,5 +79,49 @@ export const API_KEY_PROVIDER_LINK = [
     {
         name: "Anthropic",
         url: "https://console.anthropic.com/settings/keys",
+    },
+];
+export const SQL_DIALECTS = [
+    { value: "mysql", label: "MySQL", description: "The world's most popular open-source SQL database" },
+    { value: "postgresql", label: "PostgreSQL", description: "Advanced open-source relational database with strong standards compliance" },
+    { value: "oracle", label: "Oracle SQL", description: "Enterprise-grade SQL with ROWNUM, CONNECT BY, and PL/SQL extensions" },
+    { value: "sqlite", label: "SQLite", description: "Lightweight, serverless, self-contained SQL engine" },
+];
+
+export const sqlSteps = [
+    {
+        icon: Zap,
+        title: "1. Start a SQL Session",
+        description: "Select your SQL dialect (MySQL, PostgreSQL, Oracle SQL, or SQLite), choose difficulty, and optionally specify a topic like 'JOINs' or 'window functions'.",
+        color: "text-orange-400",
+        bg: "bg-orange-500/10",
+    },
+    {
+        icon: Brain,
+        title: "2. AI Question Generation",
+        description: "Our AI generates a unique SQL challenge with a full database schema, sample data, and clearly defined expected output per test case.",
+        color: "text-cyan-400",
+        bg: "bg-cyan-500/10",
+    },
+    {
+        icon: Code2,
+        title: "3. Write SQL in Monaco Editor",
+        description: "Write your SQL query in the Monaco editor with full SQL syntax highlighting. Switch dialects and themes on the fly.",
+        color: "text-green-400",
+        bg: "bg-green-500/10",
+    },
+    {
+        icon: Terminal,
+        title: "4. Run & Submit for Evaluation",
+        description: "Click 'Run' to test against visible test cases. Submit to evaluate all hidden test cases. The AI simulates SQL execution displaying pass/fail result tables.",
+        color: "text-purple-400",
+        bg: "bg-purple-500/10",
+    },
+    {
+        icon: Target,
+        title: "5. Get AI Feedback",
+        description: "Receive detailed feedback including code quality score, query complexity, optimization suggestions, and best practices for your SQL.",
+        color: "text-orange-400",
+        bg: "bg-orange-500/10",
     },
 ];

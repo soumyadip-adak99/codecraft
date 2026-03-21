@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { steps } from "@/constant";
 import { animations } from "@/lib/animations/config";
-import { ArrowRight, BookOpen, CheckCircle2, Github, Mail, Shield } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, Github, Mail, Shield, Database } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -130,7 +130,7 @@ export default function DocsPage() {
                         </p>
                     </div>
                     <div className="glass p-6 rounded-2xl">
-                        <CheckCircle2 className="h-8 w-8 text-blue-400 mx-auto mb-4" />
+                        <CheckCircle2 className="h-8 w-8 text-orange-400 mx-auto mb-4" />
                         <h4 className="text-white font-bold mb-2">Instant Feedback</h4>
                         <p className="text-zinc-500 text-sm">
                             No waiting in queues. Fast, multi-language code execution directly
@@ -169,8 +169,8 @@ export default function DocsPage() {
                             step: "02",
                             title: "Create a Repository",
                             desc: "After connecting, a modal appears to create your solutions repository. Choose name, description, and visibility (public or private).",
-                            color: "text-blue-400",
-                            bg: "bg-blue-500/10",
+                            color: "text-orange-400",
+                            bg: "bg-orange-500/10",
                         },
                         {
                             step: "03",
@@ -206,6 +206,37 @@ export default function DocsPage() {
                         Repository Structure
                     </h4>
                     <pre className="text-sm text-zinc-300 leading-relaxed font-mono whitespace-pre">{`your-repo/\n└── coding-solutions/\n    ├── two-sum/\n    │   ├── question.md      ← Problem description\n    │   └── solution.py      ← Your code\n    └── merge-intervals/\n        ├── question.md\n        └── solution.java`}</pre>
+                </div>
+            </section>
+
+            {/* SQL Practice Section */}
+            <section className="py-16 px-4 max-w-5xl mx-auto border-t border-white/5">
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-sm text-zinc-300 mb-4">
+                        <Database className="h-3.5 w-3.5" />
+                        New Feature
+                    </div>
+                    <h2 className="text-3xl font-black text-white mb-4">
+                        <span className="text-orange-500">SQL Practice</span> Environment
+                    </h2>
+                    <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                        Master database queries alongside algorithmic coding. Our fully-featured SQL practice environment dynamically generates schema-driven challenges and evaluates your queries in real-time.
+                    </p>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-6 text-center mb-10">
+                    <div className="glass p-6 rounded-2xl border border-white/5 hover:border-orange-500/20 transition-all">
+                        <h4 className="text-white font-bold mb-3">Multi-Dialect Support</h4>
+                        <p className="text-zinc-400 text-sm leading-relaxed">Practice with syntax specific to MySQL, PostgreSQL, Oracle SQL, or SQLite. Instantly toggle between dialects.</p>
+                    </div>
+                    <div className="glass p-6 rounded-2xl border border-white/5 hover:border-orange-500/20 transition-all">
+                        <h4 className="text-white font-bold mb-3">Dynamic Schemas</h4>
+                        <p className="text-zinc-400 text-sm leading-relaxed">Questions automatically generate relevant mock database tables with populated sample data integrated into the challenge description.</p>
+                    </div>
+                    <div className="glass p-6 rounded-2xl border border-white/5 hover:border-orange-500/20 transition-all">
+                        <h4 className="text-white font-bold mb-3">Parity with Code Workspace</h4>
+                        <p className="text-zinc-400 text-sm leading-relaxed">SQL progress contributes to your daily activity tracker, solves counts, and exports seamlessly to your connected GitHub repository.</p>
+                    </div>
                 </div>
             </section>
 
@@ -311,10 +342,10 @@ export default function DocsPage() {
                         </div>
 
                         {/* Google Gemini */}
-                        <div className="glass p-8 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all flex flex-col md:flex-row gap-8 items-start">
+                        <div className="glass p-8 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all flex flex-col md:flex-row gap-8 items-start">
                             <div className="md:w-1/3">
                                 <h3 className="text-xl font-black text-white mb-2 flex items-center gap-2">
-                                    <div className="h-3 w-3 rounded-full bg-blue-500" />
+                                    <div className="h-3 w-3 rounded-full bg-orange-500" />
                                     Google Gemini
                                 </h3>
                                 <p className="text-sm text-zinc-400 mb-4 font-medium">
@@ -340,7 +371,7 @@ export default function DocsPage() {
                                             href="https://aistudio.google.com/app/apikey"
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="text-blue-400 font-semibold hover:underline"
+                                            className="text-orange-400 font-semibold hover:underline"
                                         >
                                             Google AI Studio
                                         </a>

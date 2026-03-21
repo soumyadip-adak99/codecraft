@@ -1,4 +1,4 @@
-import { ExecutionResult, GeneratedQuestion, LLMConfig, TestCase } from "@/@types";
+import { ExecutionResult, GeneratedQuestion, LLMConfig, TestCase, SqlQuestion, SqlExecutionResult } from "@/@types";
 import OpenAI from "openai";
 
 export class LLMGateway {
@@ -333,6 +333,191 @@ Return ONLY a valid JSON object in this exact format:
         aiAnalysis: ExecutionResult["aiAnalysis"];
     }> {
         const prompt = this.buildEvaluationPrompt(code, language, testCases, description);
+        const raw = await this.sendRequest(prompt);
+        return this.parseJSON(raw);
+    }
+
+    // ── SQL Methods ──────────────────────────────────────────────────────────
+
+    private buildSQLQuestionPrompt(
+        dialect: string,
+        difficulty: string,
+        topic?: string,
+        usedQuestionIds: string[] = []
+    ): string {
+        const avoidNote =
+            usedQuestionIds.length > 0
+                ? `\nIMPORTANT: This is part of an ongoing SQL session. Generate a DIFFERENT question from the ${usedQuestionIds.length} already seen. Use a different scenario.\n`
+                : "";
+        const dialectNote = dialect === "oracle" ? "Use Oracle SQL syntax (use ROWNUM for limiting, not LIMIT)." :
+            dialect === "sqlite" ? "Use SQLite syntax (lightweight, no stored procedures)." :
+            dialect === "postgresql" ? "Use PostgreSQL syntax (support CTEs, window functions when relevant)." :
+            "Use MySQL syntax.";
+
+        return `Generate a ${difficulty} SQL interview question for ${dialect.toUpperCase()}.${avoidNote}
+${dialectNote}
+
+IMPORTANT: Return ONLY a single valid JSON object, no markdown, no explanation text.
+
+Requirements:
+- Title: concise, descriptive (max 10 words)
+- Include 1-3 schema tables with realistic columns and data types matching the dialect
+- Each table must have 4-6 rows of sample data
+- 2 visible test cases + 3 hidden test cases
+- Expected output for each test case is an array of row objects (column:value)
+- Tags: 2-4 SQL concept tags (e.g. "JOIN", "GROUP BY", "subquery")
+
+RULES:
+- The SQL question must be solvable with a single SELECT statement (or subquery)
+- Do NOT include DDL/DML questions (no INSERT/UPDATE/DELETE/CREATE)
+- Must be completely new — different scenario from any typical SQL 101 example
+- Return ONLY valid JSON, no markdown, no explanation
+
+Return this EXACT JSON structure:
+{
+  "title": "Find Top Earning Employees per Department",
+  "difficulty": "${difficulty}",
+  "dialect": "${dialect}",
+  "description": "Given the Employees and Departments tables, write a SQL query to find the employee with the highest salary in each department. Return the department name, employee name, and salary.",
+  "schema": [
+    {
+      "tableName": "employees",
+      "columns": [
+        {"name": "id", "type": "INT", "constraints": "PRIMARY KEY"},
+        {"name": "name", "type": "VARCHAR(100)", "constraints": "NOT NULL"},
+        {"name": "salary", "type": "DECIMAL(10,2)", "constraints": ""},
+        {"name": "dept_id", "type": "INT", "constraints": "FOREIGN KEY"}
+      ],
+      "sampleData": [
+        {"id": 1, "name": "Alice", "salary": 90000, "dept_id": 1},
+        {"id": 2, "name": "Bob", "salary": 85000, "dept_id": 1},
+        {"id": 3, "name": "Carol", "salary": 95000, "dept_id": 2},
+        {"id": 4, "name": "Dave", "salary": 70000, "dept_id": 2}
+      ]
+    },
+    {
+      "tableName": "departments",
+      "columns": [
+        {"name": "id", "type": "INT", "constraints": "PRIMARY KEY"},
+        {"name": "name", "type": "VARCHAR(100)", "constraints": "NOT NULL"}
+      ],
+      "sampleData": [
+        {"id": 1, "name": "Engineering"},
+        {"id": 2, "name": "Marketing"}
+      ]
+    }
+  ],
+  "constraints": ["Each department has at least one employee", "Salaries are positive values"],
+  "examples": [
+    {
+      "description": "For the sample data above",
+      "expectedRows": [
+        {"department": "Engineering", "employee": "Alice", "salary": 90000},
+        {"department": "Marketing", "employee": "Carol", "salary": 95000}
+      ]
+    }
+  ],
+  "testCases": [
+    {
+      "description": "Basic visible test",
+      "expectedOutput": [{"department": "Engineering", "employee": "Alice", "salary": 90000}],
+      "isHidden": false
+    },
+    {
+      "description": "Multiple departments visible",
+      "expectedOutput": [{"department": "Engineering", "employee": "Alice", "salary": 90000}, {"department": "Marketing", "employee": "Carol", "salary": 95000}],
+      "isHidden": false
+    },
+    {
+      "description": "Hidden test 1",
+      "expectedOutput": [{"department": "Engineering", "employee": "Alice", "salary": 90000}],
+      "isHidden": true
+    },
+    {
+      "description": "Hidden test 2",
+      "expectedOutput": [],
+      "isHidden": true
+    },
+    {
+      "description": "Hidden test 3",
+      "expectedOutput": [{"department": "Marketing", "employee": "Carol", "salary": 95000}],
+      "isHidden": true
+    }
+  ],
+  "tags": ["JOIN", "GROUP BY", "aggregation"]
+}`;
+    }
+
+    private buildSQLEvaluationPrompt(
+        sql: string,
+        dialect: string,
+        question: SqlQuestion,
+        testCases: SqlQuestion["testCases"]
+    ): string {
+        return `You are a SQL judge. Evaluate the following ${dialect.toUpperCase()} query for this SQL problem.
+
+PROBLEM: ${question.description}
+
+DIALECT: ${dialect.toUpperCase()}
+
+SCHEMA & SAMPLE DATA:
+${JSON.stringify(question.schema, null, 2)}
+
+USER'S SQL QUERY:
+\`\`\`sql
+${sql}
+\`\`\`
+
+TEST CASES TO EVALUATE:
+${JSON.stringify(testCases, null, 2)}
+
+Carefully analyze the SQL query logic against the provided schema and sample data. Simulate execution mentally.
+For each test case, determine if the query would produce rows matching the expectedOutput (column names and values must match, order does not matter unless ORDER BY is in the query).
+
+Return ONLY valid JSON in this exact format:
+{
+  "testCaseResults": [
+    {
+      "caseId": 0,
+      "status": "PASS",
+      "description": "Basic visible test",
+      "actualOutput": [{"department": "Engineering", "employee": "Alice", "salary": 90000}],
+      "expectedOutput": [{"department": "Engineering", "employee": "Alice", "salary": 90000}],
+      "executionTime": 12,
+      "errorMessage": null
+    }
+  ],
+  "aiAnalysis": {
+    "codeQuality": 82,
+    "complexity": "O(n log n)",
+    "feedback": "Your query correctly uses JOIN and GROUP BY. Consider adding an index on dept_id for better performance in production.",
+    "suggestions": ["Use table aliases for readability", "Consider a CTE for complex subqueries"],
+    "securityIssues": []
+  }
+}`;
+    }
+
+    async generateSQLQuestion(
+        dialect: string,
+        difficulty: string,
+        topic?: string,
+        usedQuestionIds: string[] = []
+    ): Promise<SqlQuestion> {
+        const prompt = this.buildSQLQuestionPrompt(dialect, difficulty, topic, usedQuestionIds);
+        const raw = await this.sendRequest(prompt);
+        return this.parseJSON<SqlQuestion>(raw);
+    }
+
+    async evaluateSQL(
+        sql: string,
+        dialect: string,
+        question: SqlQuestion,
+        testCases: SqlQuestion["testCases"]
+    ): Promise<{
+        testCaseResults: SqlExecutionResult["testCases"];
+        aiAnalysis: SqlExecutionResult["aiAnalysis"];
+    }> {
+        const prompt = this.buildSQLEvaluationPrompt(sql, dialect, question, testCases);
         const raw = await this.sendRequest(prompt);
         return this.parseJSON(raw);
     }

@@ -64,6 +64,16 @@ export type {
     ExecutionResult,
 } from "./submission";
 export type {
+    SqlQuestion,
+    SqlTable,
+    SqlColumn,
+    SqlExample,
+    SqlTestCase,
+    SqlTestCaseResult,
+    SqlAIAnalysis,
+    SqlExecutionResult,
+} from "./sql";
+export type {
     ISession,
     SessionSolvedQuestion,
     SessionReportData,
