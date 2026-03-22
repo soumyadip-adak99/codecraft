@@ -20,18 +20,24 @@ export interface SolutionToPush {
 
 /** Map display language name → common file extension */
 const LANGUAGE_EXTENSION: Record<string, string> = {
-    javascript: "js",
-    typescript: "ts",
-    python:     "py",
-    java:       "java",
-    "c++":      "cpp",
-    cpp:        "cpp",
-    c:          "c",
-    go:         "go",
-    rust:       "rs",
-    kotlin:     "kt",
-    swift:      "swift",
-    ruby:       "rb",
+    javascript:   "js",
+    typescript:   "ts",
+    python:       "py",
+    java:         "java",
+    "c++":        "cpp",
+    cpp:          "cpp",
+    c:            "c",
+    go:           "go",
+    rust:         "rs",
+    kotlin:       "kt",
+    swift:        "swift",
+    ruby:         "rb",
+    sql:          "sql",
+    mysql:        "sql",
+    postgresql:   "sql",
+    oracle:       "sql",
+    "oracle sql": "sql",
+    sqlite:       "sql",
 };
 
 function slugify(title: string): string {
@@ -99,7 +105,8 @@ export async function pushSolutionsToGitHub(
         for (const solution of solutions) {
             const slug = slugify(solution.title);
             const ext  = getExtension(solution.language);
-            const dir  = `coding-solutions/${slug}`;
+            const isSql = ["sql", "mysql", "postgresql", "oracle", "oracle sql", "sqlite"].includes(solution.language.toLowerCase());
+            const dir  = isSql ? `sql-solutions/${slug}` : `coding-solutions/${slug}`;
 
             try {
                 // Push question.md

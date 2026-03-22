@@ -4,6 +4,7 @@ import { ChallengeModal } from "@/components/challenge/ChallengeModal";
 import { SqlChallengeModal } from "@/components/sql/SqlChallengeModal";
 import { ModeSelectionModal } from "@/components/shared/ModeSelectionModal";
 import { AuthLoader } from "@/components/shared/AuthLoader";
+import { NavigationGuard } from "@/components/shared/NavigationGuard";
 import { Navbar } from "@/components/shared/Navbar";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
+            <NavigationGuard />
             <Navbar />
             <main className="flex-1 relative z-10">{children}</main>
             <ModeSelectionModal />

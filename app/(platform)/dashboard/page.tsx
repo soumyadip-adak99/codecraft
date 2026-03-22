@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUIStore } from "@/store";
 import { useChallengeStore } from "@/store/challengeStore";
+import { useSqlStore } from "@/store/sqlStore";
 import { useMutation, useQuery } from "convex/react";
 import {
     ArrowRight,
@@ -31,6 +32,7 @@ export default function DashboardPage() {
     const { data: session } = useAuth();
     const { openChallengeModal, openSqlModal, openModeModal } = useUIStore();
     const { sessionActive, solvedQuestions, currentQuestion } = useChallengeStore();
+    const { sqlSessionActive, currentSqlQuestion } = useSqlStore();
     const backfill = useMutation(api.userStatus.backfillDailyActivity);
     const backfillRan = useRef(false);
 
@@ -164,6 +166,25 @@ export default function DashboardPage() {
                             </p>
                         </div>
                         <ArrowRight className="h-5 w-5 text-orange-500/50 group-hover:text-orange-500 group-hover:translate-x-1 transition-all shrink-0" />
+                    </Link>
+                )}
+
+                {/* Active SQL session banner */}
+                {sqlSessionActive && currentSqlQuestion && (
+                    <Link
+                        href={`/sql`}
+                        className="mb-6 flex items-center gap-3 glass rounded-2xl border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500/10 transition-colors px-5 py-4 cursor-pointer group"
+                    >
+                        <div className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse shrink-0" />
+                        <div className="flex-1">
+                            <p className="text-sm font-semibold text-cyan-300 group-hover:text-cyan-400 transition-colors">
+                                SQL Session in progress
+                            </p>
+                            <p className="text-xs text-zinc-400 mt-0.5">
+                                Click to continue or end your active database session
+                            </p>
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-cyan-500/50 group-hover:text-cyan-500 group-hover:translate-x-1 transition-all shrink-0" />
                     </Link>
                 )}
 
