@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     rel="stylesheet"
                 />
             </head>
-            <body className={`font-sans antialiased bg-black text-white`}>
+            <body className={`font-sans antialiased bg-background text-foreground`}>
                 <SmoothScrolling>
                     <SessionProvider>
                         {children}

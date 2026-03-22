@@ -1,19 +1,46 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   Single source of truth — no ad-hoc hex values anywhere else.
+   ═══════════════════════════════════════════════════════════ */
 @theme {
-  --color-background: #000000;
-  --color-foreground: #ffffff;
-  --color-primary: #f97316;
-  --color-primary-hover: #ea580c;
-  --color-surface: #111111;
-  --color-surface-2: #1a1a1a;
-  --color-border: rgba(255,255,255,0.06);
-  --color-muted: #71717a;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  /* ── Palette ──────────────────────────────────────────── */
+  --color-accent:          #ff6b00;   /* CTA, highlights, glows        */
+  --color-background:      #0a0a0a;   /* page base                     */
+  --color-surface:         #111111;   /* cards, panels                 */
+  --color-surface-2:       #1a1a1a;   /* elevated surface              */
+  --color-border:          #1f1f1f;   /* subtle dividers               */
+  --color-border-hover:    rgba(255,255,255,0.12);
+  --color-muted:           #666666;   /* secondary text                */
+  --color-text:            #f0f0f0;   /* primary text                  */
+
+  /* shadcn / Tailwind semantic aliases */
+  --color-primary:         var(--color-accent);
+  --color-primary-hover:   #e05e00;
+  --color-foreground:      var(--color-text);
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
+
+  /* Fluid type scale — never hardcode px for headings */
+  --fs-hero:    clamp(3rem,   6vw, 5rem);
+  --fs-section: clamp(2rem,   4vw, 3rem);
+  --fs-body:    1rem;
+  --fs-caption: 0.875rem;
+
+  /* ── Spacing tokens ───────────────────────────────────── */
+  --section-padding-y: 6rem;
+  --container-max:     1280px;
 }
 
-* {
+/* ═══════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -22,103 +49,266 @@ html {
 }
 
 body {
-  background: #000;
-  color: #fff;
+  background: var(--color-background);
+  color:       var(--color-text);
   font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
+/* ── Custom scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  {
+  background: rgba(255,255,255,0.08);
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #f97316;
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* ── Focus ring (accessibility) ──────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-/* Orange glow utility */
-.glow-orange {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.3);
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT HELPERS
+   ═══════════════════════════════════════════════════════════ */
+.section-padding {
+  padding-top:    var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
 }
 
-/* Grid background */
+.container-max {
+  max-width: var(--container-max);
+  margin-left:  auto;
+  margin-right: auto;
+  padding-left:  1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BACKGROUND UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Subtle dot-grid overlay */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
 }
 
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #f97316 60%, #ea580c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.bg-grid-fade {
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
 }
 
-/* Glass card */
+/* ═══════════════════════════════════════════════════════════
+   GLASS PANELS
+   ═══════════════════════════════════════════════════════════ */
 .glass {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+  background:       rgba(20,20,20,0.45);
+  border:           1px solid rgba(255,255,255,0.07);
+  backdrop-filter:  blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:       0 8px 32px rgba(0,0,0,0.5);
+  transition:       border-color 0.25s ease, background 0.25s ease;
+}
+.glass:hover {
+  border-color: rgba(255,255,255,0.13);
+  background:   rgba(28,28,28,0.55);
+}
+
+.glass-panel {
+  background:  linear-gradient(145deg, rgba(28,28,28,0.55) 0%, rgba(14,14,14,0.55) 100%);
+  border:      1px solid rgba(255,255,255,0.06);
+  box-shadow:  inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Code editor glassmorphism container */
+.glass-editor {
+  background:   rgba(12,12,12,0.8);
+  border:       1px solid rgba(255,255,255,0.08);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 0 1px rgba(255,107,0,0.06),
+    0 24px 60px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-/* Difficulty badge colors */
-.difficulty-easy {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+/* ═══════════════════════════════════════════════════════════
+   FEATURE CARDS — gradient border via ::before
+   ═══════════════════════════════════════════════════════════ */
+.feature-card {
+  position: relative;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
-.difficulty-medium {
-  color: #f97316;
-  background: rgba(249, 115, 22, 0.1);
-  border: 1px solid rgba(249, 115, 22, 0.2);
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,107,0,0) 0%,
+    rgba(255,107,0,0.2) 50%,
+    rgba(255,107,0,0) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
-.difficulty-hard {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover {
+  transform:  translateY(-4px);
+  box-shadow: 0 12px 40px rgba(255,107,0,0.12), 0 0 0 1px rgba(255,107,0,0.08);
 }
 
-/* Status colors */
-.status-accepted { color: #22c55e; }
-.status-wrong { color: #ef4444; }
-.status-error { color: #f59e0b; }
+/* ═══════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+   ═══════════════════════════════════════════════════════════ */
 
-/* Panel resize handle */
-[data-panel-group-direction="horizontal"] > [data-panel-resize-handle-id] {
-  width: 4px;
-  background: rgba(255,255,255,0.06);
-  transition: background 0.2s;
-  cursor: col-resize;
-}
-[data-panel-group-direction="horizontal"] > [data-panel-resize-handle-id]:hover {
-  background: #f97316;
+/* Fluid hero / section headings */
+.text-hero    { font-size: var(--fs-hero);    letter-spacing: -0.03em; line-height: 1.05; }
+.text-section { font-size: var(--fs-section); letter-spacing: -0.02em; line-height: 1.1;  }
+
+/* ── Use var(--color-accent) directly for text instead of gradients ── */
+
+/* shine keyframe kept for possible future use on specific elements */
+@keyframes shine {
+  0%   { background-position: 0%   center; }
+  100% { background-position: 250% center; }
 }
 
-/* Animations */
+/* ═══════════════════════════════════════════════════════════
+   GLOW UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+.glow-primary {
+  box-shadow: 0 0 30px rgba(255,107,0,0.25), inset 0 0 20px rgba(255,107,0,0.08);
+}
+.glow-primary-hover {
+  transition: box-shadow 0.3s ease;
+}
+.glow-primary-hover:hover {
+  box-shadow: 0 0 40px rgba(255,107,0,0.45), inset 0 0 20px rgba(255,107,0,0.15);
+}
+
+/* ── Glow pulse on counter complete ──────────────────────── */
+@keyframes glow-pulse {
+  0%   { text-shadow: 0 0 0px  rgba(255,107,0,0); }
+  40%  { text-shadow: 0 0 24px rgba(255,107,0,0.7); }
+  100% { text-shadow: 0 0 0px  rgba(255,107,0,0); }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 1.2s ease-out forwards;
+}
+
+/* ── Orange pulse ring on CTA buttons ────────────────────── */
 @keyframes pulse-orange {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(249,115,22,0); }
+  0%, 100% { box-shadow: 0 0 0 0   rgba(255,107,0,0.35); }
+  50%       { box-shadow: 0 0 0 14px rgba(255,107,0,0);   }
 }
 .animate-pulse-orange {
-  animation: pulse-orange 2s ease-in-out infinite;
+  animation: pulse-orange 2.5s ease-in-out infinite;
 }
 
+/* ── Floating hover for hero badge ───────────────────────── */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
 }
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+/* ── Gradient background shift (for CTA banner) ──────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+.animate-gradient-shift {
+  background-size: 300% 300%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ── Blinking cursor in code editor ──────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.animate-blink { animation: blink 1s step-end infinite; }
+
+/* ── Smooth counter score-board appearance ───────────────── */
+.gradient-bg {
+  background: linear-gradient(120deg, var(--color-surface), #000000, var(--color-surface));
+  background-size: 200% 200%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STATUS / DIFFICULTY BADGES
+   ═══════════════════════════════════════════════════════════ */
+.difficulty-easy   { color: #10b981; background: rgba(16,185,129,0.1);  border: 1px solid rgba(16,185,129,0.2);  }
+.difficulty-medium { color: #f59e0b; background: rgba(245,158,11,0.1);  border: 1px solid rgba(245,158,11,0.2);  }
+.difficulty-hard   { color: #ef4444; background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.2);   }
+
+.status-accepted { color: #10b981; }
+.status-wrong    { color: #ef4444; }
+.status-error    { color: #f59e0b; }
+
+/* ═══════════════════════════════════════════════════════════
+   PANEL RESIZE HANDLE
+   ═══════════════════════════════════════════════════════════ */
+[data-panel-group-direction="horizontal"] > [data-panel-resize-handle-id] {
+  width:      4px;
+  background: rgba(255,255,255,0.04);
+  transition: background 0.2s;
+  cursor:     col-resize;
+}
+[data-panel-group-direction="horizontal"] > [data-panel-resize-handle-id]:hover,
+[data-panel-group-direction="horizontal"] > [data-panel-resize-handle-id][data-resize-handle-state="drag"] {
+  background: var(--color-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONNECTING LINE (How It Works section)
+   ═══════════════════════════════════════════════════════════ */
+.connector-line {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,107,0,0.4) 20%,
+    rgba(255,107,0,0.4) 80%,
+    transparent
+  );
+  transform-origin: left center;
+  /* GSAP will animate scaleX from 0 → 1 */
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER LINK HOVER
+   ═══════════════════════════════════════════════════════════ */
+.footer-link {
+  opacity: 0.55;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+.footer-link:hover {
+  opacity:   1;
+  transform: translateX(2px);
+  color:     var(--color-accent);
 }
