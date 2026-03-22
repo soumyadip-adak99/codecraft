@@ -92,10 +92,10 @@ export function SqlChallengeModal() {
     return (
         <div
             ref={backdropRef}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4"
             onClick={(e) => { if (e.target === backdropRef.current) handleClose(); }}
         >
-            <div ref={contentRef} className="w-full max-w-lg glass rounded-2xl border border-white/8 overflow-hidden">
+            <div ref={contentRef} className="w-full sm:max-w-lg glass rounded-t-2xl sm:rounded-2xl border border-white/8 overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
                     <div className="flex items-center gap-2.5">
@@ -115,27 +115,7 @@ export function SqlChallengeModal() {
                 </div>
 
                 {/* Body */}
-                <div className="p-6 space-y-5">
-                    {/* SQL Dialect */}
-                    <div>
-                        <label className="block text-xs font-medium text-zinc-400 mb-2">SQL Dialect</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {SQL_DIALECTS.map((d) => (
-                                <button
-                                    key={d.value}
-                                    onClick={() => setDialect(d.value)}
-                                    className={`py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
-                                        dialect === d.value
-                                            ? "bg-orange-500/20 border-orange-500/40 text-orange-300"
-                                            : "border-white/5 text-zinc-500 hover:border-white/10 hover:text-zinc-300 bg-white/2"
-                                    }`}
-                                >
-                                    {d.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
+                <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
                     {/* Difficulty */}
                     <div>
                         <label className="block text-xs font-medium text-zinc-400 mb-2">Difficulty</label>

@@ -1,7 +1,18 @@
-import mongoose from "mongoose";
-import dns from "node:dns";
+/**
+ * mongoose.ts — MongoDB connection via Mongoose (with DNS patch)
+ *
+ * Root cause of `querySrv ECONNREFUSED`:
+ *  - `mongodb+srv://` uses DNS SRV records for host discovery.
+ *  - Windows ISP/local DNS resolvers often block SRV record queries.
+ *  - Solution: force Node.js to use Google's DNS (8.8.8.8) which
+ *    supports SRV before any connection attempt.
+ */
 
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+// ── MUST be the very first thing — patch DNS before Mongoose loads ──
+import { setServers } from "dns";
+setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+
+import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -31,12 +42,13 @@ async function connectDB() {
     if (!cached.promise) {
         const opts = {
             bufferCommands: false,
-            family: 4,
+            serverSelectionTimeoutMS: 15000,
+            socketTimeoutMS: 30000,
+            connectTimeoutMS: 15000,
+            maxPoolSize: 10,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-            return mongoose;
-        });
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => m);
     }
 
     try {

@@ -70,35 +70,35 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
   return (
     <section
       ref={sectionRef}
-      className={`relative pt-12 pb-32 px-6 max-w-5xl mx-auto z-20 ${className}`}
+      className={`relative pt-8 sm:pt-12 pb-20 sm:pb-32 px-4 sm:px-6 max-w-5xl mx-auto z-20 ${className}`}
     >
       {/* ── Editor window ─────────────────────────────────── */}
-      <div className="glass-editor rounded-2xl overflow-hidden mx-auto max-w-4xl relative">
+      <div className="glass-editor rounded-xl sm:rounded-2xl overflow-hidden mx-auto max-w-4xl relative">
 
         {/* Title bar */}
-        <div className="flex items-center px-5 py-3 bg-white/[0.03] border-b border-white/[0.06]">
+        <div className="flex items-center px-3 sm:px-5 py-2.5 sm:py-3 bg-white/[0.03] border-b border-white/[0.06]">
           {/* Traffic lights */}
           <div className="flex gap-1.5" aria-hidden="true">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+            <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-[#28c840]" />
           </div>
           {/* File name */}
-          <span className="mx-auto text-xs font-mono text-[#666] select-none tracking-widest">
+          <span className="mx-auto text-[10px] sm:text-xs font-mono text-[#666] select-none tracking-widest">
             solution.py
           </span>
           {/* Language badge */}
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#ff6b00]/70 bg-[#ff6b00]/10 px-2 py-0.5 rounded">
+          <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-[#ff6b00]/70 bg-[#ff6b00]/10 px-1.5 sm:px-2 py-0.5 rounded">
             Python
           </span>
         </div>
 
         {/* Code body */}
-        <div className="p-6 font-mono text-sm leading-7 overflow-x-auto min-h-[280px] bg-[#080808]/60">
-          <div className="flex gap-4">
+        <div className="p-4 sm:p-6 font-mono text-[11px] sm:text-sm leading-6 sm:leading-7 overflow-x-auto min-h-[220px] sm:min-h-[280px] bg-[#080808]/60">
+          <div className="flex gap-3 sm:gap-4 min-w-max sm:min-w-0">
             {/* Line numbers */}
             <div
-              className="flex flex-col text-[#333] select-none text-right shrink-0 w-6 pt-[1px]"
+              className="flex flex-col text-[#333] select-none text-right shrink-0 w-5 sm:w-6 pt-[1px]"
               aria-hidden="true"
             >
               {CODE_LINES.map((_, i) => (
@@ -131,7 +131,7 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
               {/* Blinking cursor */}
               {!isComplete && (
                 <span
-                  className="inline-block w-2 h-5 bg-[#ff6b00] animate-blink ml-0.5 align-middle"
+                  className="inline-block w-1.5 sm:w-2 h-4 sm:h-5 bg-[#ff6b00] animate-blink ml-0.5 align-middle"
                   aria-hidden="true"
                 />
               )}
@@ -148,8 +148,8 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden border-t border-white/[0.06]"
             >
-              <div className="px-6 py-4 bg-[#050505]/80 font-mono text-xs">
-                <p className="text-[#444] mb-2 uppercase tracking-wider text-[10px]">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 bg-[#050505]/80 font-mono text-[10px] sm:text-xs">
+                <p className="text-[#444] mb-2 uppercase tracking-wider text-[9px] sm:text-[10px]">
                   ▶ Output
                 </p>
                 {OUTPUT_LINES.map((line, i) => (
@@ -158,7 +158,7 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + i * 0.1, duration: 0.3 }}
-                    className={`flex items-center gap-2 ${line.colour}`}
+                    className={`flex items-center gap-1.5 sm:gap-2 ${line.colour}`}
                   >
                     <span>{line.label}</span>
                     <span>{line.text}</span>
