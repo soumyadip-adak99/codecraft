@@ -92,9 +92,9 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
       ref={sectionRef}
       className={`relative pt-8 sm:pt-12 pb-20 sm:pb-32 px-4 sm:px-6 max-w-6xl mx-auto z-20 ${className}`}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[1.8fr_1fr] gap-10 lg:gap-16 items-center">
+      <div className="flex justify-center items-center w-full">
         {/* ── Desktop Python Editor ─────────────────────────────────── */}
-        <div className="glass-editor rounded-xl sm:rounded-2xl overflow-hidden w-full relative drop-shadow-2xl">
+        <div className="hidden lg:block glass-editor rounded-xl sm:rounded-2xl overflow-hidden w-full max-w-4xl relative drop-shadow-2xl">
           {/* Title bar */}
           <div className="flex items-center px-3 sm:px-5 py-2.5 sm:py-3 bg-white/[0.03] border-b border-white/[0.06]">
             {/* Traffic lights */}
@@ -191,7 +191,7 @@ export default function CodeEditor({ className = "" }: { className?: string }) {
         </div>
 
         {/* ── Mobile JavaScript Editor ─────────────────────────────────── */}
-        <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[340px] aspect-[9/19] bg-[#050505] rounded-[2.5rem] border-[8px] sm:border-[10px] border-[#1a1a1a] drop-shadow-2xl overflow-hidden flex flex-col group">
+        <div className="lg:hidden relative mx-auto w-full flex-shrink-0 max-w-[300px] sm:max-w-[340px] aspect-[9/19] bg-[#050505] rounded-[2.5rem] border-[8px] sm:border-[10px] border-[#1a1a1a] drop-shadow-2xl overflow-hidden flex flex-col group">
           {/* Mobile Notch */}
           <div className="absolute top-0 inset-x-0 w-28 sm:w-32 h-6 sm:h-7 bg-[#1a1a1a] mx-auto rounded-b-2xl z-20 flex items-center justify-center gap-2" aria-hidden="true">
              <div className="w-1.5 h-1.5 rounded-full bg-[#0a0a0a]" />
