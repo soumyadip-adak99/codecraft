@@ -38,8 +38,8 @@ export function Navbar() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur-xl">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <nav className="sticky top-0 z-50 w-full backdrop-blur-xl transition-all duration-300">
+            <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6">
                 {/* Logo */}
                 <div className="flex items-center gap-2.5 group">
                     <Logo />
@@ -73,7 +73,7 @@ export function Navbar() {
                         <>
                             <Button
                                 onClick={openModeModal}
-                                className="bg-orange-500 hover:bg-orange-400 text-white gap-2 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 cursor-pointer"
+                                className="gap-2 shadow-lg shadow-primary/20 cursor-pointer glow-primary-hover animate-pulse-orange"
                                 size="sm"
                             >
                                 <Zap className="h-4 w-4" />
@@ -83,15 +83,16 @@ export function Navbar() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="flex items-center gap-2 rounded-full hover:bg-white/5 p-1 pr-2 transition-colors cursor-pointer">
-                                        <Avatar className="h-8 w-8 ring-2 ring-orange-500/30">
+                                        <Avatar className="h-8 w-8 ring-2 ring-primary/30 shadow-[0_0_10px_rgba(255,106,0,0.2)]">
                                             <AvatarImage src={session.user?.image || ""} />
-                                            <AvatarFallback className="bg-orange-500/20 text-orange-400 text-xs font-bold">
-                                                {session.user?.name?.charAt(0).toUpperCase() || "U"}
+                                            <AvatarFallback className="bg-primary/20 text-primary uppercase text-xs font-bold">
+                                                {session.user?.name?.charAt(0) || "U"}
                                             </AvatarFallback>
                                         </Avatar>
                                         <ChevronDown className="h-3.5 w-3.5 text-zinc-500" />
                                     </button>
                                 </DropdownMenuTrigger>
+
                                 <DropdownMenuContent
                                     align="end"
                                     className="w-52 bg-zinc-900 border-zinc-800"
@@ -104,7 +105,9 @@ export function Navbar() {
                                             {session.user?.email}
                                         </p>
                                     </div>
+
                                     <DropdownMenuSeparator className="bg-zinc-800" />
+
                                     <DropdownMenuItem
                                         asChild
                                         className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
@@ -114,6 +117,7 @@ export function Navbar() {
                                             Dashboard
                                         </Link>
                                     </DropdownMenuItem>
+
                                     <DropdownMenuItem
                                         asChild
                                         className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
@@ -123,7 +127,9 @@ export function Navbar() {
                                             Settings
                                         </Link>
                                     </DropdownMenuItem>
+
                                     <DropdownMenuSeparator className="bg-zinc-800" />
+
                                     <DropdownMenuItem
                                         onClick={handleSignOut}
                                         className="text-red-400 hover:text-red-300 hover:bg-zinc-800 cursor-pointer"

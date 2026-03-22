@@ -32,9 +32,9 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
     if (!session) return null;
 
     return (
-        <div className="flex min-h-screen flex-col bg-black">
+        <div className="flex min-h-screen flex-col bg-background">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 relative z-10">{children}</main>
             <ModeSelectionModal />
             <ChallengeModal />
             <SqlChallengeModal />
