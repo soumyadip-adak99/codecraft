@@ -27,6 +27,7 @@ export const editorOptions = {
     smoothScrolling: true,
     cursorBlinking: "smooth" as const,
     cursorSmoothCaretAnimation: "on" as const,
+    wordWrap: "on" as const,
     scrollbar: {
         verticalScrollbarSize: 6,
         horizontalScrollbarSize: 6,

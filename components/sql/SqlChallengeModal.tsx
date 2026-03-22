@@ -92,10 +92,10 @@ export function SqlChallengeModal() {
     return (
         <div
             ref={backdropRef}
-            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
             onClick={(e) => { if (e.target === backdropRef.current) handleClose(); }}
         >
-            <div ref={contentRef} className="w-full sm:max-w-lg glass rounded-t-2xl sm:rounded-2xl border border-white/8 overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col">
+            <div ref={contentRef} className="w-full max-w-lg glass rounded-2xl border border-white/8 overflow-hidden max-h-[90vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
                     <div className="flex items-center gap-2.5">
