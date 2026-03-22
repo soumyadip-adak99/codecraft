@@ -102,9 +102,9 @@ export function CodeEditor() {
     return (
         <div className="flex flex-col h-full w-full min-h-0 min-w-0" style={{ background: editorBg }}>
             {/* ── Toolbar ── */}
-            <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b border-white/5 bg-[#0a0a0a] shrink-0 gap-1.5 sm:gap-2 min-w-0">
+            <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b border-white/5 bg-[#0a0a0a] shrink-0 gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar min-w-0">
                 {/* Left: Language + Theme selectors */}
-                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
                     {/* Language */}
                     <div className="relative">
                         <select
@@ -121,14 +121,15 @@ export function CodeEditor() {
                         <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-500 pointer-events-none" />
                     </div>
 
-                    {/* Theme — hidden on very small screens */}
-                    <div className="relative hidden sm:block">
-                        <div className="flex items-center gap-1 bg-zinc-900 border border-white/8 rounded-lg pl-2 pr-1 py-1.5 text-xs text-white">
+                    {/* Theme */}
+                    <div className="relative">
+                        {/* Desktop view */}
+                        <div className="hidden sm:flex items-center gap-1 bg-zinc-900 border border-white/8 rounded-lg pl-2 pr-1 py-1.5 text-xs text-white">
                             <Palette className="h-3 w-3 text-zinc-400 shrink-0" />
                             <select
                                 value={selectedTheme}
                                 onChange={(e) => handleThemeChange(e.target.value as EditorThemeId)}
-                                className="appearance-none border-none focus:outline-none cursor-pointer text-xs text-white pr-5 bg-gray-900"
+                                className="appearance-none border-none focus:outline-none cursor-pointer text-xs text-white pr-5 bg-zinc-900"
                                 style={{ minWidth: 80 }}
                             >
                                 {EDITOR_THEMES.map((t) => (
@@ -138,6 +139,21 @@ export function CodeEditor() {
                                 ))}
                             </select>
                             <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-500 pointer-events-none" />
+                        </div>
+                        {/* Mobile view */}
+                        <div className="flex sm:hidden items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 border border-white/8 relative overflow-hidden">
+                            <Palette className="h-3.5 w-3.5 text-zinc-400" />
+                            <select
+                                value={selectedTheme}
+                                onChange={(e) => handleThemeChange(e.target.value as EditorThemeId)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer bg-zinc-900 text-white"
+                            >
+                                {EDITOR_THEMES.map((t) => (
+                                    <option key={t.value} value={t.value} className="bg-zinc-900 text-white">
+                                        {t.label}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -149,34 +165,34 @@ export function CodeEditor() {
                         variant="outline"
                         onClick={() => executeCode("run")}
                         disabled={isRunning || isGenerating}
-                        className="gap-1 sm:gap-1.5 border-white/8 text-zinc-300 hover:text-white hover:border-green-500/40 bg-white/3 text-xs h-8 px-2 sm:px-3"
+                        className="gap-1.5 border-white/8 text-zinc-300 hover:text-white hover:border-green-500/40 bg-white/3 text-xs h-8 px-2.5 sm:px-3 min-w-0 sm:min-w-18"
                     >
                         {isRunning ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-green-400" />
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-green-400 shrink-0" />
                         ) : (
-                            <Play className="h-3.5 w-3.5 text-green-400" />
+                            <Play className="h-3.5 w-3.5 text-green-400 shrink-0" />
                         )}
                         <span className="hidden sm:inline">{isRunning ? "Running…" : "Run"}</span>
-                        <span className="sm:hidden">{isRunning ? "" : "Run"}</span>
+                        <span className="sm:hidden text-[10px]">{isRunning ? "" : "Run"}</span>
                     </Button>
                     <Button
                         size="sm"
                         onClick={() => executeCode("submit")}
                         disabled={isSubmitting || isGenerating || !isRunPass}
                         title={!isRunPass ? "Run your code first" : "Submit solution"}
-                        className={`gap-1 sm:gap-1.5 text-xs h-8 px-2 sm:px-3 shadow-lg ${
+                        className={`gap-1.5 text-xs h-8 px-2.5 sm:px-3 shadow-lg min-w-0 sm:min-w-20 ${
                             !isRunPass
                                 ? "bg-zinc-700 text-zinc-400 cursor-not-allowed shadow-none"
                                 : "bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/20"
                         }`}
                     >
                         {isSubmitting ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                         ) : (
-                            <Send className="h-3.5 w-3.5" />
+                            <Send className="h-3.5 w-3.5 shrink-0" />
                         )}
                         <span className="hidden sm:inline">{isSubmitting ? "Submitting…" : "Submit"}</span>
-                        <span className="sm:hidden">{isSubmitting ? "" : "Sub"}</span>
+                        <span className="sm:hidden text-[10px]">{isSubmitting ? "" : "Sub"}</span>
                     </Button>
 
                     {isSolved && (
@@ -184,14 +200,14 @@ export function CodeEditor() {
                             size="sm"
                             onClick={handleNextQuestion}
                             disabled={isGenerating}
-                            className="gap-1 sm:gap-1.5 bg-green-500 hover:bg-green-400 text-white text-xs h-8 px-2 sm:px-3 shadow-lg shadow-green-500/20 animate-in fade-in slide-in-from-left-2"
+                            className="gap-1.5 bg-green-500 hover:bg-green-400 text-white text-xs h-8 px-2.5 sm:px-3 shadow-lg shadow-green-500/20 animate-in fade-in slide-in-from-left-2 shrink-0"
                         >
                             {isGenerating ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                             ) : (
                                 <span className="hidden sm:inline">Next ➔</span>
                             )}
-                            <span className="sm:hidden">Next</span>
+                            <span className="sm:hidden text-[10px]">{isGenerating ? "" : "Next"}</span>
                         </Button>
                     )}
                 </div>

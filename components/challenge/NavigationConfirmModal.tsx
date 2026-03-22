@@ -446,4 +446,16 @@ const css = `
     border: 1px solid rgba(239,68,68,0.2);
     letter-spacing: 0.02em;
   }
+  @media (max-width: 400px) {
+    .ncm-modal {
+      width: calc(100vw - 24px);
+      padding: 24px 20px 20px;
+      gap: 12px;
+    }
+    .ncm-actions {
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+  }
 `;
