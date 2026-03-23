@@ -9,6 +9,8 @@ import {
     Terminal,
     Trophy,
     Zap,
+    Shield,
+    Github
 } from "lucide-react";
 
 export const steps = [
@@ -81,47 +83,121 @@ export const API_KEY_PROVIDER_LINK = [
         url: "https://console.anthropic.com/settings/keys",
     },
 ];
+
 export const SQL_DIALECTS = [
-    { value: "mysql", label: "MySQL", description: "The world's most popular open-source SQL database" },
-    { value: "postgresql", label: "PostgreSQL", description: "Advanced open-source relational database with strong standards compliance" },
-    { value: "oracle", label: "Oracle SQL", description: "Enterprise-grade SQL with ROWNUM, CONNECT BY, and PL/SQL extensions" },
-    { value: "sqlite", label: "SQLite", description: "Lightweight, serverless, self-contained SQL engine" },
+    {
+        value: "mysql",
+        label: "MySQL",
+        description: "The world's most popular open-source SQL database",
+    },
+    {
+        value: "postgresql",
+        label: "PostgreSQL",
+        description: "Advanced open-source relational database with strong standards compliance",
+    },
+    {
+        value: "oracle",
+        label: "Oracle SQL",
+        description: "Enterprise-grade SQL with ROWNUM, CONNECT BY, and PL/SQL extensions",
+    },
+    {
+        value: "sqlite",
+        label: "SQLite",
+        description: "Lightweight, serverless, self-contained SQL engine",
+    },
 ];
 
 export const sqlSteps = [
     {
         icon: Zap,
         title: "1. Start a SQL Session",
-        description: "Select your SQL dialect (MySQL, PostgreSQL, Oracle SQL, or SQLite), choose difficulty, and optionally specify a topic like 'JOINs' or 'window functions'.",
+        description:
+            "Select your SQL dialect (MySQL, PostgreSQL, Oracle SQL, or SQLite), choose difficulty, and optionally specify a topic like 'JOINs' or 'window functions'.",
         color: "text-orange-400",
         bg: "bg-orange-500/10",
     },
     {
         icon: Brain,
         title: "2. AI Question Generation",
-        description: "Our AI generates a unique SQL challenge with a full database schema, sample data, and clearly defined expected output per test case.",
+        description:
+            "Our AI generates a unique SQL challenge with a full database schema, sample data, and clearly defined expected output per test case.",
         color: "text-cyan-400",
         bg: "bg-cyan-500/10",
     },
     {
         icon: Code2,
         title: "3. Write SQL in Monaco Editor",
-        description: "Write your SQL query in the Monaco editor with full SQL syntax highlighting. Switch dialects and themes on the fly.",
+        description:
+            "Write your SQL query in the Monaco editor with full SQL syntax highlighting. Switch dialects and themes on the fly.",
         color: "text-green-400",
         bg: "bg-green-500/10",
     },
     {
         icon: Terminal,
         title: "4. Run & Submit for Evaluation",
-        description: "Click 'Run' to test against visible test cases. Submit to evaluate all hidden test cases. The AI simulates SQL execution displaying pass/fail result tables.",
+        description:
+            "Click 'Run' to test against visible test cases. Submit to evaluate all hidden test cases. The AI simulates SQL execution displaying pass/fail result tables.",
         color: "text-purple-400",
         bg: "bg-purple-500/10",
     },
     {
         icon: Target,
         title: "5. Get AI Feedback",
-        description: "Receive detailed feedback including code quality score, query complexity, optimization suggestions, and best practices for your SQL.",
+        description:
+            "Receive detailed feedback including code quality score, query complexity, optimization suggestions, and best practices for your SQL.",
         color: "text-orange-400",
         bg: "bg-orange-500/10",
+    },
+];
+
+export const LANDING_FEATURES = [
+    {
+        icon: Brain,
+        title: "AI Question Generation",
+        desc: "Generate unique Easy, Medium, or Hard challenges on any topic using our default Groq key or your own API key.",
+    },
+    {
+        icon: Code2,
+        title: "VS Code-Like Editor",
+        desc: "Monaco Editor with syntax highlighting, IntelliSense, multi-language support, and JetBrains Mono font.",
+    },
+    {
+        icon: Zap,
+        title: "Session-Based Learning",
+        desc: "Start a session, solve questions, unlock the next on correct submission, end with a full PDF performance report.",
+    },
+    {
+        icon: BarChart2,
+        title: "Progress Analytics",
+        desc: "Track easy, medium, and hard problems solved across all your sessions on a real-time dashboard.",
+    },
+    {
+        icon: Shield,
+        title: "Privacy First",
+        desc: "Your code is never stored in our database. Only your stats are saved — nothing else, ever.",
+    },
+    {
+        icon: Github,
+        title: "GitHub Integration",
+        desc: "Connect GitHub and automatically commit all solutions into a personal repository after each session.",
+    },
+];
+
+
+export const LANDING_HOW_STEPS = [
+    {
+        step: "01",
+        title: "Select Difficulty",
+        desc: "Choose Easy, Medium, or Hard. The AI instantly generates a compelling algorithmic challenge tailored to your level.",
+    },
+    {
+        step: "02",
+        title: "Write Solution",
+        desc: "Code in our VS Code-like Monaco environment with real language servers, syntax highlighting, and intelligent hints.",
+    },
+    {
+        step: "03",
+        title: "Get Insights",
+        desc: "Submit for automatic judging and receive a deep-dive PDF analysis of your time complexity, style, and performance.",
     },
 ];
